@@ -1,5 +1,5 @@
 import unittest
-from datanator_query.util import mongo_util
+from datanator_query_python.util import mongo_util
 import tempfile
 import shutil
 import configparser

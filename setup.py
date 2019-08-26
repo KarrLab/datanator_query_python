@@ -7,7 +7,7 @@ except ImportError:
     import pkg_utils
 import os
 
-name = 'datanator_query_python'
+name = 'datanator_query_python_python'
 dirname = os.path.dirname(__file__)
 package_data = {
     name: [

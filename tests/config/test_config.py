@@ -1,4 +1,4 @@
-from datanator_query.config import config
+from datanator_query_python.config import config
 import unittest
 import tempfile
 

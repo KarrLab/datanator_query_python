@@ -1,4 +1,4 @@
-""" datanator_query_python command line interface
+""" datanator_query_python_python command line interface
 
 :Author: Name <email>
 :Date: 2019-8-26
@@ -7,8 +7,8 @@
 """
 
 import cement
-import datanator_query_python
-import datanator_query_python.core
+import datanator_query_python_python
+import datanator_query_python_python.core
 
 
 class BaseController(cement.Controller):
@@ -16,9 +16,9 @@ class BaseController(cement.Controller):
 
     class Meta:
         label = 'base'
-        description = "datanator_query_python"
+        description = "datanator_query_python_python"
         arguments = [
-            (['-v', '--version'], dict(action='version', version=datanator_query_python.__version__)),
+            (['-v', '--version'], dict(action='version', version=datanator_query_python_python.__version__)),
         ]
 
     @cement.ex(help='command_1 description')
@@ -67,7 +67,7 @@ class Command3WithArgumentsController(cement.Controller):
 class App(cement.App):
     """ Command line application """
     class Meta:
-        label = 'datanator_query_python'
+        label = 'datanator_query_python_python'
         base_controller = 'base'
         handlers = [
             BaseController,

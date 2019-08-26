@@ -1,4 +1,4 @@
-""" Tests of datanator_query_python command line interface (datanator_query_python.__main__)
+""" Tests of datanator_query_python_python command line interface (datanator_query_python_python.__main__)
 
 :Author: Name <email>
 :Date: 2019-8-26
@@ -6,8 +6,8 @@
 :License: MIT
 """
 
-from datanator_query_python import __main__
-import datanator_query_python
+from datanator_query_python_python import __main__
+import datanator_query_python_python
 import capturer
 import mock
 import unittest
@@ -16,11 +16,11 @@ import unittest
 class CliTestCase(unittest.TestCase):
 
     def test_cli(self):
-        with mock.patch('sys.argv', ['datanator_query_python', '--help']):
+        with mock.patch('sys.argv', ['datanator_query_python_python', '--help']):
             with self.assertRaises(SystemExit) as context:
                 __main__.main()
                 self.assertRegex(context.Exception,
-                                 'usage: datanator_query_python')
+                                 'usage: datanator_query_python_python')
 
     def test_help(self):
         with self.assertRaises(SystemExit):
@@ -33,7 +33,7 @@ class CliTestCase(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     app.run()
                 self.assertEqual(captured.stdout.get_text(),
-                                 datanator_query_python.__version__)
+                                 datanator_query_python_python.__version__)
                 self.assertEqual(captured.stderr.get_text(), '')
 
         with __main__.App(argv=['--version']) as app:
@@ -41,7 +41,7 @@ class CliTestCase(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     app.run()
                 self.assertEqual(captured.stdout.get_text(),
-                                 datanator_query_python.__version__)
+                                 datanator_query_python_python.__version__)
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_command_1(self):

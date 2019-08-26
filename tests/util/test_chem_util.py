@@ -1,5 +1,5 @@
 import unittest
-from datanator_query.util import chem_util
+from datanator_query_python.util import chem_util
 import tempfile
 import shutil
 

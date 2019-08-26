@@ -1,4 +1,4 @@
-datanator_query_python documentation
+datanator_query_python_python documentation
 ====================================
 
 Contents

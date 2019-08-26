@@ -1,4 +1,4 @@
-from datanator_query.util import mongo_util, chem_util, file_util
+from datanator_query_python.util import mongo_util, chem_util, file_util
 import time
 
 class DataQuery(mongo_util.MongoUtil):

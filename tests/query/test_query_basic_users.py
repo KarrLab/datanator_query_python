@@ -1,6 +1,6 @@
 import unittest
-from datanator_query.query import query_basic_users
-from datanator_query.config import config
+from datanator_query_python.query import query_basic_users
+from datanator_query_python.config import config
 from bson.objectid import ObjectId
 import tempfile
 import shutil

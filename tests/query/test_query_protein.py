@@ -1,5 +1,5 @@
 import unittest
-from datanator_query.query import query_protein
+from datanator_query_python.query import query_protein
 import configparser
 import os
 import pymongo

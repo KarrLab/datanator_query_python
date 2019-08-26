@@ -1,4 +1,4 @@
-from datanator_query.util import chem_util, file_util
+from datanator_query_python.util import chem_util, file_util
 from . import query_nosql
 from pymongo.collation import Collation, CollationStrength
 

@@ -1,4 +1,4 @@
-""" Test of datanator_query_python.core
+""" Test of datanator_query_python_python.core
 
 :Author: Name <email>
 :Date: 2019-8-26
@@ -6,7 +6,7 @@
 :License: MIT
 """
 
-from datanator_query_python import core
+from datanator_query_python_python import core
 import unittest
 
 

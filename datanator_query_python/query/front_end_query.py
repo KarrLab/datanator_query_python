@@ -1,5 +1,5 @@
-from datanator_query.query import query_nosql, query_metabolites_meta, query_taxon_tree
-from datanator_query.util import mongo_util, chem_util, file_util
+from datanator_query_python.query import query_nosql, query_metabolites_meta, query_taxon_tree
+from datanator_query_python.util import mongo_util, chem_util, file_util
 import sys
 import configparser
 import os

@@ -1,5 +1,5 @@
-from datanator_query.util import mongo_util
-from datanator_query.query import query_taxon_tree
+from datanator_query_python.util import mongo_util
+from datanator_query_python.query import query_taxon_tree
 from pymongo.collation import Collation, CollationStrength
 import json
 
