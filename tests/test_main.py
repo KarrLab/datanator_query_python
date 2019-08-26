@@ -19,7 +19,8 @@ class CliTestCase(unittest.TestCase):
         with mock.patch('sys.argv', ['datanator_query_python', '--help']):
             with self.assertRaises(SystemExit) as context:
                 __main__.main()
-                self.assertRegex(context.Exception, 'usage: datanator_query_python')
+                self.assertRegex(context.Exception,
+                                 'usage: datanator_query_python')
 
     def test_help(self):
         with self.assertRaises(SystemExit):
@@ -31,14 +32,16 @@ class CliTestCase(unittest.TestCase):
             with capturer.CaptureOutput(merged=False, relay=False) as captured:
                 with self.assertRaises(SystemExit):
                     app.run()
-                self.assertEqual(captured.stdout.get_text(), datanator_query_python.__version__)
+                self.assertEqual(captured.stdout.get_text(),
+                                 datanator_query_python.__version__)
                 self.assertEqual(captured.stderr.get_text(), '')
 
         with __main__.App(argv=['--version']) as app:
             with capturer.CaptureOutput(merged=False, relay=False) as captured:
                 with self.assertRaises(SystemExit):
                     app.run()
-                self.assertEqual(captured.stdout.get_text(), datanator_query_python.__version__)
+                self.assertEqual(captured.stdout.get_text(),
+                                 datanator_query_python.__version__)
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_command_1(self):
@@ -48,7 +51,8 @@ class CliTestCase(unittest.TestCase):
                 app.run()
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), 'command_1 output')
+                self.assertEqual(captured.stdout.get_text(),
+                                 'command_1 output')
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_command_1(self):
@@ -58,7 +62,8 @@ class CliTestCase(unittest.TestCase):
                 app.run()
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), 'command_2 output')
+                self.assertEqual(captured.stdout.get_text(),
+                                 'command_2 output')
                 self.assertEqual(captured.stderr.get_text(), '')
 
     def test_command_3(self):
@@ -78,5 +83,5 @@ class CliTestCase(unittest.TestCase):
                 self.assertTrue(app.pargs.opt_arg_4)
 
                 # test that the CLI produced the correct output
-                self.assertEqual(captured.stdout.get_text(), '...')
-                self.assertEqual(captured.stderr.get_text(), '...')
+                self.assertEqual(captured.stdout.get_text(), '')
+                self.assertEqual(captured.stderr.get_text(), '')
