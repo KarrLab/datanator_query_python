@@ -2,6 +2,7 @@
 #
 # Documentation build configuration file, created by karr_lab_build_utils.
 #
+import sphinx_rtd_theme
 import datetime
 import os
 import sys
@@ -50,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'datanator_query_python_python'
+project = u'datanator_query_python'
 copyright = u'{}, Karr Lab'.format(datetime.datetime.now().year)
 author = u'Karr Lab'
 
@@ -59,7 +60,8 @@ author = u'Karr Lab'
 # built documents.
 #
 # The short X.Y version.
-filename = os.path.join(os.path.dirname(__file__), '..', 'datanator_query_python_python', 'VERSION')
+filename = os.path.join(os.path.dirname(__file__), '..',
+                        'datanator_query_python', 'VERSION')
 with open(filename, 'r') as file:
     version = file.read()
 # The full version, including alpha/beta/rc tags.
@@ -132,7 +134,7 @@ numfig_format = {
 image_converter_args = [
     '-density', '150',
     '-quality', '00',
-    ]
+]
 
 
 # -- linkcode options -----------------------------------------------------
@@ -143,9 +145,9 @@ def linkcode_resolve(domain, info):
         return None
     rel_filename = info['module'].replace('.', '/')
     if os.path.isfile(os.path.join(os.path.dirname(__file__), '..', rel_filename + '.py')):
-        return "https://github.com/KarrLab/datanator_query_python_python/blob/master/{}.py".format(rel_filename)
+        return "https://github.com/KarrLab/datanator_query_python/blob/master/{}.py".format(rel_filename)
     else:
-        return "https://github.com/KarrLab/datanator_query_python_python/blob/master/{}/__init__.py".format(rel_filename)
+        return "https://github.com/KarrLab/datanator_query_python/blob/master/{}/__init__.py".format(rel_filename)
 
 
 # -- napoleon options -----------------------------------------------------
@@ -163,7 +165,6 @@ napoleon_use_rtype = True
 
 # -- Options for HTML output ----------------------------------------------
 
-import sphinx_rtd_theme
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -182,7 +183,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = u'datanator_query_python_python v0.0.1'
+# html_title = u'datanator_query_python v0.0.1'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -282,33 +283,33 @@ html_show_copyright = True
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'datanator_query_python_python-doc'
+htmlhelp_basename = 'datanator_query_python-doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-     # The paper size ('letterpaper' or 'a4paper').
-     #
-     # 'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    # 'papersize': 'letterpaper',
 
-     # The font size ('10pt', '11pt' or '12pt').
-     #
-     # 'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #
+    # 'pointsize': '10pt',
 
-     # Additional stuff for the LaTeX preamble.
-     #
-     # 'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #
+    # 'preamble': '',
 
-     # Latex figure (float) alignment
-     #
-     # 'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'datanator_query_python_python.tex', u'datanator_query_python_python documentation',
+    (master_doc, 'datanator_query_python.tex', u'datanator_query_python documentation',
      u'Karr Lab', 'manual'),
 ]
 
@@ -350,7 +351,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'datanator_query_python_python', u'datanator_query_python_python documentation',
+    (master_doc, 'datanator_query_python', u'datanator_query_python documentation',
      [author], 1)
 ]
 
@@ -365,8 +366,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'datanator_query_python_python', u'datanator_query_python_python documentation',
-     author, 'datanator_query_python_python', 'One line description of project.',
+    (master_doc, 'datanator_query_python', u'datanator_query_python documentation',
+     author, 'datanator_query_python', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -394,5 +395,5 @@ googleanalytics_id = 'UA-86340737-1'
 
 # -- if RTD, redirect to https://docs.karrlab.org  ------------------------
 
-addmetahtml_content = '<meta http-equiv="refresh" content="0; url=https://docs.karrlab.org/datanator_query_python_python" />'
+addmetahtml_content = '<meta http-equiv="refresh" content="0; url=https://docs.karrlab.org/datanator_query_python" />'
 addmetahtml_enabled = os.getenv('READTHEDOCS', '') == 'True'

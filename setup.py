@@ -7,7 +7,7 @@ except ImportError:
     import pkg_utils
 import os
 
-name = 'datanator_query_python_python'
+name = 'datanator_query_python'
 dirname = os.path.dirname(__file__)
 package_data = {
     name: [
@@ -16,7 +16,8 @@ package_data = {
 }
 
 # get package metadata
-md = pkg_utils.get_package_metadata(dirname, name, package_data_filename_patterns=package_data)
+md = pkg_utils.get_package_metadata(
+    dirname, name, package_data_filename_patterns=package_data)
 
 # install package
 setuptools.setup(

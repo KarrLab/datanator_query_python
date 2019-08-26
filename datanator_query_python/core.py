@@ -1,4 +1,4 @@
-""" datanator_query_python_python
+""" datanator_query_python
 
 :Author: Name <email>
 :Date: 2019-8-26
