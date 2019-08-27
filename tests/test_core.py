@@ -7,6 +7,9 @@
 """
 
 from datanator_query_python import core
+from datanator_query_python import util
+from datanator_query_python import query
+from datanator_query_python import config
 import unittest
 
 
