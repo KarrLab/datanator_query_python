@@ -22,6 +22,9 @@ class TestQueryProtein(unittest.TestCase):
         cls.src = query_protein.QueryProtein(server=cls.MongoDB, database=cls.db,
                  verbose=True, max_entries=20, username = cls.username, 
                  password = cls.password, collection_str='test_query_protein')
+        cls.src_1 = query_protein.QueryProtein(server=cls.MongoDB, database='datanator',
+                 verbose=True, username = cls.username, 
+                 password = cls.password)
         cls.src.db.drop_collection('test_query_protein')
 
         mock_doc_0 = {'uniprot_id': 'MOCK_0', 'ancestor_taxon_id': [105,104,103,102,101],
@@ -63,6 +66,8 @@ class TestQueryProtein(unittest.TestCase):
         dic_5 = {'ncbi_taxonomy_id': 5, 'species_name': 's5', 'ancestor_taxon_id': [], 'ancestor_name': [], 'ko_number': 'KO0', 'uniprot_id': 'uniprot5'}
         dic_6 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name two'}
+        dic_14 = {'ncbi_taxonomy_id': 14, 'species_name': 's6 something', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
+        'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name three'}
         dic_7 = {'ncbi_taxonomy_id': 7, 'species_name': 's7', 'ancestor_taxon_id': [5,4,3,2,6], 'ancestor_name': ['s5', 's4', 's3', 's2', 's6'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot7', "protein_name": 'special name two'}
         dic_8 = {'ncbi_taxonomy_id': 8, 'species_name': 's8', 'ancestor_taxon_id': [5,4,3,2,6,7], 'ancestor_name': ['s5', 's4', 's3', 's2', 's6', 's7'],
@@ -78,9 +83,8 @@ class TestQueryProtein(unittest.TestCase):
         dic_13 = {'ncbi_taxonomy_id': 13, 'species_name': 's13', 'ancestor_taxon_id': [5,4,3,2,1], 'ancestor_name': ['s5', 's4', 's3', 's2', 's1'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot13', 'kinetics':[{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1}, {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}]}
 
-
         cls.src.collection.insert_many([mock_doc_0, mock_doc_1, mock_doc_2, mock_doc_3, mock_doc_4,mock_doc_5,mock_doc_6])
-        cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13])
+        cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13,dic_14])
 
         cls.src.collection.create_index("uniprot_id", background=False, collation=cls.src.collation)
         cls.src.collection.create_index([("protein_name", pymongo.TEXT)])
@@ -88,6 +92,7 @@ class TestQueryProtein(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.src.db.drop_collection('test_query_protein')
+        cls.src_1.client.close()
         cls.src.client.close()
     
     def test_get_protein_meta(self):
@@ -104,10 +109,15 @@ class TestQueryProtein(unittest.TestCase):
         taxon_id_0 = 0
         taxon_id_1 = 2432
         result_0 = self.src.get_meta_by_name_taxon(name_0, taxon_id_0)
-        print(result_0)
         self.assertEqual(len(result_0), 1)
         result_1 = self.src.get_meta_by_name_taxon(name_0, taxon_id_1)
         self.assertEqual(result_1, [])
+
+    def test_get_meta_by_name_name(self):
+        species_name_0 = 'escherichia coli'
+        protein_name_0 = 'phosphofructokinase'
+        result_0 = self.src_1.get_meta_by_name_name(protein_name_0, species_name_0)
+        self.assertEqual(len(result_0), 3)
 
     def test_get_id_by_name(self):
         name = 'special name'

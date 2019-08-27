@@ -33,6 +33,25 @@ class QueryTaxonTree(query_nosql.DataQuery):
         for thing in mass:
             yield json.dumps({'tax_name': thing['tax_name']})
 
+    def get_ids_by_name(self, name):
+        '''
+            Get all taxon ids associated with an
+            organism name
+            Args:
+                name (:obj: `str`): species name
+            Returns:
+                ids (:obj: `list` of :obj: `int`): list of 
+                taxon ids
+        '''
+        ids = []
+        projection = {'tax_id':1, '_id': 0}
+        expression = "\"" + name + "\""
+        query = {'$text': {'$search': expression}}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            ids.append(doc['tax_id'])
+        return ids
+
     def get_name_by_id(self, ids):
         ''' Get organisms' names given their tax_ids
             Args:

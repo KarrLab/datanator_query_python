@@ -59,6 +59,27 @@ class QueryProtein:
             result.append(doc)
         return result
 
+    def get_meta_by_name_name(self, protein_name, species_name):
+        '''
+            Get protein metadata by protein name and the 
+            name of the species the protein resides
+            Args:
+                protein_name (:obj: `str`): name of the protein
+                species_name (:obj: `str`): complete/partial name of the organism
+            Returns:
+                result (:obj: `list` of :obj: `dict`): protein's metadata
+        '''
+        result = []
+        taxon_ids = self.taxon_manager.get_ids_by_name(species_name)
+        expression = "\"" + protein_name + "\"" 
+        query = {'$and': [{'$text': { '$search': expression } },
+                         {'ncbi_taxonomy_id': {'$in' :taxon_ids}},
+                         {'abundances': {'$exists': True} }]}
+        projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0, 'kinetics': 0}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
+        return result
 
     def get_id_by_name(self, name):
         '''

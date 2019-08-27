@@ -6,6 +6,7 @@ import configparser
 import os
 import json
 
+
 class TestQueryTaxonTree(unittest.TestCase):
 
     @classmethod
@@ -43,6 +44,16 @@ class TestQueryTaxonTree(unittest.TestCase):
         ids = [743725, 2107591]
         names = self.src.get_name_by_id(ids)
         self.assertEqual(names[0], 'Candidatus Diapherotrites')
+
+    def test_get_ids_by_name(self):
+        name_0 = 'Escherichia coli'
+        name_1 = 'escherichia coli'
+        ids_0 = self.src.get_ids_by_name(name_0)
+        ids_1 = self.src.get_ids_by_name(name_1)
+        self.assertEqual(len(ids_0), len(ids_1))
+        name_2 = 'e. coli'
+        ids_2 = self.src.get_ids_by_name(name_2)
+        self.assertEqual(len(ids_2), 22)
 
 
     # @unittest.skip('passed')
