@@ -1,4 +1,4 @@
-from datanator_query_python.util import mongo_util
+from datanator_query_python.util import mongo_util, file_util
 from datanator_query_python.query import query_taxon_tree
 from pymongo.collation import Collation, CollationStrength
 import json
@@ -12,6 +12,7 @@ class QueryProtein:
                                              password=password, authSource=authSource, db=database)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
             authSource=authSource, db=database)
+        self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
         self.client, self.db, self.collection = mongo_manager.con_db(collection_str)
@@ -52,7 +53,8 @@ class QueryProtein:
         result = []
         expression = "\"" + name + "\"" 
         query = {'$and': [{'$text': { '$search': expression } },
-                         {'ncbi_taxonomy_id': taxon_id}]}
+                         {'ncbi_taxonomy_id': taxon_id},
+                         {'abundances': {'$exists': True} }]}
         projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0, 'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
@@ -103,6 +105,35 @@ class QueryProtein:
             result.append(dic)
         return result
 
+    def get_info_by_text(self, name):
+        '''
+            Get proteins whose name or kegg name contains string 'name'
+            Args:
+                name (:obj: `str`): complete/incomplete protein name
+            Returns:
+                result (:obj: `list` of :obj: `dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'ko_number': ... 'ko_name': ... 'uniprot_ids': []},
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
+        '''
+        result = []
+        expression = "\"" + name + "\"" 
+        query = { '$text': { '$search': expression } }
+        projection = {'_id': 0, 'uniprot_id': 1, 'ko_number': 1, 'ko_name': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+
+        for doc in docs:
+            ko_number = doc.get('ko_number', 'no number')
+            ko_name = doc.get('ko_name', 'no name')
+            uniprot_id = doc['uniprot_id']
+            index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
+            if len(index) == 1:
+                result[index[0]]['uniprot_ids'].append(uniprot_id)
+            else:
+                dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': [uniprot_id]}
+                result.append(dic)
+        return result
+
     def get_kinlaw_by_id(self, _id):
         '''
             Get protein kinetic law information by uniprot_id
@@ -135,7 +166,7 @@ class QueryProtein:
         return self.get_kinlaw_by_id(_ids)
 
 
-    def get_abundance_by_id(self, _id):
+    def get_abundance_by_id(self, _id, with_meta=False):
         '''
         	Get protein abundance information by uniprot_id
         	Args:
@@ -145,8 +176,11 @@ class QueryProtein:
         '''
         result = []
         query = {'uniprot_id': {'$in': _id}}
-        
-        projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
+        if with_meta == False:
+            projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
+        else:
+            projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0,
+                    'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
 
         for doc in docs:

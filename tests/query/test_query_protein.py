@@ -55,7 +55,7 @@ class TestQueryProtein(unittest.TestCase):
 
         dic_0 = {'ncbi_taxonomy_id': 0, 'species_name': 's0', 'ancestor_taxon_id': [5,4,3,2,1], 'ancestor_name': ['s5', 's4', 's3', 's2', 's1'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot0', "protein_name": 'special name one', 'kinetics': [{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1}, 
-        {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}]}
+        {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}], 'abundances': []}
         dic_1 = {'ncbi_taxonomy_id': 1, 'species_name': 's1', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot1', "protein_name": 'nonspeciali name one'}
         dic_2 = {'ncbi_taxonomy_id': 2, 'species_name': 's2', 'ancestor_taxon_id': [5,4,3], 'ancestor_name': ['s5', 's4', 's3'],
@@ -118,6 +118,11 @@ class TestQueryProtein(unittest.TestCase):
         protein_name_0 = 'phosphofructokinase'
         result_0 = self.src_1.get_meta_by_name_name(protein_name_0, species_name_0)
         self.assertEqual(len(result_0), 3)
+
+    def test_get_info_by_text(self):
+        name = 'special name'
+        result = self.src.get_info_by_text(name)
+        self.assertEqual(result[0]['ko_name'], 'no name')
 
     def test_get_id_by_name(self):
         name = 'special name'

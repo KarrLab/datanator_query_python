@@ -64,6 +64,12 @@ class TestFileUtil(unittest.TestCase):
         replacements = ['d', 'e', 'f']
         result = self.src.replace_dict_key(_dict, replacements)
         self.assertEqual({'d':0, 'e':1, 'f':2}, result)
+        
+    def test_search_dict_index(self):
+        dict_list = [{'a':1, 'b': 2, 'c':3}, {'a':10, 'b': 20, 'c':30},
+            {'a':100, 'b': 200, 'd':300}]
+        result_0 = self.src.search_dict_index(dict_list, 'b', 20)
+        self.assertEqual(result_0, [1]) 
 
     def test_distance_to_common(self):
         list1 = ['a', 'b', 'c'] 

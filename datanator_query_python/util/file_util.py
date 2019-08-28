@@ -122,6 +122,24 @@ class FileUtil:
             i += 1
         return result
 
+    def search_dict_index(self, dict_list, key, value):
+        '''
+            Find the index of the dictionary that contains key/val
+            pair within the dict_list
+            Args:
+                dict_list (:obj: `list` of :obj: `dict`): list of dictionaries
+                key (:obj: `str`): dictionary key
+                value (:obj: ): dictionary value
+            Returns:
+                index (:obj: `list` of :obj: `int`): list of indices
+        '''
+        index = []
+        for i, dic in enumerate(dict_list):
+            val = dic.get(key, None)
+            if val == value:
+                index.append(i)
+        return index
+
     def get_common(self, list1, list2):
         ''' Given two lists, find the closest
             common ancestor
