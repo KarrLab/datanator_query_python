@@ -51,7 +51,7 @@ class QueryProtein:
                 result (:obj: `list` of :obj: `dict`): protein's metadata
         '''
         result = []
-        expression = "\"" + name + "\"" 
+        expression = "\"" + name + "\""
         query = {'$and': [{'$text': { '$search': expression } },
                          {'ncbi_taxonomy_id': taxon_id},
                          {'abundances': {'$exists': True} }]}
@@ -73,7 +73,7 @@ class QueryProtein:
         '''
         result = []
         taxon_ids = self.taxon_manager.get_ids_by_name(species_name)
-        expression = "\"" + protein_name + "\"" 
+        expression = "\"" + protein_name + "\""
         query = {'$and': [{'$text': { '$search': expression } },
                          {'ncbi_taxonomy_id': {'$in' :taxon_ids}},
                          {'abundances': {'$exists': True} }]}
@@ -93,7 +93,7 @@ class QueryProtein:
                 protein's uniprot_id and name
         '''
         result = []
-        expression = "\"" + name + "\"" 
+        expression = "\"" + name + "\""
         query = { '$text': { '$search': expression } }
         projection = {'_id': 0, 'uniprot_id': 1, 'protein_name': 1}
         docs = self.collection.find(filter=query, projection=projection)
@@ -117,7 +117,7 @@ class QueryProtein:
                  {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
         '''
         result = []
-        expression = "\"" + name + "\"" 
+        expression = "\"" + name + "\""
         query = { '$text': { '$search': expression } }
         projection = {'_id': 0, 'uniprot_id': 1, 'ko_number': 1, 'ko_name': 1}
         docs = self.collection.find(filter=query, projection=projection)
@@ -149,6 +149,7 @@ class QueryProtein:
         query = {'ncbi_taxonomy_id': _id}
         projection = {'_id': 0, 'uniprot_id': 1, 'ko_number': 1, 'ko_name': 1}
         docs = self.collection.find(filter=query, projection=projection)
+
         for doc in docs:
             ko_number = doc.get('ko_number', 'no number')
             ko_name = doc.get('ko_name', 'no name')
@@ -159,6 +160,28 @@ class QueryProtein:
             else:
                 dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': [uniprot_id]}
                 result.append(dic)
+        return result
+
+    def get_info_by_ko(self, ko):
+        '''
+            Find all proteins with the same kegg orthology id
+            Args:
+                ko (:obj: `str`): kegg orthology ID
+            Returns:
+                result (:obj: `list` of :obj: `dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'ko_number': ... 'ko_name': ... 'uniprot_ids': []},
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
+        '''
+        ko = ko.upper()
+        result = [{'ko_number': ko, 'uniprot_ids': []}]
+        query = {'ko_number': ko}
+        projection = {'uniprot_id': 1, '_id': 0, 'ko_name': 1, 'ko_number': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+
+        for doc in docs:
+            result[0]['ko_name'] = doc.get('ko_name', 'no name')
+            result[0]['uniprot_ids'].append(doc.get('uniprot_id'))
         return result
 
     def get_kinlaw_by_id(self, _id):
@@ -331,7 +354,7 @@ class QueryProtein:
 
             if level == 0:
                 common_ancestors = ancestor_ids
-            else:                
+            else:
                 common_ancestors = ancestor_ids[:-(level)]
             length = len(common_ancestors)
 
@@ -347,7 +370,7 @@ class QueryProtein:
                     tmp = equivalent.pop('ancestor_taxon_id')
                     result[level]['documents'].append(equivalent)
             checked_ids.append(cur_id)
-                    
+
         return result
 
     def get_uniprot_by_ko(self, ko):
@@ -364,7 +387,7 @@ class QueryProtein:
         projection = {'uniprot_id': 1, '_id': 0}
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
-        
+
         if count == 0:
             return None
 
@@ -372,7 +395,7 @@ class QueryProtein:
             result.append(doc['uniprot_id'])
         return result
 
-    
+
     '''
         The methods below are "super" methods that try to predict some 
         commonly used functionalities for modelers

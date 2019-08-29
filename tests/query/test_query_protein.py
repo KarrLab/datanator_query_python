@@ -20,10 +20,10 @@ class TestQueryProtein(unittest.TestCase):
         cls.username = username
         cls.password = password
         cls.src = query_protein.QueryProtein(server=cls.MongoDB, database=cls.db,
-                 verbose=True, max_entries=20, username = cls.username, 
+                 verbose=True, max_entries=20, username = cls.username,
                  password = cls.password, collection_str='test_query_protein')
         cls.src_1 = query_protein.QueryProtein(server=cls.MongoDB, database='datanator',
-                 verbose=True, username = cls.username, 
+                 verbose=True, username = cls.username,
                  password = cls.password)
         cls.src.db.drop_collection('test_query_protein')
 
@@ -36,7 +36,7 @@ class TestQueryProtein(unittest.TestCase):
         mock_doc_2 = {'uniprot_id': 'MOCK_2', 'ancestor_taxon_id': [105,104,103],
                     'ancestor_name': ['name_5', 'name_4','name_3'],
                     'ko_number': 'MOCK_0', 'ncbi_taxonomy_id': 102, 'abundances': 2}
-                     
+
         mock_doc_3 = {'uniprot_id': 'MOCK_3', 'ancestor_taxon_id': [105,104],
                     'ancestor_name': ['name_5', 'name_4'],
                     'ko_number': 'MOCK_1', 'ncbi_taxonomy_id': 103, 'abundances': 3} # different ko_number
@@ -54,7 +54,7 @@ class TestQueryProtein(unittest.TestCase):
                     'ko_number': 'MOCK_0', 'ncbi_taxonomy_id': 104, 'abundances': 6}
 
         dic_0 = {'ncbi_taxonomy_id': 0, 'species_name': 's0', 'ancestor_taxon_id': [5,4,3,2,1], 'ancestor_name': ['s5', 's4', 's3', 's2', 's1'],
-        'ko_number': 'KO0', 'uniprot_id': 'uniprot0', "protein_name": 'special name one', 'kinetics': [{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1}, 
+        'ko_number': 'KO0', 'uniprot_id': 'uniprot0', "protein_name": 'special name one', 'kinetics': [{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1},
         {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}], 'abundances': []}
         dic_1 = {'ncbi_taxonomy_id': 1, 'species_name': 's1', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot1', "protein_name": 'nonspeciali name one'}
@@ -74,7 +74,7 @@ class TestQueryProtein(unittest.TestCase):
         'ko_number': 'KO0', 'uniprot_id': 'uniprot7', "protein_name": 'special name two'}
         dic_8 = {'ncbi_taxonomy_id': 8, 'species_name': 's8', 'ancestor_taxon_id': [5,4,3,2,6,7], 'ancestor_name': ['s5', 's4', 's3', 's2', 's6', 's7'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot8'}
-        dic_9 = {'ncbi_taxonomy_id': 9, 'species_name': 's9', 'ancestor_taxon_id': [5,4,3], 'ancestor_name': ['s5', 's4', 's3'], 'ko_number': 'KO0', 
+        dic_9 = {'ncbi_taxonomy_id': 9, 'species_name': 's9', 'ancestor_taxon_id': [5,4,3], 'ancestor_name': ['s5', 's4', 's3'], 'ko_number': 'KO0',
         'uniprot_id': 'uniprot9'}
         dic_10 = {'ncbi_taxonomy_id': 10, 'species_name': 's10', 'ancestor_taxon_id': [5,4,3,9], 'ancestor_name': ['s5', 's4', 's3', 's9'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot10'}
@@ -96,7 +96,7 @@ class TestQueryProtein(unittest.TestCase):
         cls.src.db.drop_collection('test_query_protein')
         cls.src_1.client.close()
         cls.src.client.close()
-    
+
     def test_get_protein_meta(self):
         _id_0 = ['MOCK_0', 'MOCK_1']
         result_0 = self.src.get_meta_by_id(_id_0)
@@ -130,6 +130,11 @@ class TestQueryProtein(unittest.TestCase):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
         self.assertEqual(result[1]['ko_name'], 'ko name 1')
+
+    def test_get_info_by_ko(self):
+        ko = 'KO0'
+        result = self.src.get_info_by_ko(ko)
+        self.assertEqual(len(result[0]['uniprot_ids']), 14)
 
     def test_get_id_by_name(self):
         name = 'special name'
@@ -176,7 +181,7 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(result_3[2]['documents'], [])
 
     def test_get_equivalent_protein(self):
-    
+
         result = self.src.get_equivalent_protein(['uniprot0'], 2, max_depth=2)
         self.assertEqual(len(result[1]['documents']), 0)
         result = self.src.get_equivalent_protein(['uniprot0'], 3, max_depth=2)
