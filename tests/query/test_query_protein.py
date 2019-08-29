@@ -65,7 +65,9 @@ class TestQueryProtein(unittest.TestCase):
         dic_4 = {'ncbi_taxonomy_id': 4, 'species_name': 's4', 'ancestor_taxon_id': [5], 'ancestor_name': ['s5'], 'ko_number': 'KO0', 'uniprot_id': 'uniprot4'}
         dic_5 = {'ncbi_taxonomy_id': 5, 'species_name': 's5', 'ancestor_taxon_id': [], 'ancestor_name': [], 'ko_number': 'KO0', 'uniprot_id': 'uniprot5'}
         dic_6 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
-        'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name two'}
+        'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name two', 'ko_name': 'ko name 0'}
+        dic_15 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
+        'ko_number': 'KO1', 'uniprot_id': 'uniprot15', "protein_name": 'your name fifteen', 'ko_name': 'ko name 1'}
         dic_14 = {'ncbi_taxonomy_id': 14, 'species_name': 's6 something', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name three'}
         dic_7 = {'ncbi_taxonomy_id': 7, 'species_name': 's7', 'ancestor_taxon_id': [5,4,3,2,6], 'ancestor_name': ['s5', 's4', 's3', 's2', 's6'],
@@ -84,7 +86,7 @@ class TestQueryProtein(unittest.TestCase):
         'ko_number': 'KO0', 'uniprot_id': 'uniprot13', 'kinetics':[{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1}, {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}]}
 
         cls.src.collection.insert_many([mock_doc_0, mock_doc_1, mock_doc_2, mock_doc_3, mock_doc_4,mock_doc_5,mock_doc_6])
-        cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13,dic_14])
+        cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13,dic_14,dic_15])
 
         cls.src.collection.create_index("uniprot_id", background=False, collation=cls.src.collation)
         cls.src.collection.create_index([("protein_name", pymongo.TEXT)])
@@ -123,6 +125,11 @@ class TestQueryProtein(unittest.TestCase):
         name = 'special name'
         result = self.src.get_info_by_text(name)
         self.assertEqual(result[0]['ko_name'], 'no name')
+
+    def test_get_info_by_taxonid(self):
+        _id = 6
+        result = self.src.get_info_by_taxonid(_id)
+        self.assertEqual(result[1]['ko_name'], 'ko name 1')
 
     def test_get_id_by_name(self):
         name = 'special name'

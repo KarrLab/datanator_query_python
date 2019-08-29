@@ -134,6 +134,33 @@ class QueryProtein:
                 result.append(dic)
         return result
 
+    def get_info_by_taxonid(self, _id):
+        '''
+            Get proteins whose name or kegg name contains string 'name'
+            Args:
+                _id (:obj: `int`): ncbi taxonomy id
+            Returns:
+                result (:obj: `list` of :obj: `dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'ko_number': ... 'ko_name': ... 'uniprot_ids': []},
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
+        '''
+        result = []
+        query = {'ncbi_taxonomy_id': _id}
+        projection = {'_id': 0, 'uniprot_id': 1, 'ko_number': 1, 'ko_name': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            ko_number = doc.get('ko_number', 'no number')
+            ko_name = doc.get('ko_name', 'no name')
+            uniprot_id = doc['uniprot_id']
+            index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
+            if len(index) == 1:
+                result[index[0]]['uniprot_ids'].append(uniprot_id)
+            else:
+                dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': [uniprot_id]}
+                result.append(dic)
+        return result
+
     def get_kinlaw_by_id(self, _id):
         '''
             Get protein kinetic law information by uniprot_id
