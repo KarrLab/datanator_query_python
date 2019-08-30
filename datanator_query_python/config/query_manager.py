@@ -15,5 +15,5 @@ class Manager:
         authSource=self.authDB)
 
     def metabolite_manager(self):
-        return front_end_query.QueryFrontEnd(username=username, password=password, MongoDB=server,
-        authDB=authDB)
+        return front_end_query.QueryFrontEnd(username=self.username, password=self.password, MongoDB=self.server,
+        authDB=self.authDB)

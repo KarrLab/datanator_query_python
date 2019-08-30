@@ -7,6 +7,7 @@ import os
 class QueryFrontEnd:
     def __init__(self, MongoDB=None, replSet=None, db='datanator',
                 username=None, password=None, authDB='admin'):
+        self.test_query_manager = True
         self.db = query_nosql.DataQuery(MongoDB=MongoDB, db=db,
                                         username=username, password=password, authSource=authDB)
         self.metab_db = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=MongoDB, replicaSet=replSet, db=db,
