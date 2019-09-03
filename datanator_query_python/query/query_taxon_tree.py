@@ -82,7 +82,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
         projection = {'_id': 0, 'anc_id': 1, 'anc_name': 1}
         for name in names:
             query = {'tax_name': name}
-            cursor = self.collection.find_one(query, collation=self.collation,
+            cursor = self.collection.find_one(filter=query, collation=self.collation,
                                               projection=projection)
             result_id.append(cursor['anc_id'])
             result_name.append(cursor['anc_name'])
