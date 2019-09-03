@@ -1,9 +1,8 @@
 import unittest
 from datanator_query_python.query import query_taxon_tree
+from datanator_query_python.config import config
 import tempfile
 import shutil
-import configparser
-import os
 import json
 
 
@@ -13,13 +12,11 @@ class TestQueryTaxonTree(unittest.TestCase):
     def setUpClass(cls):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'datanator'
-        parser = configparser.ConfigParser(allow_no_value=True)
-        parser.read(os.path.expanduser('~/.wc/datanator.ini'))
-        cls.username = parser.get('mongodb', 'user')
-        cls.password = parser.get('mongodb', 'password')
-        cls.MongoDB = parser.get('mongodb', 'server')
-        port = int(parser.get('mongodb', 'port'))
-        replSet = parser.get('mongodb', 'replSet')
+        cls.username = config.Config().USERNAME
+        cls.password = config.Config().PASSWORD
+        cls.MongoDB = config.Config().SERVER
+        cls.port = config.Config().PORT
+        cls.replSet = config.Config().REPLSET
 
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
@@ -88,14 +85,12 @@ class TestQueryTaxonTreeMock(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.cache_dirname = tempfile.mkdtemp()
-        cls.db = 'test'
-        parser = configparser.ConfigParser(allow_no_value=True)
-        parser.read(os.path.expanduser('~/.wc/datanator.ini'))
-        cls.username = parser.get('mongodb', 'user')
-        cls.password = parser.get('mongodb', 'password')
-        cls.MongoDB = parser.get('mongodb', 'server')
-        port = int(parser.get('mongodb', 'port'))
-        replSet = parser.get('mongodb', 'replSet')
+        cls.db = 'datanator'
+        cls.username = config.Config().USERNAME
+        cls.password = config.Config().PASSWORD
+        cls.MongoDB = config.Config().SERVER
+        cls.port = config.Config().PORT
+        cls.replSet = config.Config().REPLSET
 
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db, collection_str='test_taxon_tree',
