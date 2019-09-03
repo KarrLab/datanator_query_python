@@ -193,7 +193,7 @@ class TestQueryProtein(unittest.TestCase):
 
     def test_get_uniprot_by_ko(self):
         result_0 = self.src.get_uniprot_by_ko('MOCK_0')
-        self.assertEqual(['MOCK_0', 'MOCK_1','MOCK_2','MOCK_4', 'MOCK_6'], result_0)
+        self.assertTrue('MOCK_2' in result_0)
         result_1 = self.src.get_uniprot_by_ko('somenonsense')
         self.assertEqual('No information available for this KO.', result_1)
 
