@@ -389,7 +389,7 @@ class QueryProtein:
         count = self.collection.count_documents(query)
 
         if count == 0:
-            return None
+            return 'No information available for this KO.'
 
         for doc in docs:
             result.append(doc['uniprot_id'])
@@ -424,6 +424,28 @@ class QueryProtein:
             return 'No kegg information available for this protein.'
         result = [{'ko_number': ko_number}]
         uniprot_ids = self.get_uniprot_by_ko(ko_number)
+        abundance_lists = self.get_abundance_by_id(uniprot_ids)
+        meta_lists = self.get_meta_by_id(uniprot_ids)
+        for abundance, meta in zip(abundance_lists, meta_lists):
+            if abundance.get('abundances') == None:
+                continue
+            result.append({**meta, **abundance})
+        return result
+
+    def get_abundance_by_ko(self, ko):
+        ''' Get abundance information of proteins with
+            the same KO
+            Args:
+                ko (:obj: `str`): KO number
+            Returns:
+                result (:obj: `list` of :obj: `dict`): information
+                [{'ko_number': }, 
+                {'uniprot_id': , 'abundances': }, {},...,{}]                
+        '''
+        uniprot_ids = self.get_uniprot_by_ko(ko)
+        if isinstance(uniprot_ids, list) == False:
+            return 'No information for such KO.'
+        result = [{'ko_number': ko.upper()}]
         abundance_lists = self.get_abundance_by_id(uniprot_ids)
         meta_lists = self.get_meta_by_id(uniprot_ids)
         for abundance, meta in zip(abundance_lists, meta_lists):
