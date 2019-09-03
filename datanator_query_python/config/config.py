@@ -2,7 +2,13 @@ from dotenv import load_dotenv
 from pathlib import Path, PurePath
 import os
 
-dotenv_path = PurePath(Path.home(), '.wc/datanator.env')
+home_path = PurePath(Path.home(), '.wc/datanator.env')
+root_path = "/.wc/danatator.env"
+if os.path.exists(home_path):
+    dotenv_path = home_path
+else:
+    dotenv_path = root_path
+
 load_dotenv(dotenv_path)
 
 
@@ -21,30 +27,32 @@ class ProductionConfig(Config):
 
     PRODUCTION = True
 
+
 class UserAccountConfig(Config):
-	
-	USERDAEMON = os.getenv("MONGO_USER_DAMON")
-	USERDAEMON_PASSWORD = os.getenv("MONGO_USER_PASSWORD")
-	USERDAEMON_AUTHDB = os.getenv("MONGO_USER_AUTHDB")
+
+    USERDAEMON = os.getenv("MONGO_USER_DAMON")
+    USERDAEMON_PASSWORD = os.getenv("MONGO_USER_PASSWORD")
+    USERDAEMON_AUTHDB = os.getenv("MONGO_USER_AUTHDB")
+
 
 class FlaskProfiler(UserAccountConfig):
     url = ('mongodb://' + os.getenv("MONGO_AP_USER") + ':' + os.getenv("MONGO_AP_PASSWORD")
-    + '@' + os.getenv("MONGO_DATANATOR_SERVER") + ':' + os.getenv("MONGO_PORT"))
+           + '@' + os.getenv("MONGO_DATANATOR_SERVER") + ':' + os.getenv("MONGO_PORT"))
     FLASKPROFILER = {
-    "enabled": True,
-    "storage": {
-        "engine": "mongodb",
-        "MONGO_URL": url,
-        "DATABASE": 'flask_profiler',
-        "COLLECTION": 'measurements'
-    },
-    "basicAuth":{
         "enabled": True,
-        "username": os.getenv("MONGO_AP_USER"),
-        "password": os.getenv("FLASK_PROFILER_PASSWORD")
-    },
-    "ignore": [
-        "^/static/.*"
-    ],
-    "endpointRoot": "performance"
+        "storage": {
+            "engine": "mongodb",
+            "MONGO_URL": url,
+            "DATABASE": 'flask_profiler',
+            "COLLECTION": 'measurements'
+        },
+        "basicAuth": {
+            "enabled": True,
+            "username": os.getenv("MONGO_AP_USER"),
+            "password": os.getenv("FLASK_PROFILER_PASSWORD")
+        },
+        "ignore": [
+            "^/static/.*"
+        ],
+        "endpointRoot": "performance"
     }
