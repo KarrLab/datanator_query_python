@@ -96,7 +96,6 @@ class QueryFrontEnd:
         return(ecmdb_data, ymdb_data)
 
     def molecule_name_query(self, molecule_name, organism, abstract_default=False):
-
         #list_metabolites = ["ATP", "GTP"]
         list_metabolites = [molecule_name]
         m2m_ids, ymdb_ids = self.get_conc_ids(list_metabolites)
@@ -119,7 +118,6 @@ class QueryFrontEnd:
             pass
         response.append(ecmdb_data)
         response.append(ymdb_data)
-
 
         anc, dist = self.tax_db.get_common_ancestor(organism, "Escherichia coli")
         for doc in ecmdb_data:

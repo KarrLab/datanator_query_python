@@ -78,7 +78,6 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''
         result_id = []
         result_name = []
-
         projection = {'_id': 0, 'anc_id': 1, 'anc_name': 1}
         for name in names:
             query = {'tax_name': name}
