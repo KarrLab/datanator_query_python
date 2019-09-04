@@ -13,6 +13,9 @@ load_dotenv(dotenv_path)
 
 
 class Config:
+    '''
+        API for frontend with read permission to 'datanator'
+    '''
     PRODUCTION = os.getenv("PRODUCTION", False)
     USERNAME = os.getenv("MONGO_USERNAME")
     PASSWORD = os.getenv("MONGO_PASSWORD")
@@ -27,8 +30,19 @@ class ProductionConfig(Config):
 
     PRODUCTION = True
 
+class TestConfig(Config):
+    '''
+        test user with read permission to 'datanator' and
+        readWrite permission to 'test'
+    '''
+    MONGO_TEST_USERNAME = os.getenv("MONGO_TEST_USERNAME")
+    MONGO_TEST_PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
 
 class UserAccountConfig(Config):
+    '''
+        API user account manager with readWrite permission
+        to 'registered_users'
+    '''
 
     USERDAEMON = os.getenv("MONGO_USER_DAMON")
     USERDAEMON_PASSWORD = os.getenv("MONGO_USER_PASSWORD")
@@ -36,6 +50,10 @@ class UserAccountConfig(Config):
 
 
 class FlaskProfiler(UserAccountConfig):
+    '''
+        API performance tracker with readWrite permission
+        to 'flask_profiler'
+    '''
     url = ('mongodb://' + os.getenv("MONGO_AP_USER") + ':' + os.getenv("MONGO_AP_PASSWORD")
            + '@' + os.getenv("MONGO_DATANATOR_SERVER") + ':' + os.getenv("MONGO_PORT"))
     FLASKPROFILER = {

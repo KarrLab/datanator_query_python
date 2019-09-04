@@ -1,10 +1,10 @@
 import unittest
 from datanator_query_python.query import query_kegg_orthology
 from datanator_query_python.util import file_util
+from datanator_query_python.config import config
 import tempfile
 import shutil
-import configparser
-import os
+
 
 class TestQueryKO(unittest.TestCase):
 
@@ -12,13 +12,10 @@ class TestQueryKO(unittest.TestCase):
     def setUpClass(cls):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'datanator'
-        parser = configparser.ConfigParser(allow_no_value=True)
-        parser.read(os.path.expanduser('~/.wc/datanator.ini'))
-        username = parser.get('mongodb', 'user')
-        password = parser.get('mongodb', 'password')
-        MongoDB = parser.get('mongodb', 'server')
-        port = int(parser.get('mongodb', 'port'))
-        replSet = parser.get('mongodb', 'replSet')
+        conf = config.TestConfig()
+        username = conf.MONGO_TEST_USERNAME
+        password = conf.MONGO_TEST_PASSWORD
+        MongoDB = conf.SERVER
         cls.MongoDB = MongoDB
         cls.username = username
         cls.password = password

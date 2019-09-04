@@ -1,8 +1,6 @@
 import unittest
 from datanator_query_python.query import query_taxon_tree
 from datanator_query_python.config import config
-import configparser
-import os
 import tempfile
 import shutil
 import json
@@ -14,14 +12,10 @@ class TestQueryTaxonTree(unittest.TestCase):
     def setUpClass(cls):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'datanator'
-        parser = configparser.ConfigParser(allow_no_value=True)
-        parser.read(os.path.expanduser('~/.wc/datanator.ini'))
-        cls.username = parser.get('mongodb', 'user')
-        cls.password = parser.get('mongodb', 'password')
-        cls.MongoDB = parser.get('mongodb', 'server')
-        port = int(parser.get('mongodb', 'port'))
-        replSet = parser.get('mongodb', 'replSet')
-
+        conf = config.TestConfig()
+        cls.username = conf.MONGO_TEST_USERNAME
+        cls.password = conf.MONGO_TEST_PASSWORD
+        cls.MongoDB = conf.SERVER
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
                  verbose=True, max_entries=20, username = cls.username, password = cls.password)
@@ -90,14 +84,10 @@ class TestQueryTaxonTreeMock(unittest.TestCase):
     def setUpClass(cls):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'test'
-        parser = configparser.ConfigParser(allow_no_value=True)
-        parser.read(os.path.expanduser('~/.wc/datanator.ini'))
-        cls.username = parser.get('mongodb', 'user')
-        cls.password = parser.get('mongodb', 'password')
-        cls.MongoDB = parser.get('mongodb', 'server')
-        port = int(parser.get('mongodb', 'port'))
-        replSet = parser.get('mongodb', 'replSet')
-
+        conf = config.TestConfig()
+        cls.username = conf.MONGO_TEST_USERNAME
+        cls.password = conf.MONGO_TEST_PASSWORD
+        cls.MongoDB = conf.SERVER
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db, collection_str='test_taxon_tree',
                  verbose=True, max_entries=20, username = cls.username, password = cls.password)
