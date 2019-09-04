@@ -30,6 +30,7 @@ class TestMongoUtil(unittest.TestCase):
     # @unittest.skip('passed')
     def test_list_all_collections(self):
         self.assertTrue('ecmdb' in self.src.list_all_collections())
+        print(self.src.client.read_preference)
 
 
     # @unittest.skip('passed')
