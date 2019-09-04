@@ -6,15 +6,18 @@ import os
 
 class QueryFrontEnd:
     def __init__(self, MongoDB=None, replSet=None, db='datanator',
-                username=None, password=None, authDB='admin'):
+                username=None, password=None, authDB='admin', readPreference='primary'):
         self.test_query_manager = True
         self.db = query_nosql.DataQuery(MongoDB=MongoDB, db=db,
-                                        username=username, password=password, authSource=authDB)
+                                        username=username, password=password, authSource=authDB,
+                                        readPreference=readPreference)
         self.metab_db = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=MongoDB, replicaSet=replSet, db=db,
-                                                                    username=username, password=password, authSource=authDB)
+                                                                    username=username, password=password, authSource=authDB,
+                                                                    readPreference=readPreference)
 
         self.tax_db = query_taxon_tree.QueryTaxonTree(MongoDB=MongoDB, db=db,
-                                                    username=username, password=password, authSource=authDB)
+                                                    username=username, password=password, authSource=authDB,
+                                                    readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
 

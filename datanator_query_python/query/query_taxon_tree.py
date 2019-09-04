@@ -11,11 +11,11 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
     def __init__(self, cache_dirname=None, collection_str='taxon_tree', 
                 verbose=False, max_entries=float('inf'), username=None, MongoDB=None, 
-                password=None, db='datanator', authSource='admin'):
+                password=None, db='datanator', authSource='admin', readPreference='primary'):
         self.collection_str = collection_str
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                                         db=db, verbose=verbose, max_entries=max_entries, username=username,
-                                        password=password, authSource=authSource)
+                                        password=password, authSource=authSource, readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.client, self.db_obj, self.collection = self.con_db(

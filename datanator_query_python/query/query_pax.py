@@ -9,11 +9,11 @@ class QueryPax(query_nosql.DataQuery):
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='datanator',
                  collection_str='pax', verbose=False, max_entries=float('inf'), username=None,
-                 password=None, authSource='admin'):
+                 password=None, authSource='admin', readPreference='primary'):
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                                                     replicaSet=replicaSet, db=db,
                                                     verbose=verbose, max_entries=max_entries, username=username,
-                                                    password=password, authSource=authSource)
+                                                    password=password, authSource=authSource, readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries

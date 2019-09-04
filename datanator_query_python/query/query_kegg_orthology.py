@@ -4,10 +4,12 @@ from datanator_query_python.util import mongo_util
 class QueryKO:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
-                 database='datanator', max_entries=float('inf'), verbose=True):
+                 database='datanator', max_entries=float('inf'), verbose=True,
+                 readPreference='primary'):
 
         mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                             password=password, authSource=authSource, db=database)
+                                             password=password, authSource=authSource, db=database,
+                                             readPreference=readPreference)
         self.max_entries = max_entries
         self.verbose = verbose
         self.client, self.db, self.collection = mongo_manager.con_db(

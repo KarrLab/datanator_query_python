@@ -8,7 +8,7 @@ class MongoUtil:
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='test',
                  verbose=False, max_entries=float('inf'), username = None, 
-                 password = None, authSource = 'admin', readPreference='nearest'):
+                 password = None, authSource = 'admin', readPreference='primary'):
         self.client = pymongo.MongoClient(
             host=MongoDB, replicaSet=replicaSet, 
             username = username, password = password,

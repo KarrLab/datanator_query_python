@@ -6,11 +6,11 @@ class QueryBasicUsers:
 
     def __init__(self, MongoDB=None, db='registered_users', collection_str='basic_accounts', verbose=False, 
                  max_entries=float('inf'), username=None,
-                 password=None, authSource='registered_users'):
+                 password=None, authSource='registered_users', readPreference='primary'):
         self.client = pymongo.MongoClient(
             MongoDB, username=username, password=password,
             authSource=authSource, authMechanism='SCRAM-SHA-256',
-            tz_aware=True) 
+            tz_aware=True, readPreference=readPreference) 
         self.db = self.client[db]
         self.collection = self.db[collection_str]
         

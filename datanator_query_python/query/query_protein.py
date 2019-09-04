@@ -6,10 +6,12 @@ import json
 class QueryProtein:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
-                 database='datanator', max_entries=float('inf'), verbose=True, collection_str='protein'):
+                 database='datanator', max_entries=float('inf'), verbose=True, collection_str='protein',
+                 readPreference='primary'):
 
         mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                             password=password, authSource=authSource, db=database)
+                                             password=password, authSource=authSource, db=database,
+                                             readPreference=readPreference)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
             authSource=authSource, db=database)
         self.file_manager = file_util.FileUtil()
