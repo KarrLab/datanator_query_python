@@ -24,7 +24,7 @@ class Config:
     REPLSET = os.getenv("MONGO_REPL")
     AUTHDB = os.getenv("MONGO_AUTHDB")
     SESSION_KEY = os.getenv("FLASK_SESSION_KEY")
-
+    READ_PREFERENCE = os.getenv("READ_PREFERENCE")
 
 class ProductionConfig(Config):
 
@@ -37,6 +37,7 @@ class TestConfig(Config):
     '''
     MONGO_TEST_USERNAME = os.getenv("MONGO_TEST_USERNAME")
     MONGO_TEST_PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
+    MONGO_TEST_PASSWORD_READ_PREFERENCE = os.getenv("MONGO_TEST_PASSWORD_READ_PREFERENCE")
 
 class UserAccountConfig(Config):
     '''

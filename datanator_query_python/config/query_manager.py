@@ -8,12 +8,12 @@ class Manager:
         self.password = config.Config.PASSWORD
         self.server = config.Config.SERVER
         self.authDB = config.Config.AUTHDB
-
+        self.read_preference = config.Config.READ_PREFERENCE
         
     def protein_manager(self):    
         return query_protein.QueryProtein(username=self.username, password=self.password, server=self.server,
-        authSource=self.authDB)
+        authSource=self.authDB, readPreference=self.read_preference)
 
     def metabolite_manager(self):
         return front_end_query.QueryFrontEnd(username=self.username, password=self.password, MongoDB=self.server,
-        authDB=self.authDB)
+        authDB=self.authDB, readPreference=self.read_preference)
