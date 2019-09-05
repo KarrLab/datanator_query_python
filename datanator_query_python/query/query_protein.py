@@ -412,7 +412,7 @@ class QueryProtein:
                 _id (:obj: `str`): uniprot ID
             Returns:
                 result (:obj: `list` of :obj: `dict`): information
-                [{'ko_number': }, 
+                [
                 {'uniprot_id': , 'abundances': }, {},...,{}]
         '''
 
@@ -441,7 +441,7 @@ class QueryProtein:
                 ko (:obj: `str`): KO number
             Returns:
                 result (:obj: `list` of :obj: `dict`): information
-                [{'ko_number': }, 
+                [
                 {'uniprot_id': , 'abundances': }, {},...,{}]                
         '''
         uniprot_ids = self.get_uniprot_by_ko(ko)
