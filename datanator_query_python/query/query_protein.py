@@ -419,19 +419,20 @@ class QueryProtein:
         query = {'uniprot_id': _id}
         projection = {'_id': 0, 'ko_number': 1, 'ncbi_taxonomy_id': 1, 'uniprot_id': 1}
         doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
-        if doc == None:
-            return 'No information available for this protein.'
-        ko_number = doc.get('ko_number')
-        if ko_number == None:
+        if doc is None:
+            return 'No such protein in the database.'
+        else:
+            ko_number = doc.get('ko_number')
+        
+        if ko_number is None:
             return 'No kegg information available for this protein.'
+
+        query = {'$and': [{'ko_number': ko_number}, {'abundances': {'$exists': True} }]}
+        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0, 'ncbi_taxonomy_id': 0}
         result = []
-        uniprot_ids = self.get_uniprot_by_ko(ko_number)
-        abundance_lists = self.get_abundance_by_id(uniprot_ids)
-        meta_lists = self.get_meta_by_id(uniprot_ids)
-        for abundance, meta in zip(abundance_lists, meta_lists):
-            if abundance.get('abundances') == None:
-                continue
-            result.append({**meta, **abundance})
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
         return result
 
     def get_abundance_by_ko(self, ko):
@@ -444,14 +445,10 @@ class QueryProtein:
                 [
                 {'uniprot_id': , 'abundances': }, {},...,{}]                
         '''
-        uniprot_ids = self.get_uniprot_by_ko(ko)
-        if isinstance(uniprot_ids, list) == False:
-            return 'No information for such KO.'
+        query = {'$and': [{'ko_number': ko.upper()}, {'abundances': {'$exists': True} }]}
+        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0, 'ncbi_taxonomy_id': 0}
         result = []
-        abundance_lists = self.get_abundance_by_id(uniprot_ids)
-        meta_lists = self.get_meta_by_id(uniprot_ids)
-        for abundance, meta in zip(abundance_lists, meta_lists):
-            if abundance.get('abundances') == None:
-                continue
-            result.append({**meta, **abundance})
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
         return result

@@ -198,7 +198,7 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(len(result_0), 4)
         self.assertEqual(result_0[0]['ko_number'], 'MOCK_0')
         result_1 = self.src.get_abundance_with_same_ko('asfasf')
-        self.assertEqual(result_1, 'No information available for this protein.')
+        self.assertEqual(result_1, 'No such protein in the database.')
         result_2 = self.src.get_abundance_with_same_ko('MOCK_5')
         self.assertEqual(result_2, 'No kegg information available for this protein.')
 
@@ -207,6 +207,6 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(len(result_0), 4)
         self.assertEqual(result_0[0]['ko_number'], 'MOCK_0')
         result_1 = self.src.get_abundance_by_ko('asfasf')
-        self.assertEqual(result_1, 'No information for such KO.')
+        self.assertEqual(result_1, [])
         result_2 = self.src.get_abundance_by_ko('MOCK_5')
-        self.assertEqual(result_2, 'No information for such KO.')
+        self.assertEqual(result_2, [])
