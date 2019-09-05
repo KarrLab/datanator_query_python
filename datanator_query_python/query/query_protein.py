@@ -412,8 +412,7 @@ class QueryProtein:
                 _id (:obj: `str`): uniprot ID
             Returns:
                 result (:obj: `list` of :obj: `dict`): information
-                [
-                {'uniprot_id': , 'abundances': }, {},...,{}]
+                [{'uniprot_id': , 'abundances': }, {},...,{}]
         '''
 
         query = {'uniprot_id': _id}
@@ -428,7 +427,7 @@ class QueryProtein:
             return 'No kegg information available for this protein.'
 
         query = {'$and': [{'ko_number': ko_number}, {'abundances': {'$exists': True} }]}
-        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0, 'ncbi_taxonomy_id': 0}
+        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0}
         result = []
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
@@ -442,11 +441,10 @@ class QueryProtein:
                 ko (:obj: `str`): KO number
             Returns:
                 result (:obj: `list` of :obj: `dict`): information
-                [
-                {'uniprot_id': , 'abundances': }, {},...,{}]                
+                [{'uniprot_id': , 'abundances': }, {},...,{}]                
         '''
         query = {'$and': [{'ko_number': ko.upper()}, {'abundances': {'$exists': True} }]}
-        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0, 'ncbi_taxonomy_id': 0}
+        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0}
         result = []
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
