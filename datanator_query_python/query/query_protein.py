@@ -424,7 +424,7 @@ class QueryProtein:
         ko_number = doc.get('ko_number')
         if ko_number == None:
             return 'No kegg information available for this protein.'
-        result = [{'ko_number': ko_number}]
+        result = []
         uniprot_ids = self.get_uniprot_by_ko(ko_number)
         abundance_lists = self.get_abundance_by_id(uniprot_ids)
         meta_lists = self.get_meta_by_id(uniprot_ids)
@@ -447,7 +447,7 @@ class QueryProtein:
         uniprot_ids = self.get_uniprot_by_ko(ko)
         if isinstance(uniprot_ids, list) == False:
             return 'No information for such KO.'
-        result = [{'ko_number': ko.upper()}]
+        result = []
         abundance_lists = self.get_abundance_by_id(uniprot_ids)
         meta_lists = self.get_meta_by_id(uniprot_ids)
         for abundance, meta in zip(abundance_lists, meta_lists):
