@@ -16,7 +16,7 @@ Write an overview
 2. Install the latest release from PyPI
 
 ```
-pip install datanator_query_python.git[all]
+pip install datanator-query-python
 ```
 
 3. Install the latest revision from GitHub
