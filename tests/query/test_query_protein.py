@@ -125,7 +125,7 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_info_by_taxonid(self):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
-        self.assertEqual(result[1]['ko_name'], 'ko name 1')
+        self.assertEqual(result[1]['ko_name'], ['ko name 1'])
 
     def test_get_info_by_ko(self):
         ko = 'KO0'

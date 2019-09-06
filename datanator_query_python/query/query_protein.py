@@ -35,7 +35,7 @@ class QueryProtein:
                     'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
-
+        null = 'None'
         if count == 0:
             return {'uniprot_id': 'None',
          'entry_name': 'None',
@@ -170,7 +170,7 @@ class QueryProtein:
             if len(index) == 1:
                 result[index[0]]['uniprot_ids'].append(uniprot_id)
             else:
-                dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': [uniprot_id]}
+                dic = {'ko_number': ko_number, 'ko_name': [ko_name], 'uniprot_ids': [uniprot_id]}
                 result.append(dic)
         return result
 
