@@ -227,7 +227,7 @@ class QueryProtein:
 				result (:obj: `list` of `dict`): list of abundance information
         '''
         result = []
-        query = {'uniprot_id': {'$in': _id}}
+        query = {'$and': [{'uniprot_id': {'$in': _id}}, {'abundances': {'$exists': True}}]}
         
         projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
@@ -235,10 +235,7 @@ class QueryProtein:
         if count == 0:
             return {'abundances': [], 'uniprot_id': 'No proteins that match input'}
         for doc in docs:
-            dic = {}
-            dic['abundances'] = doc.get('abundances',[])
-            dic['uniprot_id'] = doc.get('uniprot_id')
-            result.append(dic)
+            result.append(doc)
         return result
 
     def get_abundance_by_taxon(self, _id):
@@ -446,7 +443,7 @@ class QueryProtein:
                 [{'uniprot_id': , 'abundances': }, {},...,{}]                
         '''
         query = {'$and': [{'ko_number': ko.upper()}, {'abundances': {'$exists': True} }]}
-        projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0}
+        projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
         result = []
         docs = self.collection.find(filter=query, projection=projection)
         if docs == None:

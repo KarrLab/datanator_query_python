@@ -159,7 +159,7 @@ class TestQueryProtein(unittest.TestCase):
         _id_2 = ['asdfafd', 'qewr']
         result_2 = self.src.get_abundance_by_id(_id_2)
         self.assertEqual(result_0, [{'uniprot_id': 'MOCK_0', 'abundances': 0}])
-        self.assertEqual(result_1, [{'uniprot_id': 'MOCK_0', 'abundances': 0}, {'abundances': [], 'uniprot_id': 'MOCK_1'}])
+        self.assertEqual(result_1, [{'uniprot_id': 'MOCK_0', 'abundances': 0}])
         self.assertEqual(result_2, {'abundances': [], 'uniprot_id': 'No proteins that match input'})
 
     def test_get_proximity_abundance_taxon(self):
@@ -205,7 +205,6 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_abundance_by_ko(self):
         result_0 = self.src.get_abundance_by_ko('MOCK_0')
         self.assertEqual(len(result_0), 4)
-        self.assertEqual(result_0[0]['ko_number'], 'MOCK_0')
         result_1 = self.src.get_abundance_by_ko('asfasf')
         self.assertEqual(result_1, [])
         result_2 = self.src.get_abundance_by_ko('MOCK_5')
