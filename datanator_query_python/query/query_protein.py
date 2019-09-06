@@ -44,7 +44,6 @@ class QueryProtein:
          'canonical_sequence': 'None',
          'length': 99999999,
          'mass': '99999999',
-         'ec_number': '99999999',
          'abundances': [],
          'ncbi_taxonomy_id': 99999999,
          'species_name': '99999999'}
