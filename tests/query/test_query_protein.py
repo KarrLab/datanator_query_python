@@ -120,7 +120,7 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_info_by_text(self):
         name = 'special name'
         result = self.src.get_info_by_text(name)
-        self.assertEqual(result[0]['ko_name'], 'no name')
+        self.assertEqual(result[0]['ko_name'], ['no name'])
 
     def test_get_info_by_taxonid(self):
         _id = 6
