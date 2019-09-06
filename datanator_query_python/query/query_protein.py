@@ -236,7 +236,7 @@ class QueryProtein:
             return {'abundances': [], 'uniprot_id': 'No proteins that match input'}
         for doc in docs:
             dic = {}
-            dic['abundances'] = doc.get('abundances')
+            dic['abundances'] = doc.get('abundances',[])
             dic['uniprot_id'] = doc.get('uniprot_id')
             result.append(dic)
         return result
