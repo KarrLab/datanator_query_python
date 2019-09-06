@@ -63,7 +63,7 @@ class TestQueryProtein(unittest.TestCase):
         dic_6 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name two', 'ko_name': 'ko name 0'}
         dic_15 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
-        'ko_number': 'KO1', 'uniprot_id': 'uniprot15', "protein_name": 'your name fifteen', 'ko_name': 'ko name 1'}
+        'ko_number': 'KO1', 'uniprot_id': 'uniprot15', "protein_name": 'your name fifteen', 'ko_name': ['ko name 1']}
         dic_14 = {'ncbi_taxonomy_id': 14, 'species_name': 's6 something', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name three'}
         dic_7 = {'ncbi_taxonomy_id': 7, 'species_name': 's7', 'ancestor_taxon_id': [5,4,3,2,6], 'ancestor_name': ['s5', 's4', 's3', 's2', 's6'],
