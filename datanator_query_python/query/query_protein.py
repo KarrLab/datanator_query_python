@@ -164,13 +164,13 @@ class QueryProtein:
 
         for doc in docs:
             ko_number = doc.get('ko_number', 'no number')
-            ko_name = doc.get('ko_name', 'no name')
+            ko_name = doc.get('ko_name', ['no name'])
             uniprot_id = doc['uniprot_id']
             index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
             if len(index) == 1:
                 result[index[0]]['uniprot_ids'].append(uniprot_id)
             else:
-                dic = {'ko_number': ko_number, 'ko_name': [ko_name], 'uniprot_ids': [uniprot_id]}
+                dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': [uniprot_id]}
                 result.append(dic)
         return result
 
