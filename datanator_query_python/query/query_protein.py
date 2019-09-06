@@ -9,7 +9,7 @@ class QueryProtein:
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='protein',
                  readPreference='primary'):
 
-        mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
+        self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
                                              password=password, authSource=authSource, db=database,
                                              readPreference=readPreference)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
@@ -17,8 +17,9 @@ class QueryProtein:
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = mongo_manager.con_db(collection_str)
+        self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
+        self.collection_str = collection_str
 
     def get_meta_by_id(self, _id):
         '''
@@ -36,7 +37,17 @@ class QueryProtein:
         count = self.collection.count_documents(query, collation=self.collation)
 
         if count == 0:
-            return None
+            return {'uniprot_id': 'None',
+         'entry_name': 'None',
+         'gene_name': 'None',
+         'protein_name': 'None',
+         'canonical_sequence': 'None',
+         'length': 99999999,
+         'mass': '99999999',
+         'ec_number': '99999999',
+         'abundances': [],
+         'ncbi_taxonomy_id': 99999999,
+         'species_name': '99999999'}
 
         for doc in docs:
             result.append(doc)

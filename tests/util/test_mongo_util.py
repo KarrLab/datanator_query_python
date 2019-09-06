@@ -40,7 +40,7 @@ class TestMongoUtil(unittest.TestCase):
 
     # @unittest.skip('passed')
     def test_print_schema(self):
-        a = self.src.print_schema('ecmdb')
+        a = self.src.get_schema('ecmdb')
         self.assertEqual(a['properties']['creation_date'], {'type': 'string'})
         self.assertEqual(a['properties']['synonyms'],  {'type': 'object', 'properties': {'synonym': {'type': 'array', 
             'items': {'type': 'string'}}}, 'required': ['synonym']})

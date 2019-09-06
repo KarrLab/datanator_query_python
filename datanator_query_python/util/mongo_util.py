@@ -30,8 +30,8 @@ class MongoUtil:
         except ServerSelectionTimeoutError:
             return ('Server timeout')
 
-    def print_schema(self, collection_str):
-        '''Print out schema of a collection
+    def get_schema(self, collection_str):
+        '''Get schema of a collection
            removed '_id' from collection due to its object type
            and universality 
         '''

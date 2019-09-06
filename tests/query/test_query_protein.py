@@ -100,7 +100,7 @@ class TestQueryProtein(unittest.TestCase):
         result_1 = self.src.get_meta_by_id(_id_1)
         self.assertEqual(result_0[0]['ko_number'], 'MOCK_0')
         self.assertEqual(result_0[1]['ko_number'], 'MOCK_0')
-        self.assertEqual(result_1, None)
+        self.assertTrue(isinstance(result_1, dict))
 
     def test_get_meta_by_name_taxon(self):
         name_0 = 'special name'
