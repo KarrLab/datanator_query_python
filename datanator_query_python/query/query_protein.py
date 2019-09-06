@@ -449,6 +449,8 @@ class QueryProtein:
         projection = {'ancestor_name': 0, 'ancestor_taxon_id': 0, '_id': 0}
         result = []
         docs = self.collection.find(filter=query, projection=projection)
+        if docs == None:
+            return {'abundances': [], 'uniprot_id': 'No proteins match input information.'}
         for doc in docs:
             result.append(doc)
         return result
