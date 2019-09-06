@@ -218,7 +218,7 @@ class QueryProtein:
         return self.get_kinlaw_by_id(_ids)
 
 
-    def get_abundance_by_id(self, _id, with_meta=False):
+    def get_abundance_by_id(self, _id):
         '''
         	Get protein abundance information by uniprot_id
         	Args:
@@ -228,15 +228,17 @@ class QueryProtein:
         '''
         result = []
         query = {'uniprot_id': {'$in': _id}}
-        if with_meta == False:
-            projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
-        else:
-            projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0,
-                    'kinetics': 0}
+        
+        projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
-
+        count = self.collection.count_documents(query, collation=self.collation)
+        if count == 0:
+            return {'abundances': [], 'uniprot_id': 'No proteins that match input'}
         for doc in docs:
-            result.append(doc)
+            dic = {}
+            dic['abundances'] = doc.get('abundances')
+            dic['uniprot_id'] = doc.get('uniprot_id')
+            result.append(dic)
         return result
 
     def get_abundance_by_taxon(self, _id):
