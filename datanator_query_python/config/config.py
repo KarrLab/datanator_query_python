@@ -56,7 +56,7 @@ class FlaskProfiler(UserAccountConfig):
         to 'flask_profiler'
     '''
     url = ('mongodb://' + os.getenv("MONGO_AP_USER") + ':' + os.getenv("MONGO_AP_PASSWORD")
-           + '@' + os.getenv("MONGO_DATANATOR_SERVER") + ':' + os.getenv("MONGO_PORT"))
+           + '@' + os.getenv("MONGO_DATANATOR_SERVER") + '/?readPreference=' + os.getenv('READ_PREFERENCE'))
     FLASKPROFILER = {
         "enabled": True,
         "storage": {
