@@ -204,6 +204,35 @@ class QueryProtein:
                 result.append(dic)
         return result
 
+    def get_info_by_taxonid_abundance(self, _id):
+        '''
+            Get proteins whose name or kegg name contains string 'name'
+            Args:
+                _id (:obj: `int`): ncbi taxonomy id
+            Returns:
+                result (:obj: `list` of :obj: `dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}},
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}}]
+        '''
+        result = []
+        query = {'ncbi_taxonomy_id': _id}
+        projection = {'_id': 0, 'uniprot_id': 1, 'ko_number': 1, 'ko_name': 1, 'abundances': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+
+        for doc in docs:
+            ko_number = doc.get('ko_number', 'no number')
+            ko_name = doc.get('ko_name', ['no name'])
+            uniprot_id = doc['uniprot_id']
+            abundance_status = 'abundances' in doc
+            index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
+            if len(index) == 1:
+                result[index[0]]['uniprot_ids'][uniprot_id] = abundance_status
+            else:
+                dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': {uniprot_id: abundance_status}}
+                result.append(dic)
+        return result
+
     def get_info_by_ko(self, ko):
         '''
             Find all proteins with the same kegg orthology id

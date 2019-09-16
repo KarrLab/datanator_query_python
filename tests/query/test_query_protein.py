@@ -61,7 +61,7 @@ class TestQueryProtein(unittest.TestCase):
         dic_4 = {'ncbi_taxonomy_id': 4, 'species_name': 's4', 'ancestor_taxon_id': [5], 'ancestor_name': ['s5'], 'ko_number': 'KO0', 'uniprot_id': 'uniprot4'}
         dic_5 = {'ncbi_taxonomy_id': 5, 'species_name': 's5', 'ancestor_taxon_id': [], 'ancestor_name': [], 'ko_number': 'KO0', 'uniprot_id': 'uniprot5'}
         dic_6 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
-        'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name two', 'ko_name': 'ko name 0'}
+        'ko_number': 'KO0', 'uniprot_id': 'uniprot6', "protein_name": 'your name two', 'ko_name': 'ko name 0', 'abundances': []}
         dic_15 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO1', 'uniprot_id': 'uniprot15', "protein_name": 'your name fifteen', 'ko_name': ['ko name 1']}
         dic_14 = {'ncbi_taxonomy_id': 14, 'species_name': 's6 something', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
@@ -131,6 +131,11 @@ class TestQueryProtein(unittest.TestCase):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
         self.assertEqual(result[1]['ko_name'], ['ko name 1'])
+    
+    def test_get_info_by_taxon_id_abundance(self):
+        _id = 6
+        result = self.src.get_info_by_taxonid_abundance(_id)
+        self.assertEqual(result[0]['uniprot_ids'], {'uniprot6': True})        
 
     def test_get_info_by_ko(self):
         ko = 'KO0'
@@ -184,7 +189,7 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_equivalent_protein(self):
 
         result = self.src.get_equivalent_protein(['uniprot0'], 2, max_depth=2)
-        self.assertEqual(len(result[1]['documents']), 0)
+        self.assertEqual(len(result[1]['documents']), 1)
         result = self.src.get_equivalent_protein(['uniprot0'], 3, max_depth=2)
         self.assertEqual(len(result[2]['documents']), 0)
 
