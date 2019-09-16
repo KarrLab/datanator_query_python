@@ -125,7 +125,7 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_info_by_text_abundances(self):
         name = 'special name'
         result = self.src.get_info_by_text_abundances(name)
-        print(result)
+        self.assertEqual(result[0]['uniprot_ids'], {'uniprot7': False, 'uniprot0': True})
 
     def test_get_info_by_taxonid(self):
         _id = 6
