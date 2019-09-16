@@ -255,6 +255,29 @@ class QueryProtein:
             result[0]['uniprot_ids'].append(doc.get('uniprot_id'))
         return result
 
+    def get_info_by_ko_abundance(self, ko):
+        '''
+            Find all proteins with the same kegg orthology id
+            Args:
+                ko (:obj: `str`): kegg orthology ID
+            Returns:
+                result (:obj: `list` of :obj: `dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'ko_number': ... 'ko_name': ... 'uniprot_ids': {}},
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {}}]
+        '''
+        ko = ko.upper()
+        result = [{'ko_number': ko, 'uniprot_ids': {}}]
+        query = {'ko_number': ko}
+        projection = {'uniprot_id': 1, '_id': 0, 'ko_name': 1, 'ko_number': 1, 'abundances': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+
+        for doc in docs:
+            result[0]['ko_name'] = doc.get('ko_name', ['no name'])
+            abundance_status = 'abundances' in doc
+            result[0]['uniprot_ids'][doc.get('uniprot_id')] = abundance_status
+        return result
+
     def get_kinlaw_by_id(self, _id):
         '''
             Get protein kinetic law information by uniprot_id

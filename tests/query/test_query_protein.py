@@ -142,6 +142,11 @@ class TestQueryProtein(unittest.TestCase):
         result = self.src.get_info_by_ko(ko)
         self.assertEqual(len(result[0]['uniprot_ids']), 14)
 
+    def test_get_info_by_ko_abundance(self):
+        ko = 'KO0'
+        result = self.src.get_info_by_ko_abundance(ko)
+        self.assertTrue(result[0]['uniprot_ids']['uniprot0'])
+
     def test_get_id_by_name(self):
         name = 'special name'
         result = self.src.get_id_by_name(name)
