@@ -122,6 +122,11 @@ class TestQueryProtein(unittest.TestCase):
         result = self.src.get_info_by_text(name)
         self.assertEqual(result[0]['ko_name'], ['no name'])
 
+    def test_get_info_by_text_abundances(self):
+        name = 'special name'
+        result = self.src.get_info_by_text_abundances(name)
+        print(result)
+
     def test_get_info_by_taxonid(self):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
