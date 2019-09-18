@@ -509,6 +509,8 @@ class QueryProtein:
         protein = self.collection.find_one(query, projection=projection, collation=self.collation)
         if protein is None:
             return [{'distance': -1, 'documents': []}]
+        elif protein.get('abundances') is None:
+            result[0] = result[0]
         else:
             dic = {}
             dic['abundances'] = protein['abundances']
