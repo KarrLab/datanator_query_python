@@ -38,15 +38,15 @@ class QueryProtein:
         null = 'None'
         if count == 0:
             return {'uniprot_id': 'None',
-         'entry_name': 'None',
-         'gene_name': 'None',
-         'protein_name': 'None',
-         'canonical_sequence': 'None',
-         'length': 99999999,
-         'mass': '99999999',
-         'abundances': [],
-         'ncbi_taxonomy_id': 99999999,
-         'species_name': '99999999'}
+            'entry_name': 'None',
+            'gene_name': 'None',
+            'protein_name': 'None',
+            'canonical_sequence': 'None',
+            'length': 99999999,
+            'mass': '99999999',
+            'abundances': [],
+            'ncbi_taxonomy_id': 99999999,
+            'species_name': '99999999'}
 
         for doc in docs:
             result.append(doc)
@@ -170,7 +170,7 @@ class QueryProtein:
             abundance_status = 'abundances' in doc
             index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
             if len(index) == 1:
-                result[index[0]]['uniprot_ids'][uniprot_id] = abundance_status 
+                result[index[0]]['uniprot_ids'][uniprot_id] = abundance_status
             else:
                 dic = {'ko_number': ko_number, 'ko_name': ko_name, 'uniprot_ids': {uniprot_id: abundance_status}}
                 result.append(dic)
@@ -320,7 +320,7 @@ class QueryProtein:
         '''
         result = []
         query = {'$and': [{'uniprot_id': {'$in': _id}}, {'abundances': {'$exists': True}}]}
-        
+
         projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
@@ -466,6 +466,89 @@ class QueryProtein:
 
         return result
 
+    def get_equivalent_protein_with_anchor(self, _id, max_distance, max_depth=float('inf')):
+        '''
+            Get replacement abundance value by taxonomic distance
+            with the same kegg_orthology number
+            Args:
+                _id (:obj: `str`): uniprot_id to query for
+                max_distance (:obj: `int`): max taxonomic distance from origin protein allowed for
+                                            proteins in results
+                max_depth (:obj: `int`) max depth allowed from the common node
+            Returns:
+                result (:obj: `list` of :obj: `dict`): list of result proteins and their info 
+                    [{'distance': 0, 'documents': [{}]}
+                     {'distance': 1, 'documents': [{}, {}, {} ...]}, 
+                     {'distance': 2, 'documents': [{}, {}, {} ...]}, ...]
+        '''
+
+        if max_distance <= 0:
+            return 'Please use get_abundance_by_id to check self abundance values'
+        if max_depth == None:
+            max_depth = 1000
+        if max_depth <= 0:
+            return 'Max_depth has to be greater than 0'
+
+        result = []
+        for i in range(max_distance):
+            result.append({'distance': i, 'documents': []})
+
+        query = {'uniprot_id': _id}  # needs indexing
+        projection = {
+            'ko_number': 1,
+            'ancestor_taxon_id': 1,
+            'ancestor_name': 1,
+            'ncbi_taxonomy_id': 1,
+            'abundances': 1,
+            'ncbi_taxonomy_id': 1,
+            'species_name': 1,
+            'uniprot_id': 1,
+            '_id': 0,
+            'ancestor_taxon_id': 1
+        }
+        protein = self.collection.find_one(query, projection=projection, collation=self.collation)
+        if protein is None:
+            return [{'distance': -1, 'documents': []}]
+        else:
+            dic = {}
+            dic['abundances'] = protein['abundances']
+            dic['ncbi_taxonomy_id'] = protein['ncbi_taxonomy_id']
+            dic['species_name'] = protein['species_name']
+            dic['uniprot_id'] = _id
+            dic['depth'] = 0
+            result[0]['documents'].append(dic)
+
+        ko_number = protein['ko_number']
+        ancestor_ids = protein.get('ancestor_taxon_id')
+        levels = min(len(ancestor_ids), max_distance)
+        checked_ids = [protein['ncbi_taxonomy_id']]
+
+        projection = {'abundances': 1, 'ncbi_taxonomy_id': 1, 'species_name': 1,
+                    'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1}
+        for level in range(levels):
+            cur_id = ancestor_ids[-(level+1)]
+
+            if level == 0:
+                common_ancestors = ancestor_ids
+            else:
+                common_ancestors = ancestor_ids[:-(level)]
+            length = len(common_ancestors)
+
+            query = {'$and': [{'ancestor_taxon_id': {'$all': common_ancestors} },{'ncbi_taxonomy_id': {'$nin': checked_ids} },
+                              {'ancestor_taxon_id': {'$nin': checked_ids} }, {'ko_number': ko_number},
+                              {'abundances': {'$exists': True} }]}
+
+            equivalents = self.collection.find(filter=query, projection=projection)
+            for equivalent in equivalents:
+                depth = len(equivalent['ancestor_taxon_id']) - length
+                if 0 <= depth < max_depth:
+                    equivalent['depth'] = depth + 1
+                    tmp = equivalent.pop('ancestor_taxon_id')
+                    result[level]['documents'].append(equivalent)
+            checked_ids.append(cur_id)
+
+        return result
+
     def get_uniprot_by_ko(self, ko):
         '''
             Find all proteins with the same kegg orthology id
@@ -513,7 +596,7 @@ class QueryProtein:
             return 'No such protein in the database.'
         else:
             ko_number = doc.get('ko_number')
-        
+
         if ko_number is None:
             return 'No kegg information available for this protein.'
 

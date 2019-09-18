@@ -131,11 +131,11 @@ class TestQueryProtein(unittest.TestCase):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
         self.assertEqual(result[1]['ko_name'], ['ko name 1'])
-    
+
     def test_get_info_by_taxon_id_abundance(self):
         _id = 6
         result = self.src.get_info_by_taxonid_abundance(_id)
-        self.assertEqual(result[0]['uniprot_ids'], {'uniprot6': True})        
+        self.assertEqual(result[0]['uniprot_ids'], {'uniprot6': True})
 
     def test_get_info_by_ko(self):
         ko = 'KO0'
@@ -196,6 +196,15 @@ class TestQueryProtein(unittest.TestCase):
         result = self.src.get_equivalent_protein(['uniprot0'], 2, max_depth=2)
         self.assertEqual(len(result[1]['documents']), 1)
         result = self.src.get_equivalent_protein(['uniprot0'], 3, max_depth=2)
+        self.assertEqual(len(result[2]['documents']), 0)
+
+    def test_get_equivalent_protein_with_anchor(self):
+
+        result = self.src.get_equivalent_protein_with_anchor('uniprot0', 2, max_depth=2)
+        self.assertEqual(len(result[1]['documents']), 1)
+        result = self.src.get_equivalent_protein_with_anchor('uniprot0',
+                                                             3,
+                                                             max_depth=2)
         self.assertEqual(len(result[2]['documents']), 0)
 
     def test_get_abundance_by_taxon(self):
