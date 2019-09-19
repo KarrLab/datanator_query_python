@@ -51,7 +51,7 @@ class TestQueryProtein(unittest.TestCase):
 
         dic_0 = {'ncbi_taxonomy_id': 0, 'species_name': 's0', 'ancestor_taxon_id': [5,4,3,2,1], 'ancestor_name': ['s5', 's4', 's3', 's2', 's1'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot0', "protein_name": 'special name one', 'kinetics': [{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1},
-        {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}], 'abundances': []}
+        {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}], 'abundances': [], 'ko_name': ['KO0 name']}
         dic_1 = {'ncbi_taxonomy_id': 1, 'species_name': 's1', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot1', "protein_name": 'nonspeciali name one'}
         dic_2 = {'ncbi_taxonomy_id': 2, 'species_name': 's2', 'ancestor_taxon_id': [5,4,3], 'ancestor_name': ['s5', 's4', 's3'],

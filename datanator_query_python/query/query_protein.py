@@ -496,6 +496,7 @@ class QueryProtein:
         query = {'uniprot_id': _id}  # needs indexing
         projection = {
             'ko_number': 1,
+            'ko_name': 1,
             'ancestor_taxon_id': 1,
             'ancestor_name': 1,
             'ncbi_taxonomy_id': 1,
@@ -518,6 +519,8 @@ class QueryProtein:
             dic['species_name'] = protein['species_name']
             dic['uniprot_id'] = _id
             dic['depth'] = 0
+            dic['ko_number'] = protein['ko_number']
+            dic['ko_name'] = protein['ko_name']
             result[0]['documents'].append(dic)
 
         ko_number = protein['ko_number']
@@ -526,7 +529,8 @@ class QueryProtein:
         checked_ids = [protein['ncbi_taxonomy_id']]
 
         projection = {'abundances': 1, 'ncbi_taxonomy_id': 1, 'species_name': 1,
-                    'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1}
+                    'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1, 'ko_number': 1,
+                    'ko_name': 1}
         for level in range(levels):
             cur_id = ancestor_ids[-(level+1)]
 
