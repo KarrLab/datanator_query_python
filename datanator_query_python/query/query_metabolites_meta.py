@@ -91,9 +91,9 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         ''' Given a hashed inchi string, find its
             corresponding m2m_id and/or ymdb_id
             Args:
-                hashed_inchi: string of hashed inchi
+                hashed_inchi (`obj`: str): string of hashed inchi
             Returns:
-                result: dictionary of ids and their keys
+                result (`obj`: dict): dictionary of ids and their keys
                     {'m2m_id': ..., 'ymdb_id': ...}
         '''
         query = {'InChI_Key': hashed_inchi}
