@@ -57,6 +57,14 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
         self.assertEqual(result_1, {'m2m_id': 'M2MDB000606', 'ymdb_id': 'YMDB00365'})
         self.assertEqual(result_2, {'m2m_id': 'M2MDB000008', 'ymdb_id': 'YMDB00282'})
 
+    def test_get_ids_from_hashes(self):
+        hashed_inchi_0 = ['QHKABHOOEWYVLI-UHFFFAOYSA-N', 'YBJHBAHKTGYVGT-ZKWXMUAHSA-N', 'some_nonsense_0']
+        hashed_inchi_1 = ['some_nonsense_1', 'some_nonsense_2', 'some_nonsense_3']
+        result_0 = self.src.get_ids_from_hashes(hashed_inchi_0)
+        result_1 = self.src.get_ids_from_hashes(hashed_inchi_1)
+        self.assertEqual(len(result_0), 2)
+        self.assertEqual(result_1, [])
+
     # @unittest.skip('passed')
     def test_get_metabolite_name_by_hash(self):
         compounds = ['QHKABHOOEWYVLI-UHFFFAOYSA-N',

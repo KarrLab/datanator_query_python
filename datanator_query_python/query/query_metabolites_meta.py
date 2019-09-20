@@ -105,6 +105,30 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
 
         return result
 
+    def get_ids_from_hashes(self, hashed_inchi):
+        ''' Given a list of hashed inchi string, find their
+            corresponding m2m_id and/or ymdb_id
+            Args:
+                hashed_inchi (`obj`: list of `obj`: str): list of hashed inchi
+            Returns:
+                result (`obj`: list of `obj`: dict): dictionary of ids and their keys
+                    [{'m2m_id': ..., 'ymdb_id': ..., 'InChI_Key': ...}, {}, ..]
+        '''
+        query = {'InChI_Key': {'$in': hashed_inchi}}
+        projection = {'m2m_id': 1, 'ymdb_id': 1, 'InChI_Key': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+        result = []
+        if docs is None: 
+            return result
+        else:
+            for doc in docs:
+                dic = {}
+                dic['m2m_id'] = doc.get('m2m_id', None)
+                dic['ymdb_id'] = doc.get('ymdb_id', None)
+                dic['InChI_Key'] = doc.get('InChI_Key', None)
+                result.append(dic)
+            return result
+
     def get_metabolite_hashed_inchi(self, compounds):
         ''' Given a list of compound name(s)
             Return the corresponding hashed inchi string
