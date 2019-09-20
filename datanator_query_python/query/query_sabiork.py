@@ -68,7 +68,7 @@ class QuerySabio(query_nosql.DataQuery):
 
         return rxns
 
-    def get_kinlawid_by_inchi(self, inchi):
+    def get_kinlawid_by_inchi(self, hashed_inchi):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchi string
             Args:
@@ -77,8 +77,8 @@ class QuerySabio(query_nosql.DataQuery):
                 rxns (:obj: `list` of :obj: `int`): list of kinlaw_ids that satisfy the condition
                 [id0, id1, id2,...,  ]
         '''
-        hashed_inchi = [self.chem_manager.inchi_to_inchikey(s)
-                        for s in inchi]
+        # hashed_inchi = [self.chem_manager.inchi_to_inchikey(s)
+        #                 for s in inchi]
         substrate = 'reactants.structures.InChI_Key'
         product = 'products.structures.InChI_Key'
         projection = {'kinlaw_id': 1}
@@ -105,7 +105,7 @@ class QuerySabio(query_nosql.DataQuery):
                 [id0, id1, id2,...,  ]
         '''
 
-        def get_kinlawid(inchi, side='substrate'):
+        def get_kinlawid(hashed_inchi, side='substrate'):
             ''' Find the kinlaw_id defined in sabio_rk using 
                 rxn participants' inchi string
                 Args:
@@ -114,8 +114,6 @@ class QuerySabio(query_nosql.DataQuery):
                     rxns: list of kinlaw_ids that satisfy the condition
                     [id0, id1, id2,...,  ]
             '''
-            hashed_inchi = [self.chem_manager.inchi_to_inchikey(s)
-                        for s in inchi]
 
             substrate = 'reactants.structures.InChI_Key'
             product = 'products.structures.InChI_Key'
