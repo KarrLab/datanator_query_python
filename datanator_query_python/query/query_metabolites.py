@@ -8,6 +8,7 @@
 
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from . import query_metabolites_meta
+from bson.objectid import ObjectId
 
 class QueryMetabolites(mongo_util.MongoUtil):
     '''Queries specific to metabolites (ECMDB, YMDB) collection
@@ -55,7 +56,6 @@ class QueryMetabolites(mongo_util.MongoUtil):
                 result (`obj`: list of `obj`: dict): concentration values separated by collections
                 e.g. [{'ymdb': }, {'ecmdb': }]
         '''
-        inchi = 'InChI=' + inchi
         hashed_inchi = self.chem_manager.inchi_to_inchikey(inchi)
         query = {'InChI_Key': hashed_inchi}
         projection = {'_id': 0, 'concentrations': 1, 'name': 1, 'species': 1,
@@ -95,3 +95,31 @@ class QueryMetabolites(mongo_util.MongoUtil):
             }]
         else:
             return result
+
+    def get_meta_from_inchis(self, inchis, species, last_id=ObjectId('000000000000000000000000'), page_size=20):
+        ''' Get all information about metabolites given
+            a list of inchi strings
+            Args:
+                inchis (`obj`: list of `obj`: str): list of inchi strings
+                species (`obj`: str): name of species in which the metabolite resides
+            Return:
+                result (`obj`: list of `obj`: dict): list of information
+        '''
+        if species == 'Escherichia coli':
+            collection = self.collection_ecmdb
+        elif species == 'Saccharomyces cerevisiae':
+            collection = self.collection_ymdb
+        else:
+            return [{'name': 'Species name not supported yet.',
+                    'inchikey': 'Species name not supported yet.',
+                    'description': 'Species name not supported yet.'}] 
+
+        result = []
+        inchikeys = [self.chem_manager.inchi_to_inchikey(x) for x in inchis]
+        query = {'$and': [{'inchikey': {'$in': inchikeys} },
+                          {'_id': {'$gt': last_id} }]}
+        projection = {}
+        docs = collection.find(filter=query, limit=page_size)
+        for doc in docs:
+            result.append(doc)
+        return result

@@ -61,6 +61,7 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
         hashed_inchi_0 = ['QHKABHOOEWYVLI-UHFFFAOYSA-N', 'YBJHBAHKTGYVGT-ZKWXMUAHSA-N', 'some_nonsense_0']
         hashed_inchi_1 = ['some_nonsense_1', 'some_nonsense_2', 'some_nonsense_3']
         result_0 = self.src.get_ids_from_hashes(hashed_inchi_0)
+        print(result_0)
         result_1 = self.src.get_ids_from_hashes(hashed_inchi_1)
         self.assertEqual(len(result_0), 2)
         self.assertEqual(result_1, [])

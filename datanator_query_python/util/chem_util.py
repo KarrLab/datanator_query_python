@@ -54,13 +54,13 @@ class ChemUtil:
         slen = len(szINCHISource)
 
         if slen < self.LEN_INCHI_STRING_PREFIX + 3:
-            return None
+            return 'Invalid inchi string'
 
         if not szINCHISource.startswith(self.INCHI_STRING_PREFIX):
-            return None
+            return 'Invalid inchi string'
 
         if szINCHISource[self.LEN_INCHI_STRING_PREFIX] != '1':
-            return None
+            return 'Invalid inchi string'
 
         pos_slash1 = self.LEN_INCHI_STRING_PREFIX + 1
 
@@ -69,15 +69,15 @@ class ChemUtil:
             pos_slash1 += 1
 
         if szINCHISource[pos_slash1] != '/':
-            return None
+            return 'Invalid inchi string'
 
         if not szINCHISource[pos_slash1+1].isalnum() and szINCHISource[pos_slash1+1] != '/':
-            return None
+            return 'Invalid inchi string'
 
         string = szINCHISource[self.LEN_INCHI_STRING_PREFIX:].strip()
 
         if not string:
-            return None
+            return 'Invalid inchi string'
 
         aux = string[(pos_slash1 - self.LEN_INCHI_STRING_PREFIX) + 1:]
         slen = len(aux)
@@ -121,7 +121,7 @@ class ChemUtil:
                 else:
                     flagproto = pminus[-nprotons-1]
             else:
-                return None
+                return 'Invalid inchi string'
 
         sminor = ''
         if end != slen:

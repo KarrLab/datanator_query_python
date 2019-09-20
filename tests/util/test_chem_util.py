@@ -32,3 +32,5 @@ class TestChemUtil(unittest.TestCase):
         self.assertEqual(key,'BQJCRHHNABKAKU-KBQPJGBKSA-N')
         key_1 = self.src.inchi_to_inchikey('InChI=1S/H2O/h1H2')
         self.assertEqual(key_1, 'XLYOFNOQVPJJNP-UHFFFAOYSA-N')
+        key_2 = self.src.inchi_to_inchikey('some nonsense')
+        self.assertEqual(key_2, 'Invalid inchi string')
