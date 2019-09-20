@@ -96,12 +96,14 @@ class QueryMetabolites(mongo_util.MongoUtil):
         else:
             return result
 
-    def get_meta_from_inchis(self, inchis, species, last_id=ObjectId('000000000000000000000000'), page_size=20):
+    def get_meta_from_inchis(self, inchis, species, last_id='000000000000000000000000', page_size=20):
         ''' Get all information about metabolites given
             a list of inchi strings
             Args:
                 inchis (`obj`: list of `obj`: str): list of inchi strings
                 species (`obj`: str): name of species in which the metabolite resides
+                last_id (`obj`: str): hex encoded version of ObjectId o, which is the last item of the previous page
+                page_size (`obj`: int): number of items per page
             Return:
                 result (`obj`: list of `obj`: dict): list of information
         '''
@@ -116,10 +118,12 @@ class QueryMetabolites(mongo_util.MongoUtil):
 
         result = []
         inchikeys = [self.chem_manager.inchi_to_inchikey(x) for x in inchis]
+        last_id = ObjectId(last_id)
         query = {'$and': [{'inchikey': {'$in': inchikeys} },
                           {'_id': {'$gt': last_id} }]}
         projection = {}
         docs = collection.find(filter=query, limit=page_size)
         for doc in docs:
+            doc['_id'] = str(doc['_id'])
             result.append(doc)
         return result

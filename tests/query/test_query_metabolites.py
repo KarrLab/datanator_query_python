@@ -42,7 +42,7 @@ class TestQueryMetabolites(unittest.TestCase):
         self.assertEqual(len(result_2), 1)
 
     def test_get_meta_from_inchis(self):
-        self.assertTrue(ObjectId('000000000000000000000000') < ObjectId('5ce84237a4c0e821788742d8'))
+        self.assertTrue(ObjectId('000000000000000000000000') < ObjectId('5ca29231d4378913c58e07d7'))
         inchis_0 = ['InChI=1S/C10H16N5O13P3/c11-8-5-9(13-2-12-8)15(3-14-5)10-7(17)6(16)4(26-10)1-25-30(21,22)28-31(23,24)27-29(18,19)20/h2-4,6-7,10,16-17H,1H2,(H,21,22)(H,23,24)(H2,11,12,13)(H2,18,19,20)/t4-,6-,7-,10-/m1/s1',
         'InChI=1S/C8H11NO2/c9-4-3-6-1-2-7(10)8(11)5-6/h1-2,5,10-11H,3-4,9H2', 'some_nonsense']
         result_0 = self.src.get_meta_from_inchis(inchis_0, 'Escherichia coli', page_size=1)
@@ -56,4 +56,5 @@ class TestQueryMetabolites(unittest.TestCase):
                     'description': 'Species name not supported yet.'}])
         self.assertEqual(len(result_2), 1)
         self.assertEqual(len(result_3), 2)
+        print(result_3[1])
         self.assertEqual(len(result_4), 1)
