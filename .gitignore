@@ -55,7 +55,7 @@ Thumbs.db
 .~*.xlsx
 
 # cloud sync artifcats
-.txt.~*
-.py.~*
-.yml.~*
+*.txt.~*
+*.py.~*
+*.yml.~*
 *(conflicted*
