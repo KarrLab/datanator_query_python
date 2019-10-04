@@ -47,3 +47,11 @@ class TestFTX(unittest.TestCase):
         es = self.src._build_es()
         es_0 = es.search(index=index_0, body=body_0)
         self.assertEqual(es_0['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
+
+    def test_simple_query_string(self):
+        query_0 = 'mock_value_3'
+        field_0 = ['mock_key_bulk', 'number']
+        index_0 = 'test_0,test_1'
+        r = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
+        analyze_wild_card=True)
+        self.assertEqual(r['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
