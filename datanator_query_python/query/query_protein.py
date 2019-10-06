@@ -3,6 +3,7 @@ from datanator_query_python.query import query_taxon_tree
 from pymongo.collation import Collation, CollationStrength
 import json
 
+
 class QueryProtein:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
