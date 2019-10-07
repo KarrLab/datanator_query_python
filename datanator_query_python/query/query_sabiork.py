@@ -22,9 +22,9 @@ class QuerySabio(query_nosql.DataQuery):
         '''
             Find a document on reaction with the kinlaw_id
             Args:
-                kinlaw_id (:obj: `list` of :obj: `int`) list of kinlaw_id to search for
+                kinlaw_id (:obj:`list` of :obj:`int`) list of kinlaw_id to search for
             Returns:
-                result (:obj: `list` of :obj: `dict`): list of docs
+                result (:obj:`list` of :obj:`dict`): list of docs
         '''
         projection = {'_id': 0}
         query = {'kinlaw_id': {'$in': kinlaw_id}}
@@ -38,9 +38,9 @@ class QuerySabio(query_nosql.DataQuery):
     def find_reaction_participants(self, kinlaw_id):
         ''' Find the reaction participants defined in sabio_rk using kinetic law id
             Args:
-                kinlaw_id (:obj: `list` of :obj: `int`) list of kinlaw_id to search for
+                kinlaw_id (:obj:`list` of :obj:`int`) list of kinlaw_id to search for
             Return:
-                rxns (:obj: `list` of :obj: `dict`) list of dictionaries containing names of reaction participants
+                rxns (:obj:`list` of :obj:`dict`) list of dictionaries containing names of reaction participants
                 [{'substrates': [], 'products': [] }, ... {} ]
         '''
         projection = {'products': 1, 'reactants': 1, '_id': 0, 'kinlaw_id':1}
@@ -72,9 +72,9 @@ class QuerySabio(query_nosql.DataQuery):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchi string
             Args:
-                inchi (:obj: `list` of :obj: `str`): list of inchi, all in one rxn
+                inchi (:obj:`list` of :obj:`str`): list of inchi, all in one rxn
             Return:
-                rxns (:obj: `list` of :obj: `int`): list of kinlaw_ids that satisfy the condition
+                rxns (:obj:`list` of :obj:`int`): list of kinlaw_ids that satisfy the condition
                 [id0, id1, id2,...,  ]
         '''
         # hashed_inchi = [self.chem_manager.inchi_to_inchikey(s)
@@ -154,10 +154,10 @@ class QuerySabio(query_nosql.DataQuery):
         '''
             Get kinlaw_id from substrates and products, all in one reaction
             Args:
-                substrates: (:obj: `list` of :obj: `str`): list of substrate names
-                products: (:obj: `list` of :obj: `str`): list of product names
+                substrates: (:obj:`list` of :obj:`str`): list of substrate names
+                products: (:obj:`list` of :obj:`str`): list of product names
             Returns:
-                result: (:obj: `list` of :obj: `str`): list of compound names
+                result: (:obj:`list` of :obj:`str`): list of compound names
         '''
         collation = {'locale': 'en', 'strength': 2}
         projection = {'_id': 0, 'products': 1, 'reactants': 1, 'kinlaw_id': 1}

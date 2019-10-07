@@ -23,8 +23,10 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
 
     def get_metabolite_synonyms(self, compounds):
         ''' Find synonyms of a compound
+
             Args:
                 compound: name(s) of the compound e.g. "ATP", ["ATP", "Oxygen", ...]
+
             Returns:
                 synonyms: dictionary of synonyms of the compounds
                         {'ATP': [], 'Oxygen': [], ...}
@@ -68,12 +70,13 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         return rxns, synonyms
 
     def get_metabolite_inchi(self, compounds):
-        '''Given a list of compound name(s)
-            Return the corrensponding inchi string
+        '''Given a list of compound name(s) Return the corrensponding inchi string
+
             Args:
                 compounds: list of compounds
                 ['ATP', '2-Ketobutanoate']
-            Return:
+
+            Returns:
                 ['....', 'InChI=1S/C4H6O3/c1-2-3(5)4(6)7/...']
         '''
         inchi = []

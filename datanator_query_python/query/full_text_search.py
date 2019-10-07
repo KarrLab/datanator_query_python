@@ -14,8 +14,8 @@ class FTX(es_query_builder.QueryBuilder):
         ''' Perform simple_query_string in elasticsearch
             (https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/full-text/#simple-query-string)
             Args:
-                query_message (:obj: `str`): simple string for querying
-                index (:obj: `str`): comma separated string to indicate indices in which query will be done
+                query_message (:obj:`str`): simple string for querying
+                index (:obj:`str`): comma separated string to indicate indices in which query will be done
         '''
         body = self.build_simple_query_string_body(query_message, **kwargs)
         r = self._build_es().search(index=index, body=body)

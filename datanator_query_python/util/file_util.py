@@ -30,11 +30,11 @@ class FileUtil:
         '''
             Get values for key from a list of dictionaries
             Args:
-                dict_list (:obj: `list` of :obj: `dict`): list of dictionary 
+                dict_list (:obj:`list` of :obj:`dict`): list of dictionary 
                                                         to query
-                key (:obj: `str`): key for which to get the value
+                key (:obj:`str`): key for which to get the value
             Returns:
-                results (:obj: `list` of :obj:): list of values
+                results (:obj:`list` of :obj:): list of values
         '''
         result = []
         for dic in dict_list:
@@ -127,11 +127,11 @@ class FileUtil:
             Find the index of the dictionary that contains key/val
             pair within the dict_list
             Args:
-                dict_list (:obj: `list` of :obj: `dict`): list of dictionaries
-                key (:obj: `str`): dictionary key
-                value (:obj: ): dictionary value
+                dict_list (:obj:`list` of :obj:`dict`): list of dictionaries
+                key (:obj:`str`): dictionary key
+                value (:obj:): dictionary value
             Returns:
-                index (:obj: `list` of :obj: `int`): list of indices
+                index (:obj:`list` of :obj:`int`): list of indices
         '''
         index = []
         for i, dic in enumerate(dict_list):
@@ -177,12 +177,12 @@ class FileUtil:
             key/value pair in a list of dictionaries
 
             Args:
-                dict_list (:obj: `list`): list of dictionaries
-                key (:obj: `string`): key in the dictionary
-                value (:obj: ``): value to be matched
+                dict_list (:obj:`list`): list of dictionaries
+                key (:obj:`string`): key in the dictionary
+                value (:obj:``): value to be matched
                                 if value==None, then only search for key
             Returns:
-                result (:obj: `list` of :obj: `dict`): list of dictionaries with the key/value pair
+                result (:obj:`list` of :obj:`dict`): list of dictionaries with the key/value pair
         '''
         if value:
             return list(filter(lambda search: search.get(key, None) == value, dict_list))
@@ -194,9 +194,9 @@ class FileUtil:
     def merge_dict(self, dicts):
         ''' Merge a list of dictionaries
             Args:
-                dicts (:obj: `list` of :obj: `dict`): list of dictionaries
+                dicts (:obj:`list` of :obj:`dict`): list of dictionaries
             Returns:
-                result (:obj: `dict`): merged dictionries
+                result (:obj:`dict`): merged dictionries
         '''
         result = {}
         for d in dicts:
@@ -207,11 +207,11 @@ class FileUtil:
     def exists_key_value_pair(self, dictionary, k, v):
         ''' Test if a key/value pair exists in dictionary
             Args:
-                dict (:obj: `dict`): dictionary to be checked
-                k (:obj: `str`): key to be matched
-                v (:obj: ``): value to be matched
+                dict (:obj:`dict`): dictionary to be checked
+                k (:obj:`str`): key to be matched
+                v (:obj:``): value to be matched
             Returns:
-                result (:obj: `bool`): True or False
+                result (:obj:`bool`): True or False
         '''
         return k in dictionary and v == dictionary[k]
 

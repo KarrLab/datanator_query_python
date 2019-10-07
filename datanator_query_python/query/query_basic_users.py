@@ -18,9 +18,9 @@ class QueryBasicUsers:
         ''' 
             Given a list of user ids, find corresponding usernames
             Args: 
-                id (:obj: `list` of :obj: `ObjectId`): list of user ids
+                id (:obj:`list` of :obj:`ObjectId`): list of user ids
             Returns:
-                results (:obj: `list` of :obj: `str`): list of usernames
+                results (:obj:`list` of :obj:`str`): list of usernames
         '''
         results = []
         query = {'_id': {'$in': _id}}
@@ -35,9 +35,9 @@ class QueryBasicUsers:
         ''' 
             Given a list of user usernames, find corresponding ids
             Args: 
-                id (:obj: `list` of :obj: `str`): list of usernames
+                id (:obj:`list` of :obj:`str`): list of usernames
             Returns:
-                results (:obj: `list` of :obj: `int`): list of user_ids
+                results (:obj:`list` of :obj:`int`): list of user_ids
         '''
         results = []
         query = {'username': {'$in': username }}

@@ -25,7 +25,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
     def get_all_species(self):
         ''' Get all organisms in taxon_tree collection
             Return:
-                result (:obj: `list` of  :obj: `str`): list of organisms
+                result (:obj:`list` of  :obj:`str`): list of organisms
         '''
         projection = {'tax_name':1}
         mass = self.collection.find({ 'tax_name': {'$exists': True} }, projection=projection)
@@ -38,9 +38,9 @@ class QueryTaxonTree(query_nosql.DataQuery):
             Get all taxon ids associated with an
             organism name
             Args:
-                name (:obj: `str`): species name
+                name (:obj:`str`): species name
             Returns:
-                ids (:obj: `list` of :obj: `int`): list of 
+                ids (:obj:`list` of :obj:`int`): list of 
                 taxon ids
         '''
         ids = []
@@ -171,12 +171,12 @@ class QueryTaxonTree(query_nosql.DataQuery):
             the equivalent species of 0 given max_distance of 2, is 8
             the equivalent species of 0 given max_distance of 3, is 8 and 9
             Args:
-                _id (:obj: `int`): taxonomy id of the species
-                max_distance (:obj: `int`): max distance allowed from species _id
-                max_depth (:obj: `int`) max depth allowed from the common node
+                _id (:obj:`int`): taxonomy id of the species
+                max_distance (:obj:`int`): max distance allowed from species _id
+                max_depth (:obj:`int`) max depth allowed from the common node
             Returs:
-                ids (:obj: `list` of :obj: `int`): list of ids of the species that met the condition
-                names (:obj: `list` of :obj: `str`) list of names of the species that met the condition
+                ids (:obj:`list` of :obj:`int`): list of ids of the species that met the condition
+                names (:obj:`list` of :obj:`str`) list of names of the species that met the condition
         '''
         if max_distance < 1 or max_depth < 1:
             return 'Either input has to be greater than 0'

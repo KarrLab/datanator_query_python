@@ -24,7 +24,7 @@ class QueryPax(query_nosql.DataQuery):
         '''
                 Get a list of all species in pax collection
                 Returns:
-                        results (:obj: `list` of :obj: `str`): list of specie names
+                        results (:obj:`list` of :obj:`str`): list of specie names
                                                     with no duplicates
         '''
         results = []
@@ -39,9 +39,9 @@ class QueryPax(query_nosql.DataQuery):
         '''
             Get all abundance data for uniprot_id
             Args:
-                    uniprot_id (:obj: `str`) protein uniprot_id
+                    uniprot_id (:obj:`str`) protein uniprot_id
             Return:
-                    result (:obj: `list` of :obj: `dict`): result containing
+                    result (:obj:`list` of :obj:`dict`): result containing
                     [{'ncbi_taxonomy_id': , 'species_name': , 'ordered_locus_name': },
                     {'organ': , 'abundance'}, {'organ': , 'abundance'}]
         '''

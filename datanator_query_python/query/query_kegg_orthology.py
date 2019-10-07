@@ -19,9 +19,9 @@ class QueryKO:
         '''
         Get a gene's ko number by its gene name
             Args:
-                    name: (:obj: `str`): gene name
+                    name: (:obj:`str`): gene name
             Returns:
-                    result: (:obj: `str`): ko number of the gene
+                    result: (:obj:`str`): ko number of the gene
         '''
         query = {'gene_name': name}
         projection = {'gene_name': 1, 'kegg_orthology_id': 1}
