@@ -214,3 +214,31 @@ class QuerySabio(query_nosql.DataQuery):
         result = list(set(sub_id) & set(pro_id))
 
         return result
+
+    def get_h1_hesc_kinlaw(self, ph_range: list, temp_range: list,
+                          name_space: dict, observed_type: list, projection={'_id': 0}):
+        """get kinlaw info for h1_hesc
+        
+        Args:
+            ph_range (list): range of pH
+            temp_range (list): range of temperature
+            name_space (dict): cross_reference key/value pair, i.e. {'ec-code': '3.4.21.62'}
+            observed_type (list): possible values for parameters.observed_type
+            projection (dict): mongodb query result projection
+
+        Returns:
+            (list): list of kinetic laws that meet the constraints 
+        """
+        result = []
+        constraint_0 = {'temperature': {'$gte': temp_range[0], '$lte': temp_range[1]} }
+        constraint_1 = {'ph': {'$gte': ph_range[0], '$lte': ph_range[1]} }
+        key = list(name_space.keys())[0]
+        val = list(name_space.values())[0]
+        field = 'cross_references' + '.' + key
+        constraint_2 = {field: val}
+        constraint_3 = {'parameters.observed_type': {'$in': observed_type} }
+        query = {'$and': [constraint_0, constraint_1, constraint_2, constraint_3]}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
+        return result

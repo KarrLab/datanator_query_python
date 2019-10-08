@@ -25,7 +25,6 @@ class TestQuerySabio(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dirname)
-
     
     def test_get_reaction_doc(self):
         _id = [31, 32]
@@ -71,3 +70,11 @@ class TestQuerySabio(unittest.TestCase):
         result_1 = self.src.get_kinlawid_by_name(substrates_1, products_1)
         self.assertTrue(31 in result_1)
         self.assertTrue(len(result) <= len(result_1))
+
+    def test_get_h1_hesc_kinlaw(self):
+        ph_range = [6, 8]
+        temp_range = [24, 26]
+        name_space = {'ec-code': '3.4.21.62'}
+        observed_type = [25, 27]
+        result = self.src.get_h1_hesc_kinlaw(ph_range, temp_range, name_space, observed_type)
+        self.assertTrue(len(result) == 66)
