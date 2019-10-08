@@ -97,9 +97,11 @@ class QuerySabio(query_nosql.DataQuery):
     def get_kinlawid_by_rxn(self, substrates, products):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchi string
+
             Args:
                 substrates: list of substrates' inchi
                 products: list of products' inchi
+
             Return:
                 rxns: list of kinlaw_ids that satisfy the condition
                 [id0, id1, id2,...,  ]
@@ -108,8 +110,10 @@ class QuerySabio(query_nosql.DataQuery):
         def get_kinlawid(hashed_inchi, side='substrate'):
             ''' Find the kinlaw_id defined in sabio_rk using 
                 rxn participants' inchi string
+
                 Args:
                     inchi: list of inchi, all in one rxn, on one side
+
                 Return:
                     rxns: list of kinlaw_ids that satisfy the condition
                     [id0, id1, id2,...,  ]
@@ -151,11 +155,12 @@ class QuerySabio(query_nosql.DataQuery):
         return result
 
     def get_kinlawid_by_name(self, substrates, products):
-        '''
-            Get kinlaw_id from substrates and products, all in one reaction
+        ''' Get kinlaw_id from substrates and products, all in one reaction
+
             Args:
                 substrates: (:obj:`list` of :obj:`str`): list of substrate names
                 products: (:obj:`list` of :obj:`str`): list of product names
+
             Returns:
                 result: (:obj:`list` of :obj:`str`): list of compound names
         '''
@@ -165,9 +170,11 @@ class QuerySabio(query_nosql.DataQuery):
         def get_kinlawid(compounds, side='substrate'):
             ''' Find the kinlaw_id defined in sabio_rk using 
                 rxn participants' name
+
                 Args:
                     compounds (:obj:`list` of :obj:`str`): compound names all in one rxn, on one side
                     side (:obj:`str`): left side or right side of the rxn
+                    
                 Return:
                     rxns: list of kinlaw_ids that satisfy the condition
                     [id0, id1, id2,...,  ]

@@ -25,7 +25,7 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         ''' Find synonyms of a compound
 
             Args:
-                compound: name(s) of the compound e.g. "ATP", ["ATP", "Oxygen", ...]
+                compound (list): name(s) of the compound e.g. "ATP", ["ATP", "Oxygen", ...]
 
             Returns:
                 synonyms: dictionary of synonyms of the compounds

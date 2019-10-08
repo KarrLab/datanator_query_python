@@ -36,3 +36,7 @@ class TestQueryCorum(unittest.TestCase):
         result_1 = self.src.get_complexes_with_uniprot('P2', ncbi_id=9607)
         self.assertEqual(result_0[0], {'subunits_uniprot_id': ['P1', 'P2'], 'SWISSPROT_organism_NCBI_ID': 9606})
         self.assertEqual(result_1[0], {'subunits_uniprot_id': ['P1', 'P2'], 'SWISSPROT_organism_NCBI_ID': 9607})
+
+    def test_get_complexes_with_ncbi(self):
+        result_0 = self.src.get_complexes_with_ncbi(9606)
+        self.assertEqual(len(result_0), 3)

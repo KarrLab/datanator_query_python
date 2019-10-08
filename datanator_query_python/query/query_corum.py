@@ -33,3 +33,19 @@ class QueryCorum:
         for doc in docs:
             result.append(doc)
         return result
+
+    def get_complexes_with_ncbi(self, ncbi_id, projection = {'_id': 0}):
+        """Find all complexes in species with ncbi taxonomy id
+        
+        Args:
+            ncbi (int): ncbi taxonomy id
+
+        Returns:
+            (list): list of all objects that meet the constraint
+        """
+        result = []
+        query = {'SWISSPROT_organism_NCBI_ID': ncbi_id}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
+        return result
