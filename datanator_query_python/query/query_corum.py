@@ -29,7 +29,7 @@ class QueryCorum:
         query = {'$and': [{'SWISSPROT_organism_NCBI_ID': ncbi_id},
                           {'subunits_uniprot_id': uniprot_id}]}
         projection = {'_id': 0}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         for doc in docs:
             result.append(doc)
         return result

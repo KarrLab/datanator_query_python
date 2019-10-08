@@ -27,6 +27,7 @@ class TestQueryPax(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dirname)
+        cls.src.client.close()
 
     def test_get_all_species(self):
         result = self.src.get_all_species()
@@ -42,3 +43,10 @@ class TestQueryPax(unittest.TestCase):
         uniprot_id_1 = 'asdfasdf'
         result_1 = self.src.get_abundance_from_uniprot(uniprot_id_1)
         self.assertEqual(result_1, [])
+
+    def test_get_file_by_name(self):
+        name = '9606/9606-iPS_(DF19.11)_iTRAQ-114_Phanstiel_2011_gene.txt'
+        result = self.src.get_file_by_name([name])
+        self.assertEqual(
+            result[0]['publication'],
+            'http://www.nature.com/nmeth/journal/v8/n10/full/nmeth.1699.html')

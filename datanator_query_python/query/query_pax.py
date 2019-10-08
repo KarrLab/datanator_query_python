@@ -14,6 +14,8 @@ class QueryPax(query_nosql.DataQuery):
                                                     replicaSet=replicaSet, db=db,
                                                     verbose=verbose, max_entries=max_entries, username=username,
                                                     password=password, authSource=authSource, readPreference=readPreference)
+        self.collation = Collation(locale='en',
+                                   strength=CollationStrength.SECONDARY)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
@@ -22,10 +24,11 @@ class QueryPax(query_nosql.DataQuery):
 
     def get_all_species(self):
         '''
-                Get a list of all species in pax collection
-                Returns:
-                        results (:obj:`list` of :obj:`str`): list of specie names
-                                                    with no duplicates
+            Get a list of all species in pax collection
+
+            Returns:
+                results (:obj:`list` of :obj:`str`): list of specie names
+                                            with no duplicates
         '''
         results = []
         query = {}
@@ -38,12 +41,14 @@ class QueryPax(query_nosql.DataQuery):
     def get_abundance_from_uniprot(self, uniprot_id):
         '''
             Get all abundance data for uniprot_id
+
             Args:
-                    uniprot_id (:obj:`str`) protein uniprot_id
-            Return:
-                    result (:obj:`list` of :obj:`dict`): result containing
-                    [{'ncbi_taxonomy_id': , 'species_name': , 'ordered_locus_name': },
-                    {'organ': , 'abundance'}, {'organ': , 'abundance'}]
+                uniprot_id (:obj:`str`) protein uniprot_id.
+
+            Returns:
+                result (:obj:`list` of :obj:`dict`): result containing
+                [{'ncbi_taxonomy_id': , 'species_name': , 'ordered_locus_name': },
+                {'organ': , 'abundance'}, {'organ': , 'abundance'}].
         '''
         query = {'observation.protein_id.uniprot_id': uniprot_id}
         projection = {'ncbi_id': 1, 'species_name': 1,
@@ -52,7 +57,7 @@ class QueryPax(query_nosql.DataQuery):
         docs = self.collection.find(filter=query, projection=projection, collation=collation)
         count = self.collection.count_documents(query)
         try:
-            result = [{'ncbi_taxonomy_id': docs[0]['ncbi_id'], 
+            result = [{'ncbi_taxonomy_id': docs[0]['ncbi_id'],
             'species_name': docs[0]['species_name']}]
         except IndexError:
             return []
@@ -68,4 +73,23 @@ class QueryPax(query_nosql.DataQuery):
             dic = {'organ': organ,
             'abundance': abundance}
             result.append(dic)
+        return result
+
+    def get_file_by_name(self, file_name: list, projection={'_id': 0}, collation=None) -> list:
+        """Given file name, get the information attached to the file.   
+        
+        Args:
+            file_name (list): list of file names, e.g. ['9606/9606-iPS_(DF19.11)_iTRAQ-114_Phanstiel_2011_gene.txt']
+        
+        Returns:
+            list: files that meet the requirement. 
+        """
+        result = []
+        if collation is None:
+            collation = self.collation
+        query = {'file_name': {'$in': file_name}}
+        projection = projection
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
         return result
