@@ -222,30 +222,43 @@ class QuerySabio(query_nosql.DataQuery):
 
         return result
 
-    def get_kinlaw_by_environment(self, ph_range: list, temp_range: list,
-                          name_space: dict, observed_type: list, projection={'_id': 0}):
+    def get_kinlaw_by_environment(self, taxon=None, taxon_wildtype=None, ph_range=None, temp_range=None,
+                          name_space=None, observed_type=None, projection={'_id': 0}):
         """get kinlaw info based on experimental conditions
         
         Args:
-            ph_range (list): range of pH
-            temp_range (list): range of temperature
-            name_space (dict): cross_reference key/value pair, i.e. {'ec-code': '3.4.21.62'}
-            observed_type (list): possible values for parameters.observed_type
-            projection (dict): mongodb query result projection
+            taxon (:obj:`list`, optional): list of ncbi taxon id
+            taxon_wildtype (:obj:`list` of :obj:`bool`, optional): True indicates wildtype and False indicates mutant
+            ph_range (:obj:`list`, optional): range of pH
+            temp_range (:obj:`list`, optional): range of temperature
+            name_space (:obj:`dict`, optional): cross_reference key/value pair, i.e. {'ec-code': '3.4.21.62'}
+            observed_type (:obj:`list`, optional): possible values for parameters.observed_type
+            projection (:obj:`dict`, optional): mongodb query result projection
 
         Returns:
             (list): list of kinetic laws that meet the constraints 
         """
-        result = []
-        constraint_0 = {'temperature': {'$gte': temp_range[0], '$lte': temp_range[1]} }
-        constraint_1 = {'ph': {'$gte': ph_range[0], '$lte': ph_range[1]} }
-        key = list(name_space.keys())[0]
-        val = list(name_space.values())[0]
-        field = 'cross_references' + '.' + key
-        constraint_2 = {field: val}
-        constraint_3 = {'parameters.observed_type': {'$in': observed_type} }
-        query = {'$and': [constraint_0, constraint_1, constraint_2, constraint_3]}
+        all_constraints = []
+        if taxon:
+            all_constraints.append({'taxon': {'$in': taxon}})
+        if taxon_wildtype:    
+            all_constraints.append({'taxon_wildtype': {'$in': taxon_wildtype}})
+        if ph_range:
+            all_constraints.append({'ph': {'$gte': ph_range[0], '$lte': ph_range[1]}})
+        if temp_range:    
+            all_constraints.append({'temperature': {'$gte': temp_range[0], '$lte': temp_range[1]}})
+        if name_space:
+            key = list(name_space.keys())[0]
+            val = list(name_space.values())[0]
+            field = 'cross_references' + '.' + key
+            all_constraints.append({field: val})
+        if observed_type:
+            all_constraints.append({'parameters.observed_type': {'$in': observed_type}})
+        
+        query = {'$and': all_constraints}
         docs = self.collection.find(filter=query, projection=projection)
+        result = []
         for doc in docs:
             result.append(doc)
+        
         return result

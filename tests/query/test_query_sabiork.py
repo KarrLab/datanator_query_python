@@ -72,9 +72,24 @@ class TestQuerySabio(unittest.TestCase):
         self.assertTrue(len(result) <= len(result_1))
 
     def test_get_kinlaw_by_environment(self):
+        taxon = [9606]
+        taxon_wildtype = [True, False]
         ph_range = [6, 8]
         temp_range = [24, 26]
         name_space = {'ec-code': '3.4.21.62'}
         observed_type = [25, 27]
-        result = self.src.get_kinlaw_by_environment(ph_range, temp_range, name_space, observed_type)
-        self.assertTrue(len(result) == 66)
+        result = self.src.get_kinlaw_by_environment(
+            taxon, taxon_wildtype, ph_range, temp_range, name_space, observed_type)
+        self.assertTrue(sorted([i['kinlaw_id'] for i in result]), [47807, 47808, 47809])
+        
+        result = self.src.get_kinlaw_by_environment(
+            [], taxon_wildtype, ph_range, temp_range, name_space, observed_type)
+        self.assertEqual(len(result), 66)
+        
+        result = self.src.get_kinlaw_by_environment(
+            [], [True], ph_range, temp_range, name_space, observed_type)
+        self.assertEqual(len(result), 56)
+
+        result = self.src.get_kinlaw_by_environment(
+            taxon, [True], ph_range, temp_range, {}, observed_type)
+        self.assertEqual(len(result), 1369)
