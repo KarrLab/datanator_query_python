@@ -94,15 +94,34 @@ class QueryPax(query_nosql.DataQuery):
         """Given file name, get the information attached to the file.   
         
         Args:
-            file_name (list): list of file names, e.g. ['9606/9606-iPS_(DF19.11)_iTRAQ-114_Phanstiel_2011_gene.txt']
+            file_name (:obj:`list`): list of file names, e.g. ['9606/9606-iPS_(DF19.11)_iTRAQ-114_Phanstiel_2011_gene.txt']
         
         Returns:
-            list: files that meet the requirement. 
+            :obj:`list`: files that meet the requirement
         """
         result = []
         if collation is None:
             collation = self.collation
         query = {'file_name': {'$in': file_name}}
+        projection = projection
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
+        return result
+
+    def get_file_by_ncbi_id(self, taxon: list, projection={'_id': 0}, collation=None) -> list:    
+        """Given the list of taxon ncbi ID, get all the files associated to the taxon.   
+        
+        Args:
+            taxon (:obj:`list`): list of taxon ncbi ID
+        
+        Returns:
+            :obj:`list`: files that meet the requirement 
+        """
+        result = []
+        if collation is None:
+            collation = self.collation
+        query = {'ncbi_id': {'$in': taxon}}
         projection = projection
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:

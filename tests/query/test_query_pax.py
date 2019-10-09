@@ -50,3 +50,8 @@ class TestQueryPax(unittest.TestCase):
         self.assertEqual(
             result[0]['publication'],
             'http://www.nature.com/nmeth/journal/v8/n10/full/nmeth.1699.html')
+
+    def test_get_file_by_ncbi_id(self):
+        taxon = [9606]
+        result = self.src.get_file_by_ncbi_id(taxon)    
+        self.assertEqual(len(result), 170)
