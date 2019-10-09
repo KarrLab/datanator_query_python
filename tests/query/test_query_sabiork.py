@@ -71,10 +71,10 @@ class TestQuerySabio(unittest.TestCase):
         self.assertTrue(31 in result_1)
         self.assertTrue(len(result) <= len(result_1))
 
-    def test_get_h1_hesc_kinlaw(self):
+    def test_get_kinlaw_by_environment(self):
         ph_range = [6, 8]
         temp_range = [24, 26]
         name_space = {'ec-code': '3.4.21.62'}
         observed_type = [25, 27]
-        result = self.src.get_h1_hesc_kinlaw(ph_range, temp_range, name_space, observed_type)
+        result = self.src.get_kinlaw_by_environment(ph_range, temp_range, name_space, observed_type)
         self.assertTrue(len(result) == 66)

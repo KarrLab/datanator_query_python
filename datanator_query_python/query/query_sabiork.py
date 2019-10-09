@@ -222,9 +222,9 @@ class QuerySabio(query_nosql.DataQuery):
 
         return result
 
-    def get_h1_hesc_kinlaw(self, ph_range: list, temp_range: list,
+    def get_kinlaw_by_environment(self, ph_range: list, temp_range: list,
                           name_space: dict, observed_type: list, projection={'_id': 0}):
-        """get kinlaw info for h1_hesc
+        """get kinlaw info based on experimental conditions
         
         Args:
             ph_range (list): range of pH
