@@ -43,7 +43,7 @@ class QueryPax(query_nosql.DataQuery):
             Get all abundance data for uniprot_id
 
             Args:
-                uniprot_id (:obj:`str`) protein uniprot_id.
+                uniprot_id (:obj:`str`): protein uniprot_id.
 
             Returns:
                 result (:obj:`list` of :obj:`dict`): result containing
