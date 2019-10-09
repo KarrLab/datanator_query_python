@@ -10,6 +10,21 @@ class QueryPax(query_nosql.DataQuery):
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='datanator',
                  collection_str='pax', verbose=False, max_entries=float('inf'), username=None,
                  password=None, authSource='admin', readPreference='primary'):
+        """Instantiating query_pax
+        
+        Args:
+            cache_dirname (str, optional): temparory cache director. Defaults to None.
+            MongoDB (str, optional): mongodb server address. Defaults to None.
+            replicaSet (str, optional): name of mongodb replicaset. Defaults to None.
+            db (str, optional): name of database in which pax collection resides. Defaults to 'datanator'.
+            collection_str (str, optional): name of collection. Defaults to 'pax'.
+            verbose (bool, optional): display verbose messages. Defaults to False.
+            max_entries (float, optional): max number of operations, mainly used for tests. Defaults to float('inf').
+            username (str, optional): db authentication username. Defaults to None.
+            password (str, optional): db authentication password. Defaults to None.
+            authSource (str, optional): authentication database. Defaults to 'admin'.
+            readPreference (str, optional): mongodb readpreference. Defaults to 'primary'.
+        """
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                                                     replicaSet=replicaSet, db=db,
                                                     verbose=verbose, max_entries=max_entries, username=username,
