@@ -16,12 +16,13 @@ class QueryKO:
             'kegg_orthology_new')
 
     def get_ko_by_name(self, name):
-        '''
-        Get a gene's ko number by its gene name
-            Args:
-                    name: (:obj:`str`): gene name
-            Returns:
-                    result: (:obj:`str`): ko number of the gene
+        '''Get a gene's ko number by its gene name
+
+        Args:
+            name: (:obj:`str`): gene name
+                
+        Returns:
+            result: (:obj:`str`): ko number of the gene
         '''
         query = {'gene_name': name}
         projection = {'gene_name': 1, 'kegg_orthology_id': 1}
@@ -32,3 +33,18 @@ class QueryKO:
         	return docs['kegg_orthology_id']
         else:
         	return None
+
+    def get_def_by_kegg_id(self, kegg_id):
+        """Get kegg definition by kegg id
+        
+        Args:
+            kegg_id (:obj:`str`): kegg orthology
+
+        Returns:
+            (:obj:`list` of :obj:`str`): list of kegg orthology definitions
+        """
+        query = {'kegg_orthology_id': kegg_id}
+        projection = {'definition.name': 1, '_id': 0}
+        doc = self.collection.find_one(filter=query, projection=projection)
+        definitions = doc['definition']['name']
+        return definitions
