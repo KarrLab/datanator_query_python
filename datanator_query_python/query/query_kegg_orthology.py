@@ -46,5 +46,7 @@ class QueryKO:
         query = {'kegg_orthology_id': kegg_id}
         projection = {'definition.name': 1, '_id': 0}
         doc = self.collection.find_one(filter=query, projection=projection)
+        if doc is None:
+            return [None]
         definitions = doc['definition']['name']
         return definitions

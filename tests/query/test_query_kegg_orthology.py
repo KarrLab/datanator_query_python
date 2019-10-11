@@ -39,3 +39,5 @@ class TestQueryKO(unittest.TestCase):
     def test_get_def_by_ko(self):
         result_0 = self.src.get_def_by_kegg_id('K00015')
         self.assertTrue('glyoxylate reductase' in result_0)
+        result_1 = self.src.get_def_by_kegg_id('somenonsense')
+        self.assertEqual([None], result_1)
