@@ -92,4 +92,4 @@ class TestQuerySabio(unittest.TestCase):
 
         result = self.src.get_kinlaw_by_environment(
             taxon, [True], ph_range, temp_range, {}, observed_type)
-        self.assertEqual(len(result), 1369)
+        self.assertEqual(len(result), 1393)
