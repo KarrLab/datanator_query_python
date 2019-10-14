@@ -59,9 +59,22 @@ class TestQueryPax(unittest.TestCase):
     def test_get_file_by_quality(self):
         organ_0 = 'CELL_LINE'
         tmp = []
-        docs, count = self.src.get_file_by_quality(organ_0, score=0, coverage=0)
-        print(count)
+        docs, count = self.src.get_file_by_quality(organ_0, score=0, coverage=0,projection={'_id': 0, 'observation': 0})
         for doc in docs:
             tmp.append(doc)
         self.assertEqual(len(tmp), count)
         self.assertEqual(count, 60)
+
+    def test_get_file_by_publication(self):
+        pub_0 = "http://www.nature.com/nmeth/journal/v8/n10/full/nmeth.1699.html"
+        docs, count = self.src.get_file_by_publication(pub_0, projection={'_id': 0, 'observation': 0})
+        tmp = []
+        for doc in docs:
+            tmp.append(doc)
+        self.assertEqual(len(tmp), count)
+        pub_1 = "http://www.mcponline.org/cgi/doi/10.1074/mcp.M111.014050"
+        docs, count = self.src.get_file_by_publication(pub_1, projection={'_id': 0, 'observation': 0})
+        tmp = []
+        for doc in docs:
+            tmp.append(doc)
+        self.assertEqual(len(tmp), count)

@@ -129,8 +129,7 @@ class QueryPax(query_nosql.DataQuery):
         return result
 
     def get_file_by_quality(self, organ, score=4.0, coverage=20, ncbi_id=None,
-                            projection={'_id': 0, 'observation': 1, 'score': 1,
-                            'coverage': 1}):
+                            projection={'_id': 0, 'weight': 0}):
         """Get 'organ's' paxdb file by quality of data
         
         Args:
@@ -138,7 +137,7 @@ class QueryPax(query_nosql.DataQuery):
             score (:obj:`float`, optional): paxdb data quality score. Defaults to 4.0.
             coverage (:obj:`int`, optional): paxdb data coverage. Defaults to 20.
             ncbi_id (:obj:`int`, optional): ncbi taxonomy id of organism. Defaults to None.
-            projection (:obj:`dict`, optional): mongodb query projection.
+            projection (:obj:`dict`, optional): mongodb query projection. Defaults to {'_id': 0, 'weight': 0}
 
         Returns:
             (:obj:`tuple`): tuple containing:
@@ -153,6 +152,23 @@ class QueryPax(query_nosql.DataQuery):
         else:
             constraint_3 = {'ncbi_id': {'$exists': True}}
         query = {'$and': [constraint_0, constraint_1, constraint_2, constraint_3]}
+        docs = self.collection.find(filter=query, projection=projection)
+        count = self.collection.count_documents(query)
+        return docs, count
+
+    def get_file_by_publication(self, publication, projection={'_id': 0}):
+        """Get documents by publication
+        
+        Args:
+            publication (:obj:`str`): URL of publication
+            projection (:obj:`dict`, optional): mongodb query projection. Defaults to {'_id': 0}.
+
+        Returns:
+            (:obj:`tuple`): tuple containing:
+                docs (:obj:`Interator`): mongodb docs interator;
+                count (:obj:`int`): total number of documents that meet the query conditions.
+        """
+        query = {'publication': publication}
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
         return docs, count
