@@ -25,10 +25,12 @@ class QueryProtein:
     def get_meta_by_id(self, _id):
         '''
             Get protein's metadata given uniprot id
+
             Args:
-                _id (:obj:`list` of :obj:`str`): list of uniprot id
+                _id (:obj:`list` of :obj:`str`): list of uniprot id.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of information
+                (:obj:`list` of :obj:`dict`): list of information.
         '''
         result = []
         query = {'uniprot_id': {'$in': _id}}
@@ -57,11 +59,13 @@ class QueryProtein:
         '''
             Get protein's metadata given protein name
             and its ncbi taxonomy ID
+
             Args:
-                name (:obj:`str`): protein's complete/partial name
-                taxon_id (:obj:`int`): protein's ncbi taxonomy id  
+                name (:obj:`str`): protein's complete/partial name.
+                taxon_id (:obj:`int`): protein's ncbi taxonomy id.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): protein's metadata
+                (:obj:`list` of :obj:`dict`): protein's metadata.
         '''
         result = []
         expression = "\"" + name + "\""
@@ -78,11 +82,13 @@ class QueryProtein:
         '''
             Get protein metadata by protein name and the 
             name of the species the protein resides
+
             Args:
                 protein_name (:obj:`str`): name of the protein
                 species_name (:obj:`str`): complete/partial name of the organism
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): protein's metadata
+                (:obj:`list` of :obj:`dict`): protein's metadata
         '''
         result = []
         taxon_ids = self.taxon_manager.get_ids_by_name(species_name)
@@ -98,12 +104,14 @@ class QueryProtein:
 
     def get_id_by_name(self, name):
         '''
-            Get proteins whose name contains string 'name'
+            Get proteins whose name contains string 'name'.
+
             Args:
-                name (:obj:`str`): complete/incomplete protein name
+                name (:obj:`str`): complete/incomplete protein name.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of dictionary containing 
-                protein's uniprot_id and name
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                protein's uniprot_id and name.
         '''
         result = []
         expression = "\"" + name + "\""
@@ -120,14 +128,16 @@ class QueryProtein:
 
     def get_info_by_text(self, name):
         '''
-            Get proteins whose name or kegg name contains string 'name'
+            Get proteins whose name or kegg name contains string 'name'.
+
             Args:
-                name (:obj:`str`): complete/incomplete protein name
+                name (:obj:`str`): complete/incomplete protein name.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
                 protein's uniprot_id and kegg information
                 [{'ko_number': ... 'ko_name': ... 'uniprot_ids': []},
-                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}].
         '''
         result = []
         expression = "\"" + name + "\""
@@ -149,14 +159,16 @@ class QueryProtein:
 
     def get_info_by_text_abundances(self, name):
         '''
-            Get proteins whose name or kegg name contains string 'name'
+            Get proteins whose name or kegg name contains string 'name'.
+
             Args:
-                name (:obj:`str`): complete/incomplete protein name
+                name (:obj:`str`): complete/incomplete protein name.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
                 protein's uniprot_id and kegg information
                 [{'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}}, # 0: has abundances info, 1: no abundances infor
-                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}}]
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}}].
         '''
         result = []
         expression = "\"" + name + "\""
@@ -179,14 +191,16 @@ class QueryProtein:
 
     def get_info_by_taxonid(self, _id):
         '''
-            Get proteins whose name or kegg name contains string 'name'
+            Get proteins whose name or kegg name contains string 'name'.
+
             Args:
-                _id (:obj:`int`): ncbi taxonomy id
+                _id (:obj:`int`): ncbi taxonomy id.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
                 protein's uniprot_id and kegg information
                 [{'ko_number': ... 'ko_name': ... 'uniprot_ids': []},
-                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}].
         '''
         result = []
         query = {'ncbi_taxonomy_id': _id}
@@ -207,14 +221,16 @@ class QueryProtein:
 
     def get_info_by_taxonid_abundance(self, _id):
         '''
-            Get proteins whose name or kegg name contains string 'name'
+            Get proteins whose name or kegg name contains string 'name'.
+
             Args:
-                _id (:obj:`int`): ncbi taxonomy id
+                _id (:obj:`int`): ncbi taxonomy id.
+
             Returns:
                 result (:obj:`list` of :obj:`dict`): list of dictionary containing 
                 protein's uniprot_id and kegg information
                 [{'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}},
-                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}}]
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {'id0': 0, 'id1': 1, 'id2': 0}}].
         '''
         result = []
         query = {'ncbi_taxonomy_id': _id}
@@ -236,14 +252,16 @@ class QueryProtein:
 
     def get_info_by_ko(self, ko):
         '''
-            Find all proteins with the same kegg orthology id
+            Find all proteins with the same kegg orthology id.
+
             Args:
-                ko (:obj:`str`): kegg orthology ID
+                ko (:obj:`str`): kegg orthology ID.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
                 protein's uniprot_id and kegg information
                 [{'ko_number': ... 'ko_name': ... 'uniprot_ids': []},
-                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}]
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': []}].
         '''
         ko = ko.upper()
         result = [{'ko_number': ko, 'uniprot_ids': []}]
@@ -258,14 +276,16 @@ class QueryProtein:
 
     def get_info_by_ko_abundance(self, ko):
         '''
-            Find all proteins with the same kegg orthology id
+            Find all proteins with the same kegg orthology id.
+
             Args:
-                ko (:obj:`str`): kegg orthology ID
+                ko (:obj:`str`): kegg orthology ID.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
                 protein's uniprot_id and kegg information
                 [{'ko_number': ... 'ko_name': ... 'uniprot_ids': {}},
-                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {}}]
+                 {'ko_number': ... 'ko_name': ... 'uniprot_ids': {}}].
         '''
         ko = ko.upper()
         result = [{'ko_number': ko, 'uniprot_ids': {}}]
@@ -281,11 +301,13 @@ class QueryProtein:
 
     def get_kinlaw_by_id(self, _id):
         '''
-            Get protein kinetic law information by uniprot_id
+            Get protein kinetic law information by uniprot_id.
+
             Args:
-                _id (:obj:`list` of :obj:`str`): list of uniprot IDs
+                _id (:obj:`list` of :obj:`str`): list of uniprot IDs.
+
             Returns:
-                result (:obj:`list` of `dict`): list of kinlaw information
+                (:obj:`list` of `dict`): list of kinlaw information.
         '''
         result = []
         query = {'uniprot_id': {'$in': _id}}
@@ -298,11 +320,13 @@ class QueryProtein:
 
     def get_kinlaw_by_name(self, name):
         '''
-        Get protein kinetic law information by protein name
+        Get protein kinetic law information by protein name.
+
         Args:
-            _id: (:obj:`str`): protein's name
+            _id: (:obj:`str`): protein's name.
+
         Returns:
-            result (:obj:`list` of :obj:`dict`): information
+            (:obj:`list` of :obj:`dict`): information.
         '''
         entries = self.get_id_by_name(name)
         _ids = []
@@ -313,11 +337,13 @@ class QueryProtein:
 
     def get_abundance_by_id(self, _id):
         '''
-        	Get protein abundance information by uniprot_id
+        	Get protein abundance information by uniprot_id.
+
         	Args:
-				id (:obj:`list` of :obj:`str`): list of uniprot_id
+				id (:obj:`list` of :obj:`str`): list of uniprot_id.
+
 			Returns:
-				result (:obj:`list` of `dict`): list of abundance information
+				(:obj:`list` of `dict`): list of abundance information.
         '''
         result = []
         query = {'$and': [{'uniprot_id': {'$in': _id}}, {'abundances': {'$exists': True}}]}
@@ -333,11 +359,13 @@ class QueryProtein:
 
     def get_abundance_by_taxon(self, _id):
         '''
-            Get protein abundance information in one species
+            Get protein abundance information in one species.
+
             Args:
-                id (:obj:`str`): taxonomy id
+                id (:obj:`str`): taxonomy id.
+
             Returns:
-                result (:obj:`list` of `dict`): list of abundance information
+                (:obj:`list` of `dict`): list of abundance information
         '''
         result = []
         query = {'ncbi_taxonomy_id': _id}
@@ -351,13 +379,15 @@ class QueryProtein:
     def get_proximity_abundance_taxon(self, _id, max_distance=3):
         '''
         	Get replacement abundance value by taxonomic distance
-        	with the same kegg_orthology number
+        	with the same kegg_orthology number.
+
             Args:
                 _id (:obj:`str`): uniprot_id to query for
                 max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
-                                            proteins in results
+                                            proteins in results.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+                (:obj:`list` of :obj:`dict`): list of result proteins and their info 
                     [{'distance': 1, 'documents': [{}, {}, {} ...]}, 
                      {'distance': 2, 'documents': [{}, {}, {} ...]}, ...]
         '''
@@ -407,16 +437,18 @@ class QueryProtein:
     def get_equivalent_protein(self, _id, max_distance, max_depth=float('inf')):
         '''
             Get replacement abundance value by taxonomic distance
-            with the same kegg_orthology number
+            with the same kegg_orthology number.
+
             Args:
-                _id (:obj:`str`): uniprot_id to query for
+                _id (:obj:`str`): uniprot_id to query for.
                 max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
-                                            proteins in results
-                max_depth (:obj:`int`) max depth allowed from the common node
+                                            proteins in results.
+                max_depth (:obj:`int`) max depth allowed from the common node.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+                (:obj:`list` of :obj:`dict`): list of result proteins and their info 
                     [{'distance': 1, 'documents': [{}, {}, {} ...]}, 
-                     {'distance': 2, 'documents': [{}, {}, {} ...]}, ...]
+                     {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
         '''
 
         if max_distance <= 0:
@@ -470,17 +502,19 @@ class QueryProtein:
     def get_equivalent_protein_with_anchor(self, _id, max_distance, max_depth=float('inf')):
         '''
             Get replacement abundance value by taxonomic distance
-            with the same kegg_orthology number
+            with the same kegg_orthology number.
+
             Args:
-                _id (:obj:`str`): uniprot_id to query for
+                _id (:obj:`str`): uniprot_id to query for.
                 max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
-                                            proteins in results
-                max_depth (:obj:`int`) max depth allowed from the common node
+                                            proteins in results.
+                max_depth (:obj:`int`) max depth allowed from the common node.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+                (:obj:`list` of :obj:`dict`): list of result proteins and their info 
                     [{'distance': 0, 'documents': [{}]}
                      {'distance': 1, 'documents': [{}, {}, {} ...]}, 
-                     {'distance': 2, 'documents': [{}, {}, {} ...]}, ...]
+                     {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
         '''
 
         if max_distance <= 0:
@@ -560,11 +594,13 @@ class QueryProtein:
 
     def get_uniprot_by_ko(self, ko):
         '''
-            Find all proteins with the same kegg orthology id
+            Find all proteins with the same kegg orthology id.
+
             Args:
-                ko (:obj:`str`): kegg orthology ID
+                ko (:obj:`str`): kegg orthology ID.
+
             Return:
-                result (:obj:`list` of :obj:`str`): list of uniprot_id
+                (:obj:`list` of :obj:`str`): list of uniprot_id.
         '''
         ko = ko.upper()
         result = []
@@ -588,14 +624,15 @@ class QueryProtein:
 
 
     def get_abundance_with_same_ko(self, _id):
-        '''
-            Find abundance information for protein with the same
-            KO number
+        '''Find abundance information for protein with the same
+            KO number.
+
             Args:
-                _id (:obj:`str`): uniprot ID
+                _id (:obj:`str`): uniprot ID.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): information
-                [{'uniprot_id': , 'abundances': }, {},...,{}]
+                (:obj:`list` of :obj:`dict`): information
+                [{'uniprot_id': , 'abundances': }, {},...,{}].
         '''
 
         query = {'uniprot_id': _id}
@@ -619,12 +656,14 @@ class QueryProtein:
 
     def get_abundance_by_ko(self, ko):
         ''' Get abundance information of proteins with
-            the same KO
+            the same KO.
+
             Args:
-                ko (:obj:`str`): KO number
+                ko (:obj:`str`): KO number.
+
             Returns:
-                result (:obj:`list` of :obj:`dict`): information
-                [{'uniprot_id': , 'abundances': }, {},...,{}]                
+                (:obj:`list` of :obj:`dict`): information
+                [{'uniprot_id': , 'abundances': }, {},...,{}].             
         '''
         query = {'$and': [{'ko_number': ko.upper()}, {'abundances': {'$exists': True} }]}
         projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
@@ -635,3 +674,22 @@ class QueryProtein:
         for doc in docs:
             result.append(doc)
         return result
+    
+    def get_kegg_orthology(self, uniprot_id):
+        """Get protein's kegg orthology number given uniprot id.
+        
+        Args:
+            uniprot_id (:obj:`str`): protein's uniprot id.
+
+        Returns:
+            (:obj:`tuple`): tuple containing:
+                (:obj:`str`): kegg orthology id;
+                (:obj:`list` of :obj:`str`): list of kegg orthology descriptions.
+        """
+        query = {'uniprot_id': uniprot_id}
+        projection = {'_id': 0, 'ko_number': 1, 'ko_name': 1}
+        doc = self.collection.find_one(filter=query, projection=projection)
+        if doc is not None:
+            return doc.get('ko_number'), doc.get('ko_name', [])
+        else:
+            return None, []

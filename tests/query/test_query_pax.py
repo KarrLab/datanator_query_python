@@ -55,3 +55,13 @@ class TestQueryPax(unittest.TestCase):
         taxon = [9606]
         result = self.src.get_file_by_ncbi_id(taxon)    
         self.assertEqual(len(result), 170)
+
+    def test_get_file_by_quality(self):
+        organ_0 = 'CELL_LINE'
+        tmp = []
+        docs, count = self.src.get_file_by_quality(organ_0, score=0, coverage=0)
+        print(count)
+        for doc in docs:
+            tmp.append(doc)
+        self.assertEqual(len(tmp), count)
+        self.assertEqual(count, 60)

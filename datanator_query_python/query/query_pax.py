@@ -127,3 +127,32 @@ class QueryPax(query_nosql.DataQuery):
         for doc in docs:
             result.append(doc)
         return result
+
+    def get_file_by_quality(self, organ, score=4.0, coverage=20, ncbi_id=None,
+                            projection={'_id': 0, 'observation': 1, 'score': 1,
+                            'coverage': 1}):
+        """Get 'organ's' paxdb file by quality of data
+        
+        Args:
+            organ (:obj:`str`): organ type in paxdb, e.g. WHOLE_ORGANISM, CELL_LINE, etc
+            score (:obj:`float`, optional): paxdb data quality score. Defaults to 4.0.
+            coverage (:obj:`int`, optional): paxdb data coverage. Defaults to 20.
+            ncbi_id (:obj:`int`, optional): ncbi taxonomy id of organism. Defaults to None.
+            projection (:obj:`dict`, optional): mongodb query projection.
+
+        Returns:
+            (:obj:`tuple`): tuple containing:
+                docs (:obj:`Interator`): mongodb docs interator;
+                count (:obj:`int`): total number of documents that meet the query conditions.
+        """
+        constraint_0 = {'organ': organ}
+        constraint_1 = {'score': {'$gte': score}}
+        constraint_2 = {'coverage': {'$gte': coverage}}
+        if ncbi_id is not None:
+            constraint_3 = {'ncbi_id': ncbi_id}
+        else:
+            constraint_3 = {'ncbi_id': {'$exists': True}}
+        query = {'$and': [constraint_0, constraint_1, constraint_2, constraint_3]}
+        docs = self.collection.find(filter=query, projection=projection)
+        count = self.collection.count_documents(query)
+        return docs, count

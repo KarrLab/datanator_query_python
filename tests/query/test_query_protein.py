@@ -233,3 +233,12 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(result_1, [])
         result_2 = self.src.get_abundance_by_ko('MOCK_5')
         self.assertEqual(result_2, [])
+
+    def test_get_kegg_orthology(self):
+        uniprot_id_0 = 'uniprot0'
+        ko_number_0, ko_name_0 = self.src.get_kegg_orthology(uniprot_id_0)
+        self.assertEqual(ko_name_0, ['KO0 name'])
+        uniprot_id_1 = 'aldfja;lfj;'
+        ko_number_1, ko_name_1 = self.src.get_kegg_orthology(uniprot_id_1)
+        self.assertEqual(ko_number_1, None)
+        self.assertEqual(ko_name_1, [])
