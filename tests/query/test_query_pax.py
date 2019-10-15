@@ -78,3 +78,11 @@ class TestQueryPax(unittest.TestCase):
         for doc in docs:
             tmp.append(doc)
         self.assertEqual(len(tmp), count)
+
+    def test_get_file_by_organ(self):
+        organ_0 = 'CELL_LINE'
+        docs, count = self.src.get_file_by_organ(organ_0, projection={'_id': 0, 'observation': 0})
+        tmp = []
+        for doc in docs:
+            tmp.append(doc)
+        self.assertEqual(len(tmp), count)        

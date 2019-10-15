@@ -172,3 +172,20 @@ class QueryPax(query_nosql.DataQuery):
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
         return docs, count
+
+    def get_file_by_organ(self, organ, projection={'_id': 0}):
+        """Get documents by organ
+        
+        Args:
+            organ (:obj:`str`): organ type in paxdb
+            projection (dict, optional): mongodb query projection. Defaults to {'_id': 0}.
+
+        Returns:
+            (:obj:`tuple`): tuple containing:
+                docs (:obj:`Interator`): mongodb docs interator;
+                count (:obj:`int`): total number of documents that meet the query conditions.
+        """
+        query = {'organ': organ}
+        docs = self.collection.find(filter=query, projection=projection)
+        count = self.collection.count_documents(query)
+        return docs, count
