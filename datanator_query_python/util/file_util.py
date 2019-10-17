@@ -38,7 +38,7 @@ class FileUtil:
         '''
         result = []
         for dic in dict_list:
-            result.append(dic.get(key, 'no such key'))
+            result.append(dic.get(key, ''))
         return result
 
 

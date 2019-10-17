@@ -25,6 +25,7 @@ class TestQuerySabio(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dirname)
+        cls.src.client.close()
     
     def test_get_reaction_doc(self):
         _id = [31, 32]
@@ -63,12 +64,11 @@ class TestQuerySabio(unittest.TestCase):
         substrates = ["2-Hydroxybutyrate", "Riboflavin-5-phosphate"]
         products = ['2-Oxobutyrate', 'Reduced FMN']
         result = self.src.get_kinlawid_by_name(substrates, products)
-        self.assertTrue(31 in result)
+        self.assertTrue(42 in result)
         self.assertTrue(33 not in result)
         substrates_1 = ["2-Hydroxybutyrate", "Riboflavin-5-phosphate"]
-        products_1 = None
         result_1 = self.src.get_kinlawid_by_name(substrates_1, products_1)
-        self.assertTrue(31 in result_1)
+        print(result_1)
         self.assertTrue(len(result) <= len(result_1))
 
     def test_get_kinlaw_by_environment(self):
@@ -84,12 +84,12 @@ class TestQuerySabio(unittest.TestCase):
         
         result = self.src.get_kinlaw_by_environment(
             [], taxon_wildtype, ph_range, temp_range, name_space, observed_type)
-        self.assertEqual(len(result), 66)
+        self.assertEqual(len(result), 37)
         
         result = self.src.get_kinlaw_by_environment(
             [], [True], ph_range, temp_range, name_space, observed_type)
-        self.assertEqual(len(result), 56)
+        self.assertEqual(len(result), 34)
 
         result = self.src.get_kinlaw_by_environment(
             taxon, [True], ph_range, temp_range, {}, observed_type)
-        self.assertEqual(len(result), 1393)
+        self.assertEqual(len(result), 491)
