@@ -59,11 +59,6 @@ class QuerySabioOld(query_nosql.DataQuery):
         
         return docs, count
 
-    def get_kinlaw_by_rxn(self):
-        '''Place holder 
-        '''
-        pass
-
     def get_reaction_doc(self, kinlaw_id, projection={'_id': 0}):
         '''Find a document on reaction with the kinlaw_id
         Args:
@@ -79,3 +74,27 @@ class QuerySabioOld(query_nosql.DataQuery):
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
         return docs, count
+
+    def get_kinlawid_by_rxn(self, substrates, products):
+        ''' Find the kinlaw_id defined in sabio_rk using 
+            rxn participants' inchi string
+
+            Args:
+                substrates: list of substrates' inchi
+                products: list of products' inchi
+
+            Return:
+                rxns: list of kinlaw_ids that satisfy the condition
+                [id0, id1, id2,...,  ]
+        '''
+        result = []
+        substrate = 'reaction_participant.substrate.substrate_structure.inchi_structure'
+        product = 'reaction_participant.product.product_structure.inchi_structure'
+        projection = {'kinlaw_id': 1, '_id': 0}
+        constraint_0 = {substrate: {'$in': substrates}}
+        constraint_1 = {product: {'$in': products}}
+        query = {'$and': [constraint_0, constraint_1]}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc['kinlaw_id'])
+        return result

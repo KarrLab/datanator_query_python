@@ -56,3 +56,11 @@ class TestQuerySabioOld(unittest.TestCase):
         result, count = self.src.get_reaction_doc(_id)
         self.assertEqual(count, 2)
         self.assertTrue('kinlaw_id' in result[0])
+
+    def test_get_kinlawid_by_rxn(self):
+        substrate_0 = 'InChI=1S/C21H28N7O17P3/c22-17-12-19(25-7-24-17)28(8-26-12)21-16(44-46(33,34)35)14(30)11(43-21)6-41-48(38,39)45-47(36,37)40-5-10-13(29)15(31)20(42-10)27-3-1-2-9(4-27)18(23)32/h1-4,7-8,10-11,13-16,20-21,29-31H,5-6H2,(H7-,22,23,24,25,32,33,34,35,36,37,38,39)/t10-,11-,13-,14-,15-,16-,20-,21-/m1/s1'
+        substrate_1 = 'InChI=1S/C6H8O7/c7-3(8)1-2(5(10)11)4(9)6(12)13/h2,4,9H,1H2,(H,7,8)(H,10,11)(H,12,13)'
+        product_0 = 'InChI=1S/C5H6O5/c6-3(5(9)10)1-2-4(7)8/h1-2H2,(H,7,8)(H,9,10)'
+        product_1 = 'InChI=1S/CO2/c2-1-3'
+        result = self.src.get_kinlawid_by_rxn([substrate_0, substrate_1], [product_0, product_1])
+        self.assertTrue(7923 in result)
