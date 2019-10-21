@@ -35,17 +35,17 @@ class TestQuerySabioOld(unittest.TestCase):
         temp_range = [24, 26]
         name_space = {'ec-code': '3.4.21.62'}
         observed_type = [25, 27]
-        result = self.src.get_kinlaw_by_environment(
+        result, _ = self.src.get_kinlaw_by_environment(
             taxon, taxon_wildtype, ph_range, temp_range, name_space, observed_type)
         self.assertTrue(sorted([i['kinlaw_id'] for i in result]), [47807, 47808, 47809])
         
-        result = self.src.get_kinlaw_by_environment(
+        result, count = self.src.get_kinlaw_by_environment(
             [], taxon_wildtype, ph_range, temp_range, name_space, observed_type)
-        self.assertEqual(len(result), 37)
+        self.assertEqual(count, 37)
         
-        result = self.src.get_kinlaw_by_environment(
+        result, count = self.src.get_kinlaw_by_environment(
             [], [True], ph_range, temp_range, name_space, observed_type)
-        self.assertEqual(len(result), 34)
+        self.assertEqual(count, 34)
 
         result = self.src.get_kinlaw_by_environment(
             taxon, [True], ph_range, temp_range, {}, observed_type)

@@ -44,7 +44,7 @@ class TestFileUtil(unittest.TestCase):
             {'a':100, 'b': 200, 'd':300}]
         key = 'c'
         result = self.src.get_val_from_dict_list(dict_list, key)
-        self.assertEqual(result, [3, 30, ''])
+        self.assertEqual(result, [3, 30])
 
     # @unittest.skip('passed')
     def test_unpack_list(self):

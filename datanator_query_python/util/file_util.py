@@ -38,7 +38,10 @@ class FileUtil:
         '''
         result = []
         for dic in dict_list:
-            result.append(dic.get(key, ''))
+            if dic.get(key) is not None:
+                 result.append(dic.get(key))
+            else:
+                continue
         return result
 
 

@@ -7,7 +7,7 @@ class QuerySabio(query_nosql.DataQuery):
     '''
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='datanator',
-                 collection_str='sabio_rk_new', verbose=False, max_entries=float('inf'), username=None,
+                 collection_str='sabio_rk', verbose=False, max_entries=float('inf'), username=None,
                  password=None, authSource='admin'):
         self.max_entries = max_entries
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
@@ -37,8 +37,10 @@ class QuerySabio(query_nosql.DataQuery):
 
     def find_reaction_participants(self, kinlaw_id):
         ''' Find the reaction participants defined in sabio_rk using kinetic law id
+        
             Args:
                 kinlaw_id (:obj:`list` of :obj:`int`) list of kinlaw_id to search for
+
             Return:
                 rxns (:obj:`list` of :obj:`dict`) list of dictionaries containing names of reaction participants
                 [{'substrates': [], 'products': [] }, ... {} ]

@@ -67,7 +67,7 @@ class TestQuerySabio(unittest.TestCase):
         self.assertTrue(42 in result)
         self.assertTrue(33 not in result)
         substrates_1 = ["2-Hydroxybutyrate", "Riboflavin-5-phosphate"]
-        result_1 = self.src.get_kinlawid_by_name(substrates_1, products_1)
+        result_1 = self.src.get_kinlawid_by_name(substrates_1, products)
         print(result_1)
         self.assertTrue(len(result) <= len(result_1))
 
@@ -84,12 +84,12 @@ class TestQuerySabio(unittest.TestCase):
         
         result = self.src.get_kinlaw_by_environment(
             [], taxon_wildtype, ph_range, temp_range, name_space, observed_type)
-        self.assertEqual(len(result), 37)
+        self.assertEqual(len(result), 50)
         
         result = self.src.get_kinlaw_by_environment(
             [], [True], ph_range, temp_range, name_space, observed_type)
-        self.assertEqual(len(result), 34)
+        self.assertEqual(len(result), 41)
 
         result = self.src.get_kinlaw_by_environment(
             taxon, [True], ph_range, temp_range, {}, observed_type)
-        self.assertEqual(len(result), 491)
+        self.assertEqual(len(result), 1040)
