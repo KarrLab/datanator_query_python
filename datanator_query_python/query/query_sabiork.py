@@ -7,7 +7,7 @@ class QuerySabio(query_nosql.DataQuery):
     '''
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='datanator',
-                 collection_str='sabio_rk', verbose=False, max_entries=float('inf'), username=None,
+                 collection_str='sabio_rk_new', verbose=False, max_entries=float('inf'), username=None,
                  password=None, authSource='admin'):
         self.max_entries = max_entries
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
@@ -61,7 +61,7 @@ class QuerySabio(query_nosql.DataQuery):
             substrates = self.file_manager.get_val_from_dict_list(doc.get('reactants',), 'name')
             products = self.file_manager.get_val_from_dict_list(doc.get('products',), 'name')
 
-            rxn = {'substrates': substrates[:-1], 'products': products[:-1]}
+            rxn = {'substrates': substrates, 'products': products}
 
             rxns.append(rxn)
             i += 1
@@ -180,16 +180,14 @@ class QuerySabio(query_nosql.DataQuery):
                     [id0, id1, id2,...,  ]
             '''
             substrates = 'reactants.name'
-            sub_syn = 'reactants.synonyms'
             products = 'products.name'
-            pro_syn = 'products.synonyms'
             projection = {'kinlaw_id': 1, '_id': 0}
 
             id_tally = []
             if side == 'substrate':
                 for name in compounds:
                     ids = []
-                    query = {'$or': [{substrates: name}, {sub_syn: name}]}
+                    query = {substrates: name}
                     cursor = self.collection.find(
                         filter=query, projection=projection, collation=collation)
                     for doc in cursor:
@@ -201,7 +199,7 @@ class QuerySabio(query_nosql.DataQuery):
 
                 for name in compounds:
                     ids = []
-                    query = {'$or': [{products: name}, {pro_syn: name}]}
+                    query = {products: name}
                     cursor = self.collection.find(
                         filter=query, projection=projection, collation=collation)
                     for doc in cursor:
@@ -219,7 +217,7 @@ class QuerySabio(query_nosql.DataQuery):
             pro_id = self.collection.distinct('kinlaw_id')
         else:
             pro_id = get_kinlawid(products, side='product')
-
+            
         result = list(set(sub_id) & set(pro_id))
 
         return result
@@ -243,11 +241,11 @@ class QuerySabio(query_nosql.DataQuery):
         all_constraints = []
         if taxon:
             all_constraints.append({'taxon': {'$in': taxon}})
-        if taxon_wildtype:
+        if taxon_wildtype:    
             all_constraints.append({'taxon_wildtype': {'$in': taxon_wildtype}})
         if ph_range:
             all_constraints.append({'ph': {'$gte': ph_range[0], '$lte': ph_range[1]}})
-        if temp_range:
+        if temp_range:    
             all_constraints.append({'temperature': {'$gte': temp_range[0], '$lte': temp_range[1]}})
         if name_space:
             key = list(name_space.keys())[0]
@@ -256,11 +254,11 @@ class QuerySabio(query_nosql.DataQuery):
             all_constraints.append({field: val})
         if observed_type:
             all_constraints.append({'parameters.observed_type': {'$in': observed_type}})
-
+        
         query = {'$and': all_constraints}
         docs = self.collection.find(filter=query, projection=projection)
         result = []
         for doc in docs:
             result.append(doc)
-
+        
         return result
