@@ -37,7 +37,7 @@ class QuerySabioOld(query_nosql.DataQuery):
             count (:obj:`int`): number of documents found 
         """
         all_constraints = []
-        taxon_wildtype = [bool(x) for x in taxon_wildtype]
+        taxon_wildtype = [int(x) for x in taxon_wildtype]
         if taxon:
             all_constraints.append({'taxon_id': {'$in': taxon}})
         if taxon_wildtype:
@@ -51,12 +51,11 @@ class QuerySabioOld(query_nosql.DataQuery):
             val = list(name_space.values())[0]
             all_constraints.append({"resource": {'$elemMatch': {'namespace': key, 'id': val}}})
         if observed_type:
-            all_constraints.append({'parameters.sbo_type': {'$in': observed_type}})
+            all_constraints.append({'parameter': {'$elemMatch': {'sbo_type': {'$in': observed_type}}}})
 
         query = {'$and': all_constraints}
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
-        
         return docs, count
 
     def get_reaction_doc(self, kinlaw_id, projection={'_id': 0}):
@@ -88,8 +87,8 @@ class QuerySabioOld(query_nosql.DataQuery):
                 [id0, id1, id2,...,  ]
         '''
         result = []
-        substrate = 'reaction_participant.substrate.substrate_structure.inchi_structure'
-        product = 'reaction_participant.product.product_structure.inchi_structure'
+        substrate = 'reaction_participant.substrate.substrate_structure.InChI_Key'
+        product = 'reaction_participant.product.product_structure.InChI_Key'
         projection = {'kinlaw_id': 1, '_id': 0}
         constraint_0 = {substrate: {'$in': substrates}}
         constraint_1 = {product: {'$in': products}}
