@@ -87,11 +87,11 @@ class QuerySabioOld(query_nosql.DataQuery):
                 [id0, id1, id2,...,  ]
         '''
         result = []
-        substrate = 'reaction_participant.substrate.substrate_structure.InChI_Key'
-        product = 'reaction_participant.product.product_structure.InChI_Key'
+        substrate = 'reaction_participant.substrate_aggregate'
+        product = 'reaction_participant.product_aggregate'
         projection = {'kinlaw_id': 1, '_id': 0}
-        constraint_0 = {substrate: {'$in': substrates}}
-        constraint_1 = {product: {'$in': products}}
+        constraint_0 = {substrate: {'$all': substrates}}
+        constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
