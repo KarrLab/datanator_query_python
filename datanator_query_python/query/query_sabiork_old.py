@@ -83,6 +83,8 @@ class QuerySabioOld(query_nosql.DataQuery):
             Args:
                 substrates: list of substrates' inchi
                 products: list of products' inchi
+                dof (:obj:`int`): degree of freedom allowed (number of parts of
+                                  inchikey to truncate). 
 
             Return:
                 rxns: list of kinlaw_ids that satisfy the condition
