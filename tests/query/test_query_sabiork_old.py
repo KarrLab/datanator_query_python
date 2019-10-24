@@ -34,22 +34,22 @@ class TestQuerySabioOld(unittest.TestCase):
         ph_range = [6, 8]
         temp_range = [24, 26]
         name_space = {'ec-code': '3.4.21.62'}
-        observed_type = [25, 27]
+        param_type = [25, 27]
         result, _ = self.src.get_kinlaw_by_environment(
-            taxon, taxon_wildtype, ph_range, temp_range, name_space, observed_type)
+            taxon, taxon_wildtype, ph_range, temp_range, name_space, param_type)
         self.assertTrue(sorted([i['kinlaw_id'] for i in result]), [47807, 47808, 47809])
 
         result, count = self.src.get_kinlaw_by_environment(
-            [], taxon_wildtype, ph_range, temp_range, name_space, observed_type)
+            [], taxon_wildtype, ph_range, temp_range, name_space, param_type)
         self.assertEqual(count, 66)
 
         result, count = self.src.get_kinlaw_by_environment(
-            [], [True], ph_range, temp_range, name_space, observed_type)
+            [], [True], ph_range, temp_range, name_space, param_type)
         self.assertEqual(count, 56)
 
         result, count = self.src.get_kinlaw_by_environment(
-            taxon, [True], ph_range, temp_range, {}, observed_type)
-        self.assertEqual(count, 1255)
+            taxon, [True], ph_range, temp_range, {}, param_type)
+        self.assertEqual(count, 1305)
 
     def test_get_reaction_doc(self):
         _id = [31, 32]
