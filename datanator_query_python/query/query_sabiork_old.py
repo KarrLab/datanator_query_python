@@ -83,10 +83,8 @@ class QuerySabioOld(query_nosql.DataQuery):
             Args:
                 substrates (:obj:`list`): list of substrates' inchikey
                 products (:obj:`list`): list of products' inchikey
-                dof (:obj:`int`, optional): if 0, the full inchikey wil be used for matching;
-                    else if 1, only the first and second part of the inchikey will be used;
-                    else, only the firts part of the inchikey will be used;
-                    the default is 0 
+                dof (:obj:`int`, optional): degree of freedom allowed (number of parts of
+                                  inchikey to truncate); the default is 0 
 
             Return:
                 rxns: list of kinlaw_ids that satisfy the condition
