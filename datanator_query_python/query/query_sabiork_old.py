@@ -1,6 +1,8 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from . import query_nosql
 import json
+import re
+
 
 class QuerySabioOld(query_nosql.DataQuery):
     '''Queries specific to sabio_rk collection
