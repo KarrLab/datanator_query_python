@@ -74,7 +74,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         count = self.collection.count_documents(query)
         return docs, count
 
-    def get_kinlawid_by_rxn(self, substrates, products, dof=1):
+    def get_kinlawid_by_rxn(self, substrates, products, dof=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchi string
 
