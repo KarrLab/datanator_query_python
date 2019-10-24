@@ -38,11 +38,11 @@ class TestQuerySabioOld(unittest.TestCase):
         result, _ = self.src.get_kinlaw_by_environment(
             taxon, taxon_wildtype, ph_range, temp_range, name_space, observed_type)
         self.assertTrue(sorted([i['kinlaw_id'] for i in result]), [47807, 47808, 47809])
-        
+
         result, count = self.src.get_kinlaw_by_environment(
             [], taxon_wildtype, ph_range, temp_range, name_space, observed_type)
         self.assertEqual(count, 66)
-        
+
         result, count = self.src.get_kinlaw_by_environment(
             [], [True], ph_range, temp_range, name_space, observed_type)
         self.assertEqual(count, 56)
@@ -64,3 +64,11 @@ class TestQuerySabioOld(unittest.TestCase):
         product_1 = 'KPGXRSRHYNQIFN-UHFFFAOYSA-N'
         result = self.src.get_kinlawid_by_rxn([substrate_0, substrate_1], [product_0, product_1])
         self.assertTrue(7923 in result)
+        substrate_2 = 'PQGCEDQWHSBAJP-TXICZTDVSA-I'
+        substrate_3 = 'GFFGJBXGBJISGV-UHFFFAOYSA-N'
+        product_2 = 'UDMBCSSLTHHNCD-KQYNXXCUSA-L'
+        product_3 = 'XPPKVPWEQAFLFU-UHFFFAOYSA-K'
+        result_1 = self.src.get_kinlawid_by_rxn([substrate_2, substrate_3],
+                                                [product_2, product_3],
+                                                dof=1)
+        self.assertTrue(15503 in result_1)

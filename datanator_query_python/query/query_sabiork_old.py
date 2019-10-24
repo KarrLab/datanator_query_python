@@ -90,6 +90,16 @@ class QuerySabioOld(query_nosql.DataQuery):
         substrate = 'reaction_participant.substrate_aggregate'
         product = 'reaction_participant.product_aggregate'
         projection = {'kinlaw_id': 1, '_id': 0}
+        if dof == 0:
+            substrates = substrates
+            products = products
+        elif dof == 1:
+            substrates = [re.compile('^' + x[:-2]) for x in substrates]
+            products = [re.compile('^' + x[:-2]) for x in products]
+        else:
+            substrates = [re.compile('^' + x[:14]) for x in substrates]
+            products = [re.compile('^' + x[:14]) for x in products]
+
         constraint_0 = {substrate: {'$all': substrates}}
         constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
