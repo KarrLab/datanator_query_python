@@ -1,6 +1,8 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from . import query_nosql
 import json
+import re
+
 
 class QuerySabioOld(query_nosql.DataQuery):
     '''Queries specific to sabio_rk collection
@@ -19,7 +21,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         self.client, self.db_obj, self.collection = self.con_db(collection_str)
 
     def get_kinlaw_by_environment(self, taxon=None, taxon_wildtype=None, ph_range=None, temp_range=None,
-                          name_space=None, observed_type=None, projection={'_id': 0}):
+                          name_space=None, param_type=None, projection={'_id': 0}):
         """get kinlaw info based on experimental conditions
         
         Args:
@@ -28,7 +30,7 @@ class QuerySabioOld(query_nosql.DataQuery):
             ph_range (:obj:`list`, optional): range of pH
             temp_range (:obj:`list`, optional): range of temperature
             name_space (:obj:`dict`, optional): cross_reference key/value pair, i.e. {'ec-code': '3.4.21.62'}
-            observed_type (:obj:`list`, optional): possible values for parameters.observed_type
+            param_type (:obj:`list`, optional): possible values for parameters.type
             projection (:obj:`dict`, optional): mongodb query result projection
 
         Returns:
@@ -50,8 +52,8 @@ class QuerySabioOld(query_nosql.DataQuery):
             key = list(name_space.keys())[0]
             val = list(name_space.values())[0]
             all_constraints.append({"resource": {'$elemMatch': {'namespace': key, 'id': val}}})
-        if observed_type:
-            all_constraints.append({'parameter': {'$elemMatch': {'sbo_type': {'$in': observed_type}}}})
+        if param_type:
+            all_constraints.append({'parameter': {'$elemMatch': {'type': {'$in': param_type}}}})
 
         query = {'$and': all_constraints}
         docs = self.collection.find(filter=query, projection=projection)
@@ -74,13 +76,15 @@ class QuerySabioOld(query_nosql.DataQuery):
         count = self.collection.count_documents(query)
         return docs, count
 
-    def get_kinlawid_by_rxn(self, substrates, products):
+    def get_kinlawid_by_rxn(self, substrates, products, dof=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
-            rxn participants' inchi string
+            rxn participants' inchikey
 
             Args:
-                substrates: list of substrates' inchi
-                products: list of products' inchi
+                substrates (:obj:`list`): list of substrates' inchikey
+                products (:obj:`list`): list of products' inchikey
+                dof (:obj:`int`, optional): degree of freedom allowed (number of parts of
+                                  inchikey to truncate); the default is 0 
 
             Return:
                 rxns: list of kinlaw_ids that satisfy the condition
@@ -90,6 +94,16 @@ class QuerySabioOld(query_nosql.DataQuery):
         substrate = 'reaction_participant.substrate_aggregate'
         product = 'reaction_participant.product_aggregate'
         projection = {'kinlaw_id': 1, '_id': 0}
+        if dof == 0:
+            substrates = substrates
+            products = products
+        elif dof == 1:
+            substrates = [re.compile('^' + x[:-2]) for x in substrates]
+            products = [re.compile('^' + x[:-2]) for x in products]
+        else:
+            substrates = [re.compile('^' + x[:14]) for x in substrates]
+            products = [re.compile('^' + x[:14]) for x in products]
+
         constraint_0 = {substrate: {'$all': substrates}}
         constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
