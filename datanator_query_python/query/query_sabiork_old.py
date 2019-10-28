@@ -12,10 +12,10 @@ class QuerySabioOld(query_nosql.DataQuery):
                  collection_str='sabio_rk_old', verbose=False, max_entries=float('inf'), username=None,
                  password=None, authSource='admin'):
         self.max_entries = max_entries
-        super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
-                                        replicaSet=replicaSet, db=db,
-                                        verbose=verbose, max_entries=max_entries, username=username,
-                                        password=password, authSource=authSource)
+        super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
+                        replicaSet=replicaSet, db=db,
+                        verbose=verbose, max_entries=max_entries, username=username,
+                        password=password, authSource=authSource)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.client, self.db_obj, self.collection = self.con_db(collection_str)
