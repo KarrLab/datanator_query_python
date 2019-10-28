@@ -112,3 +112,38 @@ class QuerySabioOld(query_nosql.DataQuery):
         for doc in docs:
             result.append(doc['kinlaw_id'])
         return result
+
+    def get_kinlaw_by_rxn(self, substrates, products, dof=0,
+                            projection = {'kinlaw_id': 1, '_id': 0}):
+        ''' Find the kinlaw_id defined in sabio_rk using 
+            rxn participants' inchikey
+
+            Args:
+                substrates (:obj:`list`): list of substrates' inchikey
+                products (:obj:`list`): list of products' inchikey
+                dof (:obj:`int`, optional): degree of freedom allowed (number of parts of
+                                  inchikey to truncate); the default is 0
+                projection (:obj:`dict`): pymongo query projection 
+
+            Return:
+                (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
+        '''
+        result = []
+        substrate = 'reaction_participant.substrate_aggregate'
+        product = 'reaction_participant.product_aggregate'
+        if dof == 0:
+            substrates = substrates
+            products = products
+        elif dof == 1:
+            substrates = [re.compile('^' + x[:-2]) for x in substrates]
+            products = [re.compile('^' + x[:-2]) for x in products]
+        else:
+            substrates = [re.compile('^' + x[:14]) for x in substrates]
+            products = [re.compile('^' + x[:14]) for x in products]
+
+        constraint_0 = {substrate: {'$all': substrates}}
+        constraint_1 = {product: {'$all': products}}
+        query = {'$and': [constraint_0, constraint_1]}
+        docs = self.collection.find(filter=query, projection=projection)
+        count = self.collection.count_documents(query)
+        return count, result

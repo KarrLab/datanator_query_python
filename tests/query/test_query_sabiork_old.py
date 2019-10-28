@@ -72,3 +72,19 @@ class TestQuerySabioOld(unittest.TestCase):
                                                 [product_2, product_3],
                                                 dof=1)
         self.assertTrue(15503 in result_1)
+
+    def test_get_kinlaw_by_rxn(self):
+        substrate_0 = 'XJLXINKUBYWONI-NNYOXOHSSA-N'
+        substrate_1 = 'ODBLHEXUDAPZAU-UHFFFAOYSA-N'
+        product_0 = 'GPRLSGONYQIRFK-UHFFFAOYSA-N'
+        product_1 = 'KPGXRSRHYNQIFN-UHFFFAOYSA-N'
+        count, _ = self.src.get_kinlaw_by_rxn([substrate_0, substrate_1], [product_0, product_1])
+        self.assertEqual(193, count)
+        substrate_2 = 'PQGCEDQWHSBAJP-TXICZTDVSA-I'
+        substrate_3 = 'GFFGJBXGBJISGV-UHFFFAOYSA-N'
+        product_2 = 'UDMBCSSLTHHNCD-KQYNXXCUSA-L'
+        product_3 = 'XPPKVPWEQAFLFU-UHFFFAOYSA-K'
+        count_1, _ = self.src.get_kinlaw_by_rxn([substrate_2, substrate_3],
+                                                [product_2, product_3],
+                                                dof=1)
+        self.assertEqual(26, count_1)
