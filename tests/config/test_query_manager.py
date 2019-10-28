@@ -26,3 +26,14 @@ class TestQueryManager(unittest.TestCase):
     def test_eymdb_manager(self):
         obj = self.src.eymdb_manager()
         self.assertTrue(obj.verbose)
+
+
+class TestRxnManager(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.src = query_manager.RxnManager()
+
+    def test_rxn_manager(self):
+        obj = self.src.rxn_manager()
+        self.assertTrue(obj.collection_str=='sabio_rk_old')

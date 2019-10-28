@@ -1,5 +1,6 @@
 from datanator_query_python.config import config
-from datanator_query_python.query import query_protein, front_end_query, query_metabolites
+from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
+                                         query_sabiork_old)
 
 class Manager:
 
@@ -26,3 +27,11 @@ class Manager:
             authSource=self.authDB,
             db='datanator',
             readPreference=self.read_preference)
+
+
+class RxnManager:
+
+    def rxn_manager(self):
+        return query_sabiork_old.QuerySabioOld(username=config.Config.USERNAME, 
+        password=config.Config.PASSWORD, MongoDB=config.Config.SERVER,
+        authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE)
