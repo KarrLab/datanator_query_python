@@ -1,6 +1,6 @@
 from datanator_query_python.config import config
 from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
-                                         query_sabiork_old)
+                                         query_sabiork_old, query_taxon_tree)
 
 class Manager:
 
@@ -33,5 +33,13 @@ class RxnManager:
 
     def rxn_manager(self):
         return query_sabiork_old.QuerySabioOld(username=config.Config.USERNAME, 
+        password=config.Config.PASSWORD, MongoDB=config.Config.SERVER,
+        authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE)
+
+
+class TaxonManager:
+
+    def txn_manager(self):
+        return query_taxon_tree.QueryTaxonTree(username=config.Config.USERNAME, 
         password=config.Config.PASSWORD, MongoDB=config.Config.SERVER,
         authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE)

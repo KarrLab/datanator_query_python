@@ -21,6 +21,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
         self.client, self.db_obj, self.collection = self.con_db(
             self.collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
+        self.collection_str = collection_str
 
     def get_all_species(self):
         ''' Get all organisms in taxon_tree collection

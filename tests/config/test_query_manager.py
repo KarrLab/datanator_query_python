@@ -37,3 +37,14 @@ class TestRxnManager(unittest.TestCase):
     def test_rxn_manager(self):
         obj = self.src.rxn_manager()
         self.assertTrue(obj.collection_str=='sabio_rk_old')
+
+
+class TestTaxonManager(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.src = query_manager.TaxonManager()
+
+    def test_rxn_manager(self):
+        obj = self.src.txn_manager()
+        self.assertTrue(obj.collection_str=='taxon_tree')
