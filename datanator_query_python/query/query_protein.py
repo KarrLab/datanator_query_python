@@ -221,7 +221,7 @@ class QueryProtein:
 
     def get_info_by_taxonid_abundance(self, _id):
         '''
-            Get proteins whose name or kegg name contains string 'name'.
+            Get proteins associated with ncbi id.
 
             Args:
                 _id (:obj:`int`): ncbi taxonomy id.

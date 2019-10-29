@@ -80,9 +80,11 @@ class TestQueryProtein(unittest.TestCase):
         'ko_number': 'KO0', 'uniprot_id': 'uniprot12'}
         dic_13 = {'ncbi_taxonomy_id': 13, 'species_name': 's13', 'ancestor_taxon_id': [5,4,3,2,1], 'ancestor_name': ['s5', 's4', 's3', 's2', 's1'],
         'ko_number': 'KO0', 'uniprot_id': 'uniprot13', 'kinetics':[{'ncbi_taxonomy_id': 100, 'kinlaw_id': 1}, {'ncbi_taxonomy_id': 101, 'kinlaw_id': 2}]}
+        dic_16 = {'ncbi_taxonomy_id': 6, 'species_name': 's6', 'ancestor_taxon_id': [5,4,3,2], 'ancestor_name': ['s5', 's4', 's3', 's2'],
+        'ko_number': 'KO1', 'uniprot_id': 'uniprot16', "protein_name": 'your name fifteen'}
 
         cls.src.collection.insert_many([mock_doc_0, mock_doc_1, mock_doc_2, mock_doc_3, mock_doc_4,mock_doc_5,mock_doc_6])
-        cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13,dic_14,dic_15])
+        cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13,dic_14,dic_15,dic_16])
 
         cls.src.collection.create_index("uniprot_id", background=False, collation=cls.src.collation)
         cls.src.collection.create_index([("protein_name", pymongo.TEXT)])
@@ -134,8 +136,8 @@ class TestQueryProtein(unittest.TestCase):
 
     def test_get_info_by_taxon_id_abundance(self):
         _id = 6
-        result = self.src.get_info_by_taxonid_abundance(_id)
-        self.assertEqual(result[0]['uniprot_ids'], {'uniprot6': True})
+        results = self.src.get_info_by_taxonid_abundance(_id)
+        self.assertEqual(results[0]['uniprot_ids'], {'uniprot6': True})
 
     def test_get_info_by_ko(self):
         ko = 'KO0'

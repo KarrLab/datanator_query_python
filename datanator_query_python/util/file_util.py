@@ -129,12 +129,14 @@ class FileUtil:
         '''
             Find the index of the dictionary that contains key/val
             pair within the dict_list
+
             Args:
                 dict_list (:obj:`list` of :obj:`dict`): list of dictionaries
                 key (:obj:`str`): dictionary key
-                value (:obj:): dictionary value
+                value (:obj:): dictionary value.
+
             Returns:
-                index (:obj:`list` of :obj:`int`): list of indices
+                index (:obj:`list` of :obj:`int`): list of indices.
         '''
         index = []
         for i, dic in enumerate(dict_list):
