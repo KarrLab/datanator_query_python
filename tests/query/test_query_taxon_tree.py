@@ -78,6 +78,12 @@ class TestQueryTaxonTree(unittest.TestCase):
         self.assertEqual(ranks[3], 'kingdom')
         self.assertEqual(ranks[1], '+')
 
+    def test_get_canon_rank_distance(self):
+        _id = 9606
+        result = self.src.get_canon_rank_distance(_id)
+        self.assertTrue(result[3], {'Mammalia': 13})      
+
+
 class TestQueryTaxonTreeMock(unittest.TestCase):
 
     @classmethod

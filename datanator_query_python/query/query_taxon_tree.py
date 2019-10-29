@@ -91,7 +91,8 @@ class QueryTaxonTree(query_nosql.DataQuery):
         ''' Get organism's ancestor ids by
             using organism's ids
             Args:
-                ids: list of organism's ids e.g. Candidatus Diapherotrites
+                ids: list of organism's ids e.g.[12345, 234456]
+
             Return:
                 result: list of ancestors in order of the farthest to the closest
         '''
@@ -207,3 +208,29 @@ class QueryTaxonTree(query_nosql.DataQuery):
             checked_ids.append(cur_id)
 
         return ids, names
+
+    def get_canon_rank_distance(self, _id):
+        '''Given the ncbi_id, return canonically-ranked ancestors
+            along the lineage and their non-canonical distances
+
+            Args:
+                _id (:obj:`int`): ncbi_id of the organism.
+
+            Return:
+                (:obj:`list` of :obj:`dict`): canonical organisms and distances
+                e.g. [{'a':1}, {'b': 3}, ...]
+        '''
+        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom']
+        projection = {'rank': 1, '_id': 0, 'tax_name': 1}
+        query = {'tax_id': _id}
+        anc = self.collection.find_one(filter=query, projection={'anc_id'})
+        result = []
+        for i, tax_id in enumerate(reversed(anc['anc_id'])):
+            query = {'tax_id': tax_id}
+            doc = self.collection.find_one(filter = query, projection = projection)
+            rank = doc.get('rank', None)
+            if rank in roi:
+                result.append({doc['tax_name']: i + 1})
+            else:
+                continue
+        return result
