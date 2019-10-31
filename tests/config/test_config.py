@@ -9,6 +9,7 @@ class TestConfig(unittest.TestCase):
 		cls.src_basic = config.Config()
 		cls.src_prod = config.ProductionConfig()
 		cls.src_test = config.TestConfig()
+		cls.src_ftx = config.FtxConfig()
 
 	@classmethod
 	def tearDownClass(cls):
@@ -27,4 +28,8 @@ class TestConfig(unittest.TestCase):
 		result = self.src_test
 		self.assertTrue(result.MONGO_TEST_USERNAME is not None)
 		self.assertTrue(result.MONGO_TEST_PASSWORD is not None)
+
+	def test_ftx_config(self):
+		result = self.src_ftx
+		self.assertEqual(result.TEST_FTX_PROFILE_NAME, 'mock')
 		

@@ -1,6 +1,6 @@
 from datanator_query_python.config import config
 from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
-                                         query_sabiork_old, query_taxon_tree)
+                                         query_sabiork_old, query_taxon_tree, full_text_search)
 
 class Manager:
 
@@ -43,3 +43,9 @@ class TaxonManager:
         return query_taxon_tree.QueryTaxonTree(username=config.Config.USERNAME, 
         password=config.Config.PASSWORD, MongoDB=config.Config.SERVER,
         authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE)
+
+
+class FtxManager:
+
+    def ftx_manager(self):
+        return full_text_search.FTX(profile_name=config.FtxConfig.FTX_AWS_PROFILE)

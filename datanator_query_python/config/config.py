@@ -26,9 +26,11 @@ class Config:
     SESSION_KEY = os.getenv("FLASK_SESSION_KEY")
     READ_PREFERENCE = os.getenv("READ_PREFERENCE")
 
+
 class ProductionConfig(Config):
 
     PRODUCTION = True
+
 
 class TestConfig(Config):
     '''
@@ -39,6 +41,7 @@ class TestConfig(Config):
     MONGO_TEST_PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
     MONGO_TEST_PASSWORD_READ_PREFERENCE = os.getenv("MONGO_TEST_PASSWORD_READ_PREFERENCE")
 
+
 class UserAccountConfig(Config):
     '''
         API user account manager with readWrite permission
@@ -48,6 +51,13 @@ class UserAccountConfig(Config):
     USERDAEMON = os.getenv("MONGO_USER_DAMON")
     USERDAEMON_PASSWORD = os.getenv("MONGO_USER_PASSWORD")
     USERDAEMON_AUTHDB = os.getenv("MONGO_USER_AUTHDB")
+
+
+class FtxConfig(Config):
+    """Environment variables for AWS Elasticsearch service
+    """
+    FTX_AWS_PROFILE = os.getenv("FTX_AWS_PROFILE")
+    TEST_FTX_PROFILE_NAME = os.getenv("TEST_FTX_PROFILE_NAME")
 
 
 class FlaskProfiler(UserAccountConfig):
