@@ -2,7 +2,7 @@ import unittest
 import tempfile
 import shutil
 from datanator_query_python.query import full_text_search
-from karr_lab_aws_manager.elasticsearch import util as es_util
+from karr_lab_aws_manager.elasticsearch_kl import util as es_util
 import time
 import requests
 
@@ -28,8 +28,8 @@ class TestFTX(unittest.TestCase):
                   {'number': 6, 'mock_key_bulk': 'mock_value_6', 'uniprot_id': 'P6'},
                   {'number': 7, 'mock_key_bulk': 'mock_value_7', 'uniprot_id': 'P7'},
                   {'number': 8, 'mock_key_bulk': 'mock_value_7', 'uniprot_id': 'P8'}]
-        _ = cls.src.data_to_es_bulk(len(cursor_0), cursor_0, cls.index_0, bulk_size=1)
-        _ = cls.src.data_to_es_bulk(len(cursor_0), cursor_1, cls.index_1, bulk_size=1)
+        _ = cls.src.data_to_es_bulk(cursor_0, cls.index_0, bulk_size=1)
+        _ = cls.src.data_to_es_bulk(cursor_1, cls.index_1, bulk_size=1)
         time.sleep(1)
 
     @classmethod
@@ -55,3 +55,14 @@ class TestFTX(unittest.TestCase):
         r = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
         analyze_wild_card=True)
         self.assertEqual(r['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
+
+    def test_simple_query_string_real(self):
+        query_0 = 'alcohol dehydrogenase'
+        field_0 = ['protein_name', 'synonyms', 'enzymes', 'ko_name', 'gene_name']
+        index_0 = 'ecmdb,ymdb,protein,metabolites_meta'
+        r_0 = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
+        analyze_wild_card=True)
+        r_1 = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
+        analyze_wild_card=True, from_=20)
+        self.assertEqual(r_1['hits']['hits'][0]['_id'], 'Q66JJ3')
+        self.assertEqual(r_0['hits']['hits'][0]['_id'], 'A1B4L2')

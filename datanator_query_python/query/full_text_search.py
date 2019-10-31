@@ -1,4 +1,4 @@
-from karr_lab_aws_manager.elasticsearch import query_builder as es_query_builder
+from karr_lab_aws_manager.elasticsearch_kl import query_builder as es_query_builder
 
 
 class FTX(es_query_builder.QueryBuilder):
@@ -17,7 +17,13 @@ class FTX(es_query_builder.QueryBuilder):
             Args:
                 query_message (:obj:`str`): simple string for querying
                 index (:obj:`str`): comma separated string to indicate indices in which query will be done
+                **size (:obj:`int`): number of hits to be returned
+                **from_ (:obj:`int`): starting offset (default: 0)
+                **scroll (:obj:`str`): specify how long a consistent view of the index should be maintained for scrolled search
+                (https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-scroll).
         '''
         body = self.build_simple_query_string_body(query_message, **kwargs)
-        r = self._build_es().search(index=index, body=body)
+        from_ = kwargs.get('from_', 0)
+        size = kwargs.get('size', 10)
+        r = self._build_es().search(index=index, body=body, size=size, from_=from_)
         return r
