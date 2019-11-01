@@ -86,6 +86,14 @@ class TestQueryTaxonTree(unittest.TestCase):
         self.assertEqual(result_0[0], {'Homo sapiens': 0})     
         self.assertEqual(result_0[-1], {'cellular organisms': 30})
 
+    def test_get_canon_rank_distance_by_name(self):
+        name = 'homo sapiens'
+        result = self.src.get_canon_rank_distance_by_name(name)
+        self.assertTrue(result[3], {'Mammalia': 13})
+        result_0 = self.src.get_canon_rank_distance_by_name(name, front_end=True)
+        self.assertEqual(result_0[0], {'Homo sapiens': 0})     
+        self.assertEqual(result_0[-1], {'cellular organisms': 30})
+
 
 class TestQueryTaxonTreeMock(unittest.TestCase):
 

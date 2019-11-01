@@ -240,3 +240,35 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if front_end:
             result.append({anc['anc_name'][0]: len(anc['anc_name'])})
         return result
+
+    def get_canon_rank_distance_by_name(self, name, front_end=False):
+        '''Given the name of species, return canonically-ranked ancestors
+            along the lineage and their non-canonical distances
+
+            Args:
+                name (:obj:`str`): name of the organism.
+                front_end (:obj:`bool`): meets front_end request
+
+            Return:
+                (:obj:`list` of :obj:`dict`): canonical organisms and distances
+                e.g. [{'a':1}, {'b': 3}, ...]
+        '''
+        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
+        projection = {'rank': 1, '_id': 0, 'tax_name': 1}
+        query = {'tax_name': name}
+        anc = self.collection.find_one(filter=query, projection={'anc_id':1, 'tax_name': 1, 'anc_name': 1},
+                                        collation=self.collation)
+        result = []
+        if front_end:
+            result.append({anc['tax_name']: 0})
+        for i, tax_id in enumerate(reversed(anc['anc_id'])):
+            query = {'tax_id': tax_id}
+            doc = self.collection.find_one(filter=query, projection=projection)
+            rank = doc.get('rank', None)
+            if rank in roi:
+                result.append({doc['tax_name']: i + 1})
+            else:
+                continue
+        if front_end:
+            result.append({anc['anc_name'][0]: len(anc['anc_name'])})
+        return result

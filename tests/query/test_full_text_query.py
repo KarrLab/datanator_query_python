@@ -64,5 +64,6 @@ class TestFTX(unittest.TestCase):
         analyze_wild_card=True)
         r_1 = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
         analyze_wild_card=True, from_=20)
+        print(r_1)
         self.assertEqual(r_1['hits']['hits'][0]['_id'], 'Q66JJ3')
         self.assertEqual(r_0['hits']['hits'][0]['_id'], 'A1B4L2')
