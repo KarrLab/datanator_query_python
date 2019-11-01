@@ -24,7 +24,7 @@ class TestQueryTaxonTree(unittest.TestCase):
     def tearDownClass(cls):
         shutil.rmtree(cls.cache_dirname)
 
-    # @unittest.skip('passed')
+    @unittest.skip('passed')
     def test_get_all_species(self):
         result = []
         generator = self.src.get_all_species()
@@ -81,7 +81,10 @@ class TestQueryTaxonTree(unittest.TestCase):
     def test_get_canon_rank_distance(self):
         _id = 9606
         result = self.src.get_canon_rank_distance(_id)
-        self.assertTrue(result[3], {'Mammalia': 13})      
+        self.assertTrue(result[3], {'Mammalia': 13})
+        result_0 = self.src.get_canon_rank_distance(_id, front_end=True)
+        self.assertEqual(result_0[0], {'Homo sapiens': 0})     
+        self.assertEqual(result_0[-1], {'cellular organisms': 30})
 
 
 class TestQueryTaxonTreeMock(unittest.TestCase):

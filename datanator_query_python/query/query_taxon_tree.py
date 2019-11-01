@@ -210,28 +210,33 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
         return ids, names
 
-    def get_canon_rank_distance(self, _id):
+    def get_canon_rank_distance(self, _id, front_end=False):
         '''Given the ncbi_id, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
             Args:
                 _id (:obj:`int`): ncbi_id of the organism.
+                front_end (:obj:`bool`): meets front_end request
 
             Return:
                 (:obj:`list` of :obj:`dict`): canonical organisms and distances
                 e.g. [{'a':1}, {'b': 3}, ...]
         '''
-        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom']
+        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
         query = {'tax_id': _id}
-        anc = self.collection.find_one(filter=query, projection={'anc_id'})
+        anc = self.collection.find_one(filter=query, projection={'anc_id':1, 'tax_name': 1, 'anc_name': 1})
         result = []
+        if front_end:
+            result.append({anc['tax_name']: 0})
         for i, tax_id in enumerate(reversed(anc['anc_id'])):
             query = {'tax_id': tax_id}
-            doc = self.collection.find_one(filter = query, projection = projection)
+            doc = self.collection.find_one(filter=query, projection=projection)
             rank = doc.get('rank', None)
             if rank in roi:
                 result.append({doc['tax_name']: i + 1})
             else:
                 continue
+        if front_end:
+            result.append({anc['anc_name'][0]: len(anc['anc_name'])})
         return result
