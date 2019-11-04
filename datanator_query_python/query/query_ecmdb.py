@@ -26,7 +26,7 @@ class QueryEcmdb:
             (list): all results that meet the constraint.
         """
         result = []
-        query = {'concentrations': {'$exists': True} }
+        query = {'concentrations': {'$ne': None} }
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
             result.append(doc)
