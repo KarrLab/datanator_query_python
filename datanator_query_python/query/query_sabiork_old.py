@@ -128,7 +128,6 @@ class QuerySabioOld(query_nosql.DataQuery):
             Return:
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
-        result = []
         substrate = 'reaction_participant.substrate_aggregate'
         product = 'reaction_participant.product_aggregate'
         if dof == 0:
@@ -145,7 +144,5 @@ class QuerySabioOld(query_nosql.DataQuery):
         constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
         docs = self.collection.find(filter=query, projection=projection)
-        for doc in docs:
-            result.append(doc)
         count = self.collection.count_documents(query)
-        return count, result
+        return count, docs

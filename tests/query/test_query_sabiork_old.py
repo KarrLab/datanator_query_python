@@ -84,7 +84,7 @@ class TestQuerySabioOld(unittest.TestCase):
         substrate_3 = 'GFFGJBXGBJISGV-UHFFFAOYSA-N'
         product_2 = 'UDMBCSSLTHHNCD-KQYNXXCUSA-L'
         product_3 = 'XPPKVPWEQAFLFU-UHFFFAOYSA-K'
-        count_1, _ = self.src.get_kinlaw_by_rxn([substrate_2, substrate_3],
+        count_1, docs_1 = self.src.get_kinlaw_by_rxn([substrate_2, substrate_3],
                                                 [product_2, product_3],
                                                 dof=1)
         self.assertEqual(26, count_1)
