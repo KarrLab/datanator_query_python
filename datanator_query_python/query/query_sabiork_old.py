@@ -145,5 +145,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
         docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            result.append(doc)
         count = self.collection.count_documents(query)
         return count, result
