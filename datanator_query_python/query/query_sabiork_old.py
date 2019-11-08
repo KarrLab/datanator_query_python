@@ -146,3 +146,31 @@ class QuerySabioOld(query_nosql.DataQuery):
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
         return count, docs
+
+    def get_kinlaw_by_entryid(self, entry_id):
+        """Find reactions by sabio entry id
+        
+        Args:
+            entry_id (:obj:`int`): entry_id
+
+            Return:
+                (:obj:`dict`): {'kinlaw_id': [], 'substrates': [], 'products': []}
+        """
+        result = {}
+        kinlaw_id = []
+        substrates = []
+        products = []
+        constraint_0 = {'namespace': 'sabiork.reaction', 'id': str(entry_id)}
+        query = {'resource': {'$elemMatch': constraint_0}}
+        projection = {'_id': 0, 'kinlaw_id': 1, 'reaction_participant.substrate_aggregate': 1,
+                     'reaction_participant.product_aggregate': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            kinlaw_id.append(doc['kinlaw_id'])
+            substrates.append(doc['reaction_participant'][3]['substrate_aggregate'])
+            products.append(doc['reaction_participant'][4]['product_aggregate'])
+
+        result['kinlaw_id'] = kinlaw_id
+        result['substrates'] = substrates
+        result['products'] = products
+        return result

@@ -88,3 +88,8 @@ class TestQuerySabioOld(unittest.TestCase):
                                                 [product_2, product_3],
                                                 dof=1)
         self.assertEqual(26, count_1)
+
+    def test_get_kinlaw_by_entryid(self):
+        entry_id_0 = 6593
+        result_0 = self.src.get_kinlaw_by_entryid(entry_id_0)
+        self.assertTrue(21 in result_0['kinlaw_id'])
