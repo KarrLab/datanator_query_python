@@ -174,3 +174,20 @@ class QuerySabioOld(query_nosql.DataQuery):
         result['substrates'] = substrates
         result['products'] = products
         return result
+
+
+    def get_info_by_entryid(self, entry_id):
+        """Find reactions by sabio entry id, return all information
+        
+        Args:
+            entry_id (:obj:`int`): entry_id
+
+            Return:
+                (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`): pymongo cursor and number of documents
+        """
+        constraint_0 = {'namespace': 'sabiork.reaction', 'id': str(entry_id)}
+        query = {'resource': {'$elemMatch': constraint_0}}
+        projection = {'_id': 0}
+        docs = self.collection.find(filter=query, projection=projection)
+        count = self.collection.count_documents(query)
+        return docs, count
