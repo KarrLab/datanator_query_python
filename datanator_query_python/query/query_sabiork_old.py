@@ -118,7 +118,8 @@ class QuerySabioOld(query_nosql.DataQuery):
         return result
 
     def get_kinlaw_by_rxn(self, substrates, products, dof=0,
-                          projection={'kinlaw_id': 1, '_id': 0}):
+                          projection={'kinlaw_id': 1, '_id': 0},
+                          bound='loose'):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchikey
 
@@ -128,6 +129,7 @@ class QuerySabioOld(query_nosql.DataQuery):
                 dof (:obj:`int`, optional): degree of freedom allowed (number of parts of
                                   inchikey to truncate); the default is 0
                 projection (:obj:`dict`): pymongo query projection 
+                bound (:obj:`str`): limit substrates/products to include only input values
 
             Return:
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
@@ -144,8 +146,12 @@ class QuerySabioOld(query_nosql.DataQuery):
             substrates = [re.compile('^' + x[:14]) for x in substrates]
             products = [re.compile('^' + x[:14]) for x in products]
 
-        constraint_0 = {substrate: {'$all': substrates}}
-        constraint_1 = {product: {'$all': products}}
+        if bound == 'loose':
+            constraint_0 = {substrate: {'$all': substrates}}
+            constraint_1 = {product: {'$all': products}}
+        else:
+            constraint_0 = {substrate: substrates}
+            constraint_1 = {product: products}            
         query = {'$and': [constraint_0, constraint_1]}
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
