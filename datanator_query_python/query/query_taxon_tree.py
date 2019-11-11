@@ -62,10 +62,10 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''
         names = []
         projection = {'_id': 0, 'tax_name': 1}
-        for _id in ids:
-            query = {'tax_id': _id}
-            cursor = self.collection.find_one(filter=query, projection=projection)
-            names.append(cursor['tax_name'])
+        query = {'tax_id': {'$in': ids}}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            names.append(doc['tax_name'])
         return names
 
     def get_anc_by_name(self, names):
@@ -80,12 +80,12 @@ class QueryTaxonTree(query_nosql.DataQuery):
         result_id = []
         result_name = []
         projection = {'_id': 0, 'anc_id': 1, 'anc_name': 1}
-        for name in names:
-            query = {'tax_name': name}
-            cursor = self.collection.find_one(filter=query, collation=self.collation,
-                                              projection=projection)
-            result_id.append(cursor['anc_id'])
-            result_name.append(cursor['anc_name'])
+        query = {'tax_name': {'$in': names}}
+        docs = self.collection.find(filter=query, collation=self.collation,
+                                    projection=projection)
+        for doc in docs:
+            result_id.append(doc['anc_id'])
+            result_name.append(doc['anc_name'])
         return result_id, result_name
 
     def get_anc_by_id(self, ids):
@@ -100,6 +100,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
         result_name = []
         result_id = []
         projection = {'_id': 0, 'anc_id': 1, 'anc_name': 1}
+        query = {'tax_id': {'$in': ids}}
         for _id in ids:
             query = {'tax_id': _id}
             cursor = self.collection.find_one(query,
