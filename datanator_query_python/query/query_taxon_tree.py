@@ -64,6 +64,8 @@ class QueryTaxonTree(query_nosql.DataQuery):
         projection = {'_id': 0, 'tax_name': 1}
         query = {'tax_id': {'$in': ids}}
         docs = self.collection.find(filter=query, projection=projection)
+        if docs is None:
+            return ['not in database']
         for doc in docs:
             names.append(doc['tax_name'])
         return names
@@ -105,8 +107,12 @@ class QueryTaxonTree(query_nosql.DataQuery):
             query = {'tax_id': _id}
             cursor = self.collection.find_one(query,
                                               projection=projection)
-            result_id.append(cursor['anc_id'])
-            result_name.append(cursor['anc_name'])
+            if cursor is None:
+                result_id.append([-1])
+                result_name.append(['not in database'])
+            else:                
+                result_id.append(cursor['anc_id'])
+                result_name.append(cursor['anc_name'])
         return result_id, result_name
 
     def get_common_ancestor(self, org1, org2, org_format='name'):
