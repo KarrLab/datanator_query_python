@@ -96,5 +96,10 @@ class TestQuerySabioOld(unittest.TestCase):
 
     def test_get_info_by_entryid(self):
         entry_id_0 = 6690
-        _, count_0 = self.src.get_info_by_entryid(entry_id_0)
-        self.assertEqual(1, count_0)
+        result_0 = self.src.get_info_by_entryid(entry_id_0)
+        result_1 = self.src.get_info_by_entryid(entry_id_0, target_organism='homo sapiens')
+        self.assertTrue(len(result_0) <= 10)
+        self.assertEqual(result_1[0]['taxon_distance'], 9)
+        entry_id_1 = 82
+        result = self.src.get_info_by_entryid(entry_id_1)
+        self.assertTrue(len(result) == 10)

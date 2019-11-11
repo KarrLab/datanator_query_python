@@ -122,7 +122,7 @@ class QueryFrontEnd:
         response.append(ecmdb_data)
         response.append(ymdb_data)
 
-        anc, dist = self.tax_db.get_common_ancestor(organism, "Escherichia coli")
+        _, dist = self.tax_db.get_common_ancestor(organism, "Escherichia coli")
         for doc in ecmdb_data:
             doc["taxon_distance"] = dist[0]
         anc, dist = self.tax_db.get_common_ancestor(organism, "Saccharomyces cerevisiae")

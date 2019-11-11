@@ -1,7 +1,9 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from . import query_nosql
+from . import query_taxon_tree
 import json
 import re
+from pymongo import ASCENDING, DESCENDING
 
 
 class QuerySabioOld(query_nosql.DataQuery):
@@ -20,6 +22,8 @@ class QuerySabioOld(query_nosql.DataQuery):
         self.file_manager = file_util.FileUtil()
         self.client, self.db_obj, self.collection = self.con_db(collection_str)
         self.collection_str = collection_str
+        self.taxon_manager = query_taxon_tree.QueryTaxonTree(username=username, password=password,
+        authSource=authSource, readPreference=readPreference, MongoDB=MongoDB)
 
     def get_kinlaw_by_environment(self, taxon=None, taxon_wildtype=None, ph_range=None, temp_range=None,
                           name_space=None, param_type=None, projection={'_id': 0}):
@@ -176,18 +180,38 @@ class QuerySabioOld(query_nosql.DataQuery):
         return result
 
 
-    def get_info_by_entryid(self, entry_id):
+    def get_info_by_entryid(self, entry_id, target_organism=None, size=10, last_id=0):
         """Find reactions by sabio entry id, return all information
         
         Args:
             entry_id (:obj:`int`): entry_id
+            target_organism (:obj:`str`): the organism in which the reaction occurs
+            size (:obj:`int`): pagination page size
+            last_id (:obj:`int`) the largest kinlaw id from previous page
 
-            Return:
-                (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`): pymongo cursor and number of documents
+        Return:
+            (:obj:`list` of :obj:`dict`): list of documents of entry id
         """
         constraint_0 = {'namespace': 'sabiork.reaction', 'id': str(entry_id)}
         query = {'resource': {'$elemMatch': constraint_0}}
         projection = {'_id': 0}
-        docs = self.collection.find(filter=query, projection=projection)
-        count = self.collection.count_documents(query)
-        return docs, count
+        sort = [('kinlaw_id', ASCENDING)]
+        taxon_name = None
+        distance = -1
+        result = []
+        docs = self.collection.find(filter=query, projection=projection, sort=sort, limit=size)
+        if target_organism is not None:  # need distance information
+            for i, doc in enumerate(docs):
+                if i == 0:
+                    taxon_name = doc['taxon_name']
+                    _, dist = self.taxon_manager.get_common_ancestor(taxon_name, target_organism)
+                    distance = dist[0]
+                    doc['taxon_distance'] = distance
+                    result.append(doc)
+                else:
+                    doc['taxon_distance'] = distance
+                    result.append(doc)
+        else:
+            for doc in docs:
+                result.append(doc)
+        return result
