@@ -131,7 +131,7 @@ class QueryFrontEnd:
 
 
 
-        result_id, result_name = self.tax_db.get_anc_by_name([organism])
+        _, result_name = self.tax_db.get_anc_by_name([organism])
         result_name[0].append(organism)
         response.append(result_name)
         #response = self.inchi_query(inchi, organism, string)
