@@ -88,6 +88,10 @@ class TestQuerySabioOld(unittest.TestCase):
                                                 [product_2, product_3],
                                                 dof=1)
         self.assertEqual(26, count_1)
+        count_2, _ = self.src.get_kinlaw_by_rxn([substrate_0], [product_0, product_1], bound='loose')
+        self.assertTrue(count_2 >= 193)
+        count_3, _ = self.src.get_kinlaw_by_rxn([substrate_0], [product_0, product_1], bound='tight')
+        self.assertEqual(count_3, 0)
 
     def test_get_kinlaw_by_entryid(self):
         entry_id_0 = 6593
