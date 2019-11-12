@@ -1,7 +1,6 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
-from pymongo.collation import Collation
-from . import query_nosql
-from . import query_taxon_tree
+from pymongo.collation import Collation, CollationStrength
+from . import query_nosql, query_taxon_tree, query_sabio_compound
 import json
 import re
 from pymongo import ASCENDING, DESCENDING
@@ -25,6 +24,9 @@ class QuerySabioOld(query_nosql.DataQuery):
         self.collection_str = collection_str
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(username=username, password=password,
         authSource=authSource, readPreference=readPreference, MongoDB=MongoDB)
+        self.compound_manager = query_sabio_compound.QuerySabioCompound(server=MongoDB, database=db,
+                                                                        username=username, password=password, 
+                                                                        readPreference=readPreference)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_kinlaw_by_environment(self, taxon=None, taxon_wildtype=None, ph_range=None, temp_range=None,
@@ -224,9 +226,9 @@ class QuerySabioOld(query_nosql.DataQuery):
                 result.append(doc)
         return result
 
-    def get_kinlaw_by_rxn(self, substrates, products,
-                          projection={'kinlaw_id': 1, '_id': 0},
-                          bound='loose'):
+    def get_kinlaw_by_rxn_name(self, substrates, products,
+                                projection={'kinlaw_id': 1},
+                                bound='loose'):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchikey
 
@@ -239,22 +241,21 @@ class QuerySabioOld(query_nosql.DataQuery):
             Return:
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
-        substrate_field = 'reaction_participant.substrate.substrate_name'
-        substrate_syn_field = 'reaction_participant.substrate.substrate_synonym'
-        product_field = 'reaction_participant.product.product_name'
-        product_syn_field = 'reaction_participant.product.product_synonym'
-
+        sub_id_field = 'reaction_participant.substrate.sabio_compound_id'
+        pro_id_field = 'reaction_participant.product.sabio_compound_id'
         bounded_s = {'reaction_participant.substrate': {'$size': len(substrates)}}
         bounded_p = {'reaction_participant.product': {'$size': len(products)}}
 
-        for substrate in substrates:
-            query = {'$or': [{substrate_field: substrate}, {substrate_syn_field: substrate}]}
-            projection = {'_id': 0, 'kinlaw_id': 1}
-            
-            docs_name = self.collection.find(filter=query, projection=projection, collation=self.collation)
+        substrate_ids = self.compound_manager.get_id_by_name(substrates)
+        product_ids = self.compound_manager.get_id_by_name(products)
 
-         
-        query = {'$and': [constraint_0, constraint_1]}
+        s_constraint = {sub_id_field: {'$all': substrate_ids}}
+        p_constraint = {pro_id_field: {'$all': product_ids}}
+
+        if bound == 'loose':
+            query = {'$and': [s_constraint, p_constraint]}
+        else:
+            query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
         return count, docs

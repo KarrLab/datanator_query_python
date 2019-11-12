@@ -107,3 +107,14 @@ class TestQuerySabioOld(unittest.TestCase):
         entry_id_1 = 82
         result = self.src.get_info_by_entryid(entry_id_1)
         self.assertTrue(len(result) == 10)
+
+    def test_get_kinlaw_by_rxn_name(self):
+        substrate_name_0 = ['Riboflavin-5-phosphate', 'nonsense', '2-Hydroxypentanoate']
+        product_name_0 = ['reduced FMN', 'alpha-Ketovaleric acid']
+        _, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0)
+        count, _ = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, bound='tight')
+        ids_0 = []
+        for doc in docs_0:
+            ids_0.append(doc['kinlaw_id'])
+        self.assertTrue(41 in ids_0)
+        self.assertEqual(0, count)
