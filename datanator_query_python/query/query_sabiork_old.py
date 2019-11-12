@@ -26,7 +26,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         authSource=authSource, readPreference=readPreference, MongoDB=MongoDB)
         self.compound_manager = query_sabio_compound.QuerySabioCompound(server=MongoDB, database=db,
                                                                         username=username, password=password, 
-                                                                        readPreference=readPreference)
+                                                                        readPreference=readPreference, authSource=authSource)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_kinlaw_by_environment(self, taxon=None, taxon_wildtype=None, ph_range=None, temp_range=None,
