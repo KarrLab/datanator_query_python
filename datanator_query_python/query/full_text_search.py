@@ -29,35 +29,57 @@ class FTX(es_query_builder.QueryBuilder):
         r = self._build_es().search(index=index, body=body, size=size, from_=from_)
         return r
 
-    def get_metabolites(self, q, index,fields=['name', 'synonyms'], count=10, from_=0, batch_size=100):
-        """Extract metabolites (ecmdb, ymdb, metabolite_meta) index
+    def get_index_in_page(self, r, index):
+        """Get indices in current hits page
+        
+        Args:
+            r (:obj:`dict`): ftx search result
+            index (:obj:`set`): set of string of indices
+
+        Return:
+            (:obj:`list`): list of index hits
+        """
+        result = []
+        hits = r['hits']['hits']
+        if hits == []:
+            return result
+        else:
+            for hit in hits:
+                if hit['_index'] in index:
+                    result.append(hit['_source'])
+            return result
+
+    def get_num_source(self, q, q_index, index, fields=['name', 'synonyms'], 
+                        count=10, from_=0, batch_size=100):
+        """Extract a count number of source (ecmdb, ymdb, metabolite_meta, etc) index
         from ftx search result
         
         Args:
             q (:obj:`str`): ftx query message
-            index (:obj:`str`): comma separated string to indicate indices in which query will be done
+            q_index (:obj:`str`): comma separated string to indicate indices in which query will be done
+            index (:obj:`set`): set of index of interest (source collections)
             fields (:obj:`list`, optional): list of fields to query. Defaults to ['name', 'synonyms']
             count (:obj:`int`, optional): number of records required. Defaults to 0.
             from_ (:obj:`int`, optional): page start. Defaults to 0.
             batch_size (:obj:`int`, optional): ftx query page size. Defaults to 100.
 
         Return:
-            (:obj:`list`): list of hits of metabolites
+            (:obj:`list`): list of hits of index
         """
         result = []
-        r_0 = self.simple_query_string(q, index, from_=from_, size=batch_size, fields=fields)
+        r_0 = self.simple_query_string(q, q_index, from_=from_, size=batch_size, fields=fields)
         total = r_0['hits']['total']['value']
         if total < count:
             count = total
         from_list = np.arange(from_, total, batch_size).tolist()
         iteration = 0
         while len(result) < count:
-            r = self.simple_query_string(q, index, from_=from_list[iteration], size=batch_size, fields=fields)
+            r = self.simple_query_string(q, q_index, from_=from_list[iteration], size=batch_size, fields=fields)
             hits = r['hits']['hits']
             for hit in hits:
                 if len(result) >= count:
                     break
-                elif hit['_index'] in ('ecmdb', 'ymdb'):
+                elif hit['_index'] in index:
                     result.append(hit['_source'])
             iteration += 1
         return result
