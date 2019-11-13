@@ -64,6 +64,19 @@ class TestFTX(unittest.TestCase):
         analyze_wild_card=True)
         r_1 = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
         analyze_wild_card=True, from_=20)
-        print(r_1)
         self.assertEqual(r_1['hits']['hits'][0]['_id'], 'Q66JJ3')
         self.assertEqual(r_0['hits']['hits'][0]['_id'], 'A1B4L2')
+
+    def test_get_metabolites(self):
+        query_0 = 'glucose'
+        query_1 = 'somenonsense'
+        fields_0 = ['protein_name', 'synonyms', 'enzymes', 'ko_name', 'gene_name', 'name',
+                    'reaction_participant.substrate.substrate_name', 'reaction_participant.substrate.substrate_synonym',
+                    'reaction_participant.product.product_name', 'reaction_participant.product.substrate_synonym',
+                    'enzymes.enzyme.enzyme_name', 'enzymes.subunit.canonical_sequence']
+        r_0 = self.src.get_metabolites(query_0, 'ecmdb,ymdb')
+        self.assertEqual(len(r_0), 10)
+        r_1 = self.src.get_metabolites(query_0, 'ecmdb,ymdb,protein,sabio_rk', fields=fields_0)
+        self.assertEqual(len(r_1), 10)
+        r_2 = self.src.get_metabolites(query_1, 'ecmdb,ymdb')
+        self.assertEqual(r_2, [])

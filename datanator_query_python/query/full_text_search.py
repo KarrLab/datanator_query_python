@@ -1,4 +1,5 @@
 from karr_lab_aws_manager.elasticsearch_kl import query_builder as es_query_builder
+import numpy as np
 
 
 class FTX(es_query_builder.QueryBuilder):
@@ -27,3 +28,36 @@ class FTX(es_query_builder.QueryBuilder):
         size = kwargs.get('size', 10)
         r = self._build_es().search(index=index, body=body, size=size, from_=from_)
         return r
+
+    def get_metabolites(self, q, index,fields=['name', 'synonyms'], count=10, from_=0, batch_size=100):
+        """Extract metabolites (ecmdb, ymdb, metabolite_meta) index
+        from ftx search result
+        
+        Args:
+            q (:obj:`str`): ftx query message
+            index (:obj:`str`): comma separated string to indicate indices in which query will be done
+            fields (:obj:`list`, optional): list of fields to query. Defaults to ['name', 'synonyms']
+            count (:obj:`int`, optional): number of records required. Defaults to 0.
+            from_ (:obj:`int`, optional): page start. Defaults to 0.
+            batch_size (:obj:`int`, optional): ftx query page size. Defaults to 100.
+
+        Return:
+            (:obj:`list`): list of hits of metabolites
+        """
+        result = []
+        r_0 = self.simple_query_string(q, index, from_=from_, size=batch_size, fields=fields)
+        total = r_0['hits']['total']['value']
+        if total < count:
+            count = total
+        from_list = np.arange(from_, total, batch_size).tolist()
+        iteration = 0
+        while len(result) < count:
+            r = self.simple_query_string(q, index, from_=from_list[iteration], size=batch_size, fields=fields)
+            hits = r['hits']['hits']
+            for hit in hits:
+                if len(result) >= count:
+                    break
+                elif hit['_index'] in ('ecmdb', 'ymdb'):
+                    result.append(hit['_source'])
+            iteration += 1
+        return result
