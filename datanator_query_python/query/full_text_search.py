@@ -34,19 +34,22 @@ class FTX(es_query_builder.QueryBuilder):
         
         Args:
             r (:obj:`dict`): ftx search result
-            index (:obj:`set`): set of string of indices
+            index (:obj:`list`): list of string of indices.
 
         Return:
-            (:obj:`list`): list of index hits
+            (:obj:`dict`): obj of index hits {'index_0': [], 'index_1': []}
         """
-        result = []
+        result = {}
+        for item in index:
+            result[item] = []
         hits = r['hits']['hits']
         if hits == []:
             return result
         else:
             for hit in hits:
                 if hit['_index'] in index:
-                    result.append(hit['_source'])
+                    hit['_source']['_score'] = hit['_score']
+                    result[hit['_index']].append(hit['_source'])
             return result
 
     def get_num_source(self, q, q_index, index, fields=['name', 'synonyms'], 
