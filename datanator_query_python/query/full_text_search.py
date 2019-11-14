@@ -1,5 +1,6 @@
 from karr_lab_aws_manager.elasticsearch_kl import query_builder as es_query_builder
 import numpy as np
+import math
 
 
 class FTX(es_query_builder.QueryBuilder):
@@ -86,3 +87,28 @@ class FTX(es_query_builder.QueryBuilder):
                     result.append(hit['_source'])
             iteration += 1
         return result
+
+    def get_single_index_count(self, q, index, num, **kwargs):
+        """Get single index up to num hits
+        
+        Args:
+            q (:obj:`str`): query message
+            index (:obj:`str`): index in which query will be performed
+            num (:obj:`int`): number of hits needed
+
+        Return:
+            (:obj:`dict`): obj of index hits {'index': []}
+        """
+        result = {}
+        body = self.build_simple_query_string_body(query_message, **kwargs)
+        r = self._build_es().search(index=index, body=body, size=num)
+        hits = r['hits']['hits']
+        if hits == []:
+            result[index] = []
+            return result
+        else:
+            for hit in hits:
+                if hit['_index'] in index:
+                    hit['_source']['_score'] = hit['_score']
+                    result[hit['_index']].append(hit['_source'])
+            return result

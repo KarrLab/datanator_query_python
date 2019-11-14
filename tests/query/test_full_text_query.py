@@ -127,3 +127,13 @@ class TestFTX(unittest.TestCase):
         self.assertEqual(len(result_1['ecmdb'])+ len(result_1['ymdb']), 10)
         self.assertEqual(result_2, {'ecmdb': [], 'ymdb': []})
         self.assertEqual(len(result_3['protein']), 10)
+
+    def get_get_single_index_count(self):
+        index = 'ecmdb'
+        r_0 = 'glucose'
+        num_0 = 0
+        num_1 = 14
+        result_0 = self.src.get_single_index_count(r_0, index, num_0)
+        result_1 = self.src.get_single_index_count(r_0, index, num_1)
+        self.assertEqual(result_0, {index: []})
+        self.assertEqual(len(result_1[index].values()), num_1)
