@@ -52,7 +52,7 @@ class TestFTX(unittest.TestCase):
         requests.delete(cls.url_0, auth=cls.src.awsauth)
         requests.delete(cls.url_1, auth=cls.src.awsauth)
 
-    #@unittest.skip('skip')
+    @unittest.skip('skip')
     def test_request_body_search(self):
         query_0 = 'mock_value_3'
         field_0 = ['mock_key_bulk', 'number']
@@ -63,7 +63,7 @@ class TestFTX(unittest.TestCase):
         es_0 = es.search(index=index_0, body=body_0)
         self.assertEqual(es_0['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
 
-    #@unittest.skip('skip')
+    # @unittest.skip('skip')
     def test_simple_query_string(self):
         query_0 = 'mock_value_3'
         field_0 = ['mock_key_bulk', 'number']
@@ -71,19 +71,26 @@ class TestFTX(unittest.TestCase):
         r = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
         analyze_wild_card=True)
         self.assertEqual(r['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
+        query_1 = "esc* + coli"
+        index_1 = "ecmdb,ymdb,metabolites_meta,protein,sabio_rk"
+        field_1 = ['protein_name', 'synonyms', 'enzymes', 'ko_name', 'gene_name', 'name',
+                    'reaction_participant.substrate.substrate_name', 'reaction_participant.substrate.substrate_synonym',
+                    'reaction_participant.product.product_name', 'reaction_participant.product.substrate_synonym',
+                    'enzymes.enzyme.enzyme_name', 'enzymes.subunit.canonical_sequence', 'species']
+        r_1 = self.src.simple_query_string(query_1, index_1, fields=field_1)
+        print(r_1)
 
-    #@unittest.skip('skip')
+
+    @unittest.skip('skip')
     def test_simple_query_string_real(self):
-        query_0 = 'alcohol dehydrogenase'
-        field_0 = ['protein_name', 'synonyms', 'enzymes', 'ko_name', 'gene_name']
-        index_0 = 'ecmdb,ymdb,protein,metabolites_meta'
+        query_0 = "alcohol dehydrogenase"
+        field_0 = ["protein_name", "synonyms", "enzymes", "ko_name", "gene_name"]
+        index_0 = "ecmdb,ymdb,protein,metabolites_meta"
         r_0 = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
         analyze_wild_card=True)
-        r_1 = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
-        analyze_wild_card=True, from_=20)
-        self.assertEqual(r_1['hits']['hits'][0]['_id'], 'Q66JJ3')
-        self.assertEqual(r_0['hits']['hits'][0]['_id'], 'A1B4L2')
+        self.assertEqual(r_0['hits']['hits'][0]['_id'], 'P41795')
 
+    @unittest.skip('skip')
     def test_get_num_source(self):
         query_0 = 'glucose'
         query_1 = 'somenonsense'
@@ -102,7 +109,7 @@ class TestFTX(unittest.TestCase):
         # r_3 = self.src.get_num_source(query_3, 'test_0,test_1', (self.index_0, self.index_1), fields=field_3)
         # self.assertEqual(len(r_3), 1)
 
-    #@unittest.skip('skip')
+    @unittest.skip('skip')
     def test_get_index_in_page(self):
         query_0 = 'glucose'
         query_1 = 'somenonsense'
@@ -128,6 +135,7 @@ class TestFTX(unittest.TestCase):
         self.assertEqual(result_2, {'ecmdb': [], 'ymdb': []})
         self.assertEqual(len(result_3['protein']), 10)
 
+    @unittest.skip('skip')
     def get_get_single_index_count(self):
         index = 'ecmdb'
         r_0 = 'glucose'

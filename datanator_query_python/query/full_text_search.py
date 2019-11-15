@@ -1,6 +1,8 @@
 from karr_lab_aws_manager.elasticsearch_kl import query_builder as es_query_builder
 import numpy as np
 import math
+import json
+import requests
 
 
 class FTX(es_query_builder.QueryBuilder):
@@ -25,9 +27,13 @@ class FTX(es_query_builder.QueryBuilder):
                 (https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-scroll).
         '''
         body = self.build_simple_query_string_body(query_message, **kwargs)
+        print(body)
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
-        r = self._build_es().search(index=index, body=body, size=size, from_=from_)
+        es = self.build_es()
+        r = es.search(index=index, body=body, from_=from_, size=size)
+        # url = self.es_endpoint + '/' + index + '/_search'
+        # r = requests.get(url, auth=self.awsauth, json=body)
         return r
 
     def get_index_in_page(self, r, index):
