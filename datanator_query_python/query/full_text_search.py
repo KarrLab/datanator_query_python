@@ -100,7 +100,8 @@ class FTX(es_query_builder.QueryBuilder):
             (:obj:`dict`): obj of index hits {'index': []}
         """
         result = {}
-        body = self.build_simple_query_string_body(query_message, **kwargs)
+        result[index] = []
+        body = self.build_simple_query_string_body(q, **kwargs)
         r = self._build_es().search(index=index, body=body, size=num)
         hits = r['hits']['hits']
         if hits == []:
@@ -108,7 +109,6 @@ class FTX(es_query_builder.QueryBuilder):
             return result
         else:
             for hit in hits:
-                if hit['_index'] in index:
-                    hit['_source']['_score'] = hit['_score']
-                    result[hit['_index']].append(hit['_source'])
+                hit['_source']['_score'] = hit['_score']
+                result[index].append(hit['_source'])
             return result
