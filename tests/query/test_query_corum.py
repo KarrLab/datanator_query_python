@@ -17,7 +17,8 @@ class TestQueryCorum(unittest.TestCase):
         cls.password = password
         cls.src = query_corum.QueryCorum(server=cls.MongoDB, database=cls.db,
                  verbose=True, max_entries=20, username = cls.username,
-                 password = cls.password, collection_str='test_query_corum')
+                 password = cls.password, collection_str='test_query_corum',
+                 readPreference='primary')
         doc_0 = {'subunits_uniprot_id': ['P0', 'P1'], 'SWISSPROT_organism_NCBI_ID': 9606}
         doc_1 = {'subunits_uniprot_id': ['P1', 'P2'], 'SWISSPROT_organism_NCBI_ID': 9606}
         doc_2 = {'subunits_uniprot_id': ['P1', 'P2', 'P3'], 'SWISSPROT_organism_NCBI_ID': 9606}
