@@ -6,7 +6,7 @@ import os
 
 class QueryFrontEnd:
     def __init__(self, MongoDB=None, replSet=None, db='datanator',
-                username=None, password=None, authDB='admin', readPreference='primary'):
+                username=None, password=None, authDB='admin', readPreference='nearest'):
         self.test_query_manager = True
         self.db = query_nosql.DataQuery(MongoDB=MongoDB, db=db,
                                         username=username, password=password, authSource=authDB,

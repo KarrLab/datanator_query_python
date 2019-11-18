@@ -65,18 +65,15 @@ class TestFTX(unittest.TestCase):
 
     # @unittest.skip('skip')
     def test_simple_query_string(self):
-        query_0 = 'mock_value_3'
+        query_0 = 'mock_value_3*'
         field_0 = ['mock_key_bulk', 'number']
         index_0 = 'test_0,test_1'
-        r = self.src.simple_query_string(query_0, index_0, fields=field_0, lenient=True,
-        analyze_wild_card=True)
+        r = self.src.simple_query_string(query_0, index_0, fields=field_0)
+        print(r)
         self.assertEqual(r['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
-        query_1 = "esc* + coli"
+        query_1 = "Escherichia coli"
         index_1 = "ecmdb,ymdb,metabolites_meta,protein,sabio_rk"
-        field_1 = ['protein_name', 'synonyms', 'enzymes', 'ko_name', 'gene_name', 'name',
-                    'reaction_participant.substrate.substrate_name', 'reaction_participant.substrate.substrate_synonym',
-                    'reaction_participant.product.product_name', 'reaction_participant.product.substrate_synonym',
-                    'enzymes.enzyme.enzyme_name', 'enzymes.subunit.canonical_sequence', 'species']
+        field_1 = ['protein_name', 'species','synonyms', 'enzymes', 'ko_name', 'gene_name', 'name']
         r_1 = self.src.simple_query_string(query_1, index_1, fields=field_1)
         print(r_1)
 
