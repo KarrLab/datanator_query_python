@@ -19,10 +19,10 @@ class TestQueryProtein(unittest.TestCase):
         cls.password = password
         cls.src = query_protein.QueryProtein(server=cls.MongoDB, database=cls.db,
                  verbose=True, max_entries=20, username = cls.username,
-                 password = cls.password, collection_str='test_query_protein')
+                 password = cls.password, collection_str='test_query_protein', readPreference='primary')
         cls.src_1 = query_protein.QueryProtein(server=cls.MongoDB, database='datanator',
                  verbose=True, username = cls.username,
-                 password = cls.password)
+                 password = cls.password, readPreference='primary')
         cls.src.db.drop_collection('test_query_protein')
 
         mock_doc_0 = {'uniprot_id': 'MOCK_0', 'ancestor_taxon_id': [105,104,103,102,101],
