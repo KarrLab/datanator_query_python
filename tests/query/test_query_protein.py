@@ -2,6 +2,8 @@ import unittest
 from datanator_query_python.query import query_protein
 from datanator_query_python.config import config
 import pymongo
+import time
+
 
 class TestQueryProtein(unittest.TestCase):
 
@@ -132,11 +134,13 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_info_by_taxonid(self):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
+        time.sleep(0.5)
         self.assertEqual(result[1]['ko_name'], ['ko name 1'])
 
     def test_get_info_by_taxon_id_abundance(self):
         _id = 6
         results = self.src.get_info_by_taxonid_abundance(_id)
+        time.sleep(0.5)
         self.assertEqual(results[0]['uniprot_ids'], {'uniprot6': True})
 
     def test_get_info_by_ko(self):
