@@ -14,7 +14,7 @@ class FTX(es_query_builder.QueryBuilder):
                 config_path=config_path, elastic_path=elastic_path,
                 cache_dir=cache_dir, service_name=service_name, max_entries=max_entries, verbose=verbose)
 
-    def simple_query_string(self, query_message, index, headers={ "Content-Type": "application/json" }, **kwargs):
+    def simple_query_string(self, query_message, index, **kwargs):
         ''' Perform simple_query_string in elasticsearch
             (https://opendistro.github.io/for-elasticsearch-docs/docs/elasticsearch/full-text/#simple-query-string)
             
@@ -27,13 +27,10 @@ class FTX(es_query_builder.QueryBuilder):
                 (https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-scroll).
         '''
         body = self.build_simple_query_string_body(query_message, **kwargs)
-        print(body)
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
         es = self.build_es()
         r = es.search(index=index, body=json.dumps(body), from_=from_, size=size)
-        # url = self.es_endpoint + '/' + index + '/_search'
-        # r = requests.get(url, auth=self.awsauth, json=body, headers=headers)
         return r
 
     def get_index_in_page(self, r, index):
