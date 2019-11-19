@@ -728,6 +728,25 @@ class QueryProtein:
         ancestor_ids, _ = self.taxon_manager.get_anc_by_name([anchor])
         ancestor_ids = ancestor_ids[0]
         ncbi_id = self.taxon_manager.get_ids_by_name(anchor)
+        constraint_0 = {'ko_number': ko_number}
+        constraint_1 = {'ncbi_taxonomy_id': {'$in': ncbi_id}}
+        query = {'$and': [constraint_0, constraint_1]}
+        projection = {
+            'ko_number': 1,
+            'ko_name': 1,
+            'ancestor_name': 1,
+            'ncbi_taxonomy_id': 1,
+            'abundances': 1,
+            'species_name': 1,
+            'uniprot_id': 1,
+            '_id': 0,
+            'ancestor_taxon_id': 1
+        }
+        docs = self.collection.find(filter=query, projection=projection)
+        if docs is not None:
+            for doc in docs:
+                result[0]['documents'].append(doc)
+
         levels = min(len(ancestor_ids), max_distance)
         checked_ids = ncbi_id
 
