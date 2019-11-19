@@ -30,7 +30,7 @@ class FTX(es_query_builder.QueryBuilder):
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
         es = self.build_es()
-        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size)
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=True)
         return r
 
     def get_index_in_page(self, r, index):
@@ -105,7 +105,7 @@ class FTX(es_query_builder.QueryBuilder):
         result = {}
         result[index] = []
         body = self.build_simple_query_string_body(q, **kwargs)
-        r = self._build_es().search(index=index, body=body, size=num)
+        r = self.build_es().search(index=index, body=body, size=num)
         hits = r['hits']['hits']
         if hits == []:
             result[index] = []

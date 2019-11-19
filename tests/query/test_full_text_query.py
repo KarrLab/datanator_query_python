@@ -59,7 +59,7 @@ class TestFTX(unittest.TestCase):
         body_0 = self.src.build_simple_query_string_body(query_0, fields=field_0, lenient=True,
         analyze_wild_card=True)
         index_0 = 'test_0,test_1'
-        es = self.src._build_es()
+        es = self.src.build_es()
         es_0 = es.search(index=index_0, body=body_0)
         self.assertEqual(es_0['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
 
