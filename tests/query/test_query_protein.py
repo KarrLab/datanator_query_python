@@ -248,3 +248,10 @@ class TestQueryProtein(unittest.TestCase):
         ko_number_1, ko_name_1 = self.src.get_kegg_orthology(uniprot_id_1)
         self.assertEqual(ko_number_1, None)
         self.assertEqual(ko_name_1, [])
+
+    def test_get_equivalent_kegg_with_anchor(self):
+        result_0 = self.src_1.get_equivalent_kegg_with_anchor('K03154','Thermus thermophilus HB27', 3, max_depth=2)
+        result_1 = self.src_1.get_equivalent_protein_with_anchor('Q72KL7',
+                                                             3,
+                                                             max_depth=2)
+        self.assertEqual(result_0, result_1)
