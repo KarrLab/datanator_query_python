@@ -8,7 +8,7 @@ class QueryProtein:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='protein',
-                 readPreference='primary'):
+                 readPreference='nearest'):
 
         self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
                                              password=password, authSource=authSource, db=database,
@@ -693,3 +693,86 @@ class QueryProtein:
             return doc.get('ko_number'), doc.get('ko_name', [])
         else:
             return None, []
+
+    def get_equivalent_kegg_with_anchor(self, ko, anchor, max_distance, max_depth=float('inf')):
+        '''
+            Get replacement abundance value by taxonomic distance
+            with the same kegg_orthology number.
+
+            Args:
+                ko (:obj:`str`): kegg orthology id to query for.
+                anchor (:obj:`str`): anchor species' name.
+                max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
+                                            proteins in results.
+                max_depth (:obj:`int`) max depth allowed from the common node.
+
+            Returns:
+                (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+                    [{'distance': 0, 'documents': [{}]}
+                     {'distance': 1, 'documents': [{}, {}, {} ...]}, 
+                     {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
+        '''
+
+        if max_distance <= 0:
+            return 'Please use get_abundance_by_id to check self abundance values'
+        if max_depth == None:
+            max_depth = 1000
+        if max_depth <= 0:
+            return 'Max_depth has to be greater than 0'
+
+        result = []
+        for i in range(max_distance):
+            result.append({'distance': i, 'documents': []})
+
+        ko_number = ko
+        ancestor_ids, _ = self.taxon_manager.get_anc_by_name([anchor])
+        ancestor_ids = ancestor_ids[0]
+        ncbi_id = self.taxon_manager.get_ids_by_name(anchor)
+        constraint_0 = {'ko_number': ko_number}
+        constraint_1 = {'ncbi_taxonomy_id': {'$in': ncbi_id}}
+        query = {'$and': [constraint_0, constraint_1]}
+        projection = {
+            'ko_number': 1,
+            'ko_name': 1,
+            'ancestor_name': 1,
+            'ncbi_taxonomy_id': 1,
+            'abundances': 1,
+            'species_name': 1,
+            'uniprot_id': 1,
+            '_id': 0,
+            'ancestor_taxon_id': 1
+        }
+        docs = self.collection.find(filter=query, projection=projection)
+        if docs is not None:
+            for doc in docs:
+                result[0]['documents'].append(doc)
+
+        levels = min(len(ancestor_ids), max_distance)
+        checked_ids = ncbi_id
+
+        projection = {'abundances': 1, 'ncbi_taxonomy_id': 1, 'species_name': 1,
+                    'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1, 'ko_number': 1,
+                    'ko_name': 1}
+        for level in range(levels):
+            cur_id = ancestor_ids[-(level+1)]
+
+            if level == 0:
+                common_ancestors = ancestor_ids
+            else:
+                common_ancestors = ancestor_ids[:-(level)]
+            length = len(common_ancestors)
+
+            query = {'$and': [{'ancestor_taxon_id': {'$all': common_ancestors} },{'ncbi_taxonomy_id': {'$nin': checked_ids} },
+                              {'ancestor_taxon_id': {'$nin': checked_ids} }, {'ko_number': ko_number},
+                              {'abundances': {'$exists': True} }]}
+
+            equivalents = self.collection.find(filter=query, projection=projection)
+            for equivalent in equivalents:
+                depth = len(equivalent['ancestor_taxon_id']) - length
+                if 0 <= depth < max_depth:
+                    equivalent['depth'] = depth + 1
+                    tmp = equivalent.pop('ancestor_taxon_id')
+                    result[level]['documents'].append(equivalent)
+            checked_ids.append(cur_id)
+
+        return result

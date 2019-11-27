@@ -1,6 +1,8 @@
 from karr_lab_aws_manager.elasticsearch_kl import query_builder as es_query_builder
 import numpy as np
 import math
+import json
+import requests
 
 
 class FTX(es_query_builder.QueryBuilder):
@@ -27,7 +29,8 @@ class FTX(es_query_builder.QueryBuilder):
         body = self.build_simple_query_string_body(query_message, **kwargs)
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
-        r = self._build_es().search(index=index, body=body, size=size, from_=from_)
+        es = self.build_es()
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=True)
         return r
 
     def get_index_in_page(self, r, index):
@@ -100,15 +103,15 @@ class FTX(es_query_builder.QueryBuilder):
             (:obj:`dict`): obj of index hits {'index': []}
         """
         result = {}
-        body = self.build_simple_query_string_body(query_message, **kwargs)
-        r = self._build_es().search(index=index, body=body, size=num)
+        result[index] = []
+        body = self.build_simple_query_string_body(q, **kwargs)
+        r = self.build_es().search(index=index, body=body, size=num)
         hits = r['hits']['hits']
         if hits == []:
             result[index] = []
             return result
         else:
             for hit in hits:
-                if hit['_index'] in index:
-                    hit['_source']['_score'] = hit['_score']
-                    result[hit['_index']].append(hit['_source'])
+                hit['_source']['_score'] = hit['_score']
+                result[index].append(hit['_source'])
             return result

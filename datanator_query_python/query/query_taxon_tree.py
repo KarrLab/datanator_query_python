@@ -11,7 +11,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
     def __init__(self, cache_dirname=None, collection_str='taxon_tree', 
                 verbose=False, max_entries=float('inf'), username=None, MongoDB=None, 
-                password=None, db='datanator', authSource='admin', readPreference='primary'):
+                password=None, db='datanator', authSource='admin', readPreference='nearest'):
         self.collection_str = collection_str
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                                         db=db, verbose=verbose, max_entries=max_entries, username=username,

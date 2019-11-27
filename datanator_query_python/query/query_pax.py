@@ -9,7 +9,7 @@ class QueryPax(query_nosql.DataQuery):
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='datanator',
                  collection_str='pax', verbose=False, max_entries=float('inf'), username=None,
-                 password=None, authSource='admin', readPreference='primary'):
+                 password=None, authSource='admin', readPreference='nearest'):
         """Instantiating query_pax
         
         Args:

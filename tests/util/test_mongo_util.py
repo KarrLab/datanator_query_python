@@ -35,8 +35,8 @@ class TestMongoUtil(unittest.TestCase):
     def test_con_db(self):
         client, db, col = self.src.con_db(self.db)
         self.assertNotEqual(self.src.con_db(self.db), 'Server not available')
-        self.assertEqual(str(self.src.client.read_preference), 'Primary()')
-        self.assertEqual(str(col.read_preference), 'Primary()')
+        self.assertEqual(str(self.src.client.read_preference), 'Nearest(tag_sets=None, max_staleness=-1)')
+        self.assertEqual(str(col.read_preference), 'Nearest(tag_sets=None, max_staleness=-1)')
 
     # @unittest.skip('passed')
     def test_print_schema(self):

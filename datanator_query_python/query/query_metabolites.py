@@ -16,7 +16,7 @@ class QueryMetabolites(mongo_util.MongoUtil):
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db=None,
                  verbose=True, max_entries=float('inf'), username=None,
-                 password=None, authSource='admin', readPreference='primary'):
+                 password=None, authSource='admin', readPreference='nearest'):
         self.verbose = verbose
         super().__init__(cache_dirname=cache_dirname,
                          MongoDB=MongoDB,

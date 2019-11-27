@@ -17,7 +17,7 @@ class TestQueryCorum(unittest.TestCase):
         cls.password = password
         cls.src = query_intact_complex.QueryIntactComplex(server=cls.MongoDB, database=cls.db,
                  verbose=True, max_entries=20, username = cls.username,
-                 password = cls.password, collection_str='test_query_intact_complex')
+                 password = cls.password, collection_str='test_query_intact_complex',readPreference='primary')
         doc_0 = {'name': 'name_0', 'ncbi_id': 9606}
         doc_1 = {'name': 'name_1', 'ncbi_id': 9607}
         doc_2 = {'name': 'name_2', 'ncbi_id': 9606}

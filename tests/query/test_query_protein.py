@@ -2,6 +2,8 @@ import unittest
 from datanator_query_python.query import query_protein
 from datanator_query_python.config import config
 import pymongo
+import time
+
 
 class TestQueryProtein(unittest.TestCase):
 
@@ -17,10 +19,10 @@ class TestQueryProtein(unittest.TestCase):
         cls.password = password
         cls.src = query_protein.QueryProtein(server=cls.MongoDB, database=cls.db,
                  verbose=True, max_entries=20, username = cls.username,
-                 password = cls.password, collection_str='test_query_protein')
+                 password = cls.password, collection_str='test_query_protein', readPreference='primary')
         cls.src_1 = query_protein.QueryProtein(server=cls.MongoDB, database='datanator',
                  verbose=True, username = cls.username,
-                 password = cls.password)
+                 password = cls.password, readPreference='primary')
         cls.src.db.drop_collection('test_query_protein')
 
         mock_doc_0 = {'uniprot_id': 'MOCK_0', 'ancestor_taxon_id': [105,104,103,102,101],
@@ -132,11 +134,13 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_info_by_taxonid(self):
         _id = 6
         result = self.src.get_info_by_taxonid(_id)
+        time.sleep(0.5)
         self.assertEqual(result[1]['ko_name'], ['ko name 1'])
 
     def test_get_info_by_taxon_id_abundance(self):
         _id = 6
         results = self.src.get_info_by_taxonid_abundance(_id)
+        time.sleep(0.5)
         self.assertEqual(results[0]['uniprot_ids'], {'uniprot6': True})
 
     def test_get_info_by_ko(self):
@@ -244,3 +248,7 @@ class TestQueryProtein(unittest.TestCase):
         ko_number_1, ko_name_1 = self.src.get_kegg_orthology(uniprot_id_1)
         self.assertEqual(ko_number_1, None)
         self.assertEqual(ko_name_1, [])
+
+    def test_get_equivalent_kegg_with_anchor(self):
+        result_0 = self.src_1.get_equivalent_kegg_with_anchor('K03154','Thermus thermophilus HB27', 3, max_depth=2)
+        self.assertTrue(len(result_0[0]['documents']) > 0)

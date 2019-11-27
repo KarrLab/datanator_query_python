@@ -8,7 +8,7 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db=None,
                  collection_str='metabolites_meta', verbose=False, max_entries=float('inf'), username=None,
-                 password=None, authSource='admin', readPreference='primary'):
+                 password=None, authSource='admin', readPreference='nearest'):
         self.collection_str = collection_str
         self.verbose = verbose
         super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,

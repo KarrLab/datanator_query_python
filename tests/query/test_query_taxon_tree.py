@@ -18,7 +18,8 @@ class TestQueryTaxonTree(unittest.TestCase):
         cls.MongoDB = conf.SERVER
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
-                 verbose=True, max_entries=20, username = cls.username, password = cls.password)
+            verbose=True, max_entries=20, username = cls.username, password = cls.password,
+            readPreference='primary')
 
     @classmethod
     def tearDownClass(cls):
@@ -107,7 +108,8 @@ class TestQueryTaxonTreeMock(unittest.TestCase):
         cls.MongoDB = conf.SERVER
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db, collection_str='test_taxon_tree',
-                 verbose=True, max_entries=20, username = cls.username, password = cls.password)
+            verbose=True, max_entries=20, username = cls.username, password = cls.password,
+            readPreference='primary')
         dic_0 = {'tax_id': 0, 'tax_name': 's0', 'anc_id': [5,4,3,2,1], 'anc_name': ['s5', 's4', 's3', 's2', 's1']}
         dic_1 = {'tax_id': 1, 'tax_name': 's1', 'anc_id': [5,4,3,2], 'anc_name': ['s5', 's4', 's3', 's2']}
         dic_2 = {'tax_id': 2, 'tax_name': 's2', 'anc_id': [5,4,3], 'anc_name': ['s5', 's4', 's3']}
