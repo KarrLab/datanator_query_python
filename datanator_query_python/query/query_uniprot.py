@@ -26,7 +26,8 @@ class QueryUniprot:
         con_1 = {'gene_name_alt': locus}
         con_2 = {'gene_name_orf': locus}
         con_3 = {'gene_name_oln': locus}
-        query = ['$or': [con_0, con_1, con_2, con_3]]
+        query = {'$or': [con_0, con_1, con_2, con_3]}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query)
         return docs, count
+        
