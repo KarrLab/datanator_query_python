@@ -230,7 +230,7 @@ class QuerySabioOld(query_nosql.DataQuery):
                                 projection={'kinlaw_id': 1},
                                 bound='loose'):
         ''' Find the kinlaw_id defined in sabio_rk using 
-            rxn participants' inchikey
+            rxn participants' names
 
             Args:
                 substrates (:obj:`list`): list of substrates' names

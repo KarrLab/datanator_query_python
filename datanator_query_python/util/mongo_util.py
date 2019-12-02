@@ -27,7 +27,7 @@ class MongoUtil:
             return (self.client, self.db_obj, collection)
         except pymongo.errors.ConnectionFailure:
             return ('Server not available')
-        except ServerSelectionTimeoutError:
+        except pymongo.errors.ServerSelectionTimeoutError:
             return ('Server timeout')
 
     def get_schema(self, collection_str):
