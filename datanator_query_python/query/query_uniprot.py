@@ -12,7 +12,7 @@ class QueryUniprot:
         self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
-    def get_gene_name_by_locus(self, locus, projection={'_id':0}):
+    def get_doc_by_locus(self, locus, projection={'_id':0}):
         """Get preferred gene name by locus name
         
         Args:
@@ -30,4 +30,21 @@ class QueryUniprot:
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query)
         return docs, count
+
+    def get_gene_protein_name_by_oln(self, oln, projection={'_id': 0}):
+        """Get documents by ordered locus name
+        
+        Args:
+            oln (:obj:`str`): Ordered locus name
+            projection (:obj:`dict`, optional): Pymongo projection. Defaults to {'_id': 0}.
+
+        Return:
+            (:obj:`tuple` of :obj:`str`): gene_name and protein_name
+        """
+        query = {'gene_name_oln': oln}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return "", ""
+        else:
+            return doc['gene_name'], doc['protein_name']
         
