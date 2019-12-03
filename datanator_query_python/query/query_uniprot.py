@@ -31,20 +31,24 @@ class QueryUniprot:
         count = self.collection.count_documents(query)
         return docs, count
 
-    def get_gene_protein_name_by_oln(self, oln, projection={'_id': 0}):
+    def get_gene_protein_name_by_oln(self, oln, species=None, projection={'_id': 0}):
         """Get documents by ordered locus name
         
         Args:
-            oln (:obj:`str`): Ordered locus name
+            oln (:obj:`str`): Ordered locus name.
+            species (:obj:`int`): NCBI taxonomy id. Defaults to None.
             projection (:obj:`dict`, optional): Pymongo projection. Defaults to {'_id': 0}.
 
         Return:
             (:obj:`tuple` of :obj:`str`): gene_name and protein_name
         """
-        query = {'gene_name_oln': oln}
+        if species is None:
+            query = {'gene_name_oln': oln}
+        else:
+            query = {'$and': [{'gene_name_oln': oln}, {'ncbi_taxonomy_id': species}]}
         doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
         if doc is None:
-            return "", ""
+            return None, None
         else:
             return doc['gene_name'], doc['protein_name']
         

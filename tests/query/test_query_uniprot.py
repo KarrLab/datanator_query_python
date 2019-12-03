@@ -29,5 +29,5 @@ class TestUniprot(unittest.TestCase):
         self.assertEqual(gene_name_0, 'cdc6')
         self.assertEqual(protein_name_0, 'ORC1-type DNA replication protein')
         gene_name_1, protein_name_1 = self.src.get_gene_protein_name_by_oln('somenonesense')
-        self.assertEqual(gene_name_1, '')
-        self.assertEqual(protein_name_1, '')
+        self.assertEqual(gene_name_1, None)
+        self.assertEqual(protein_name_1, None)
