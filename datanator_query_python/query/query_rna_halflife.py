@@ -6,7 +6,7 @@ class QueryRNA(mongo_util.MongoUtil):
 
     def __init__(self, server=None, username=None, password=None, verbose=False,
                  db=None, collection_str=None, authDB='admin', readPreference=None):
-        super().__init__(self, MongoDB=server, db=db, username=username,
+        super().__init__(MongoDB=server, db=db, username=username,
                         password=password, authSource=authDB, readPreference=readPreference,
                         verbose=verbose)
         self.client, self.db, self.collection = self.con_db(collection_str)

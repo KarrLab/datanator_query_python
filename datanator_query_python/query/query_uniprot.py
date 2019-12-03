@@ -28,7 +28,7 @@ class QueryUniprot:
         con_3 = {'gene_name_oln': locus}
         query = {'$or': [con_0, con_1, con_2, con_3]}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
-        count = self.collection.count_documents(query)
+        count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
 
     def get_gene_protein_name_by_oln(self, oln, species=None, projection={'_id': 0}):

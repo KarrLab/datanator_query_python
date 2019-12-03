@@ -12,8 +12,6 @@ class TestQueryRna(unittest.TestCase):
         username = conf.MONGO_TEST_USERNAME
         password = conf.MONGO_TEST_PASSWORD
         MongoDB = conf.SERVER
-        username = username
-        password = password
         cls.col_str = 'rna_halflife'
         cls.src = query_rna_halflife.QueryRNA(server=MongoDB, username=username, password=password,
                                             verbose=True, db=db, collection_str=cls.col_str,
