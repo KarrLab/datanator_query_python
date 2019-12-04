@@ -167,14 +167,43 @@ class FTX(es_query_builder.QueryBuilder):
                             }
                         }
                     }}
+        aggregation = {
+                        "top_kos": {
+                            "terms": {
+                                "field": "ko_number",
+                                "order": {
+                                    "top_hit": "desc"
+                                },
+                                "size": num
+                            },
+                        "aggs": {
+                            "top_ko": {
+                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
+                            },
+                                "top_hit" : {
+                                "max": {
+                                    "script": {
+                                        "source": "_score"
+                                    }
+                                }
+                            }
+                        }
+                        }
+                    }
         result[index] = []
-        r = self.bool_query(q, index, must_not=must_not, size=num, **kwargs)
-        hits = r['hits']['hits']
-        if hits == []:
-            result[index] = []
-            return result
-        else:
-            for hit in hits:
-                hit['_source']['_score'] = hit['_score']
-                result[index].append(hit['_source'])
-            return result
+        sqs_body = self.build_simple_query_string_body(q, **kwargs)
+        must = sqs_body['query']
+        body = self.build_bool_query_body(must=must, must_not=must_not)
+        body['aggs'] = aggregation
+        body['size'] = 0
+        r = self.build_es().search(index=index, body=body, size=num)
+        return r['aggregations']
+        # hits = r['hits']['hits']
+        # if hits == []:
+        #     result[index] = []
+        #     return result
+        # else:
+        #     for hit in hits:
+        #         hit['_source']['_score'] = hit['_score']
+        #         result[index].append(hit['_source'])
+        #     return result
