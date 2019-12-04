@@ -30,7 +30,38 @@ class FTX(es_query_builder.QueryBuilder):
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
         es = self.build_es()
-        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=True)
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=False)
+        return r
+
+    def bool_query(self, query_message, index, must=None, should=None, must_not=None, _filter=None, **kwargs):
+        ''' Perform boolean query in elasticsearch
+            (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html)
+            
+            Args:
+                query_message (:obj:`str`): simple string for querying
+                index (:obj:`str`): comma separated string to indicate indices in which query will be done.
+                must (:obj:`list` or :obj:`dict`, optional): Body for must. Defaults to None.
+                _filter (:obj:`list` or :obj:`dict`, optional): Body for filter. Defaults to None.
+                should (:obj:`list` or :obj:`dict`, optional): Body for should. Defaults to None.
+                must_not (:obj:`list` or :obj:`dict`, optional): Body for must_not. Defaults to None.
+                **size (:obj:`int`): number of hits to be returned
+                **from_ (:obj:`int`): starting offset (default: 0)
+                **scroll (:obj:`str`): specify how long a consistent view of the index should be maintained for scrolled search
+                (https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-scroll).
+        '''
+        simple_str_query_body = self.build_simple_query_string_body(query_message, **kwargs)
+        part_must = simple_str_query_body['query']
+        if must is None:
+            must = part_must
+        elif isinstance(must, dict):
+            must = [must].append(part_must)
+        else:
+            must.append(part_must)
+        body = self.build_bool_query_body(must=must, should=should, _filter=_filter, must_not=must_not)
+        from_ = kwargs.get('from_', 0)
+        size = kwargs.get('size', 10)
+        es = self.build_es()
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=False)
         return r
 
     def get_index_in_page(self, r, index):
