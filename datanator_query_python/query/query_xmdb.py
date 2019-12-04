@@ -2,7 +2,7 @@ from datanator_query_python.util import mongo_util
 from pymongo.collation import Collation, CollationStrength
 
 
-class QueryEcmdb:
+class QueryXmdb:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='ecmdb',
@@ -31,3 +31,20 @@ class QueryEcmdb:
         for doc in docs:
             result.append(doc)
         return result
+
+    def get_name_by_inchikey(self, inchikey):
+        """Get metabolite's name by its inchikey
+        
+        Args:
+            inchikey (:obj:`str`): inchi key of metabolite
+
+        Return:
+            (:obj:`str`): name of metabolite
+        """
+        query = {'inchikey': inchikey}
+        projection = {'_id': 0, 'name': 1}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return 'No metabolite found.'
+        else:
+            return doc['name']
