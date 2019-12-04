@@ -130,7 +130,7 @@ class TestFTX(unittest.TestCase):
         self.assertEqual(result_2, {'ecmdb': [], 'ymdb': []})
         self.assertEqual(len(result_3['protein']), 10)
 
-    @unittest.skip('skip')
+    # @unittest.skip('skip')
     def test_get_single_index_count(self):
         index = 'ecmdb'
         r_0 = 'glucose'
@@ -139,7 +139,7 @@ class TestFTX(unittest.TestCase):
         result_0 = self.src.get_single_index_count(r_0, index, num_0)
         result_1 = self.src.get_single_index_count(r_0, index, num_1)
         self.assertEqual(result_0, {index: []})
-        self.assertEqual(len(result_1[index].values()), num_1)
+        self.assertEqual(len(result_1[index]), num_1)
 
     def test_bool_query(self):
         query_message = 'alcohol dehydrogenase'
@@ -153,3 +153,8 @@ class TestFTX(unittest.TestCase):
                     }}
         result = self.src.bool_query(query_message, index, must_not=must_not)
         self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K00001')
+
+    def test_get_protein_ko_count(self):
+        query_message = 'alcohol dehydrogenase'
+        result = self.src.get_protein_ko_count(query_message, 14)
+        self.assertEqual(len(result['protein']), 14)

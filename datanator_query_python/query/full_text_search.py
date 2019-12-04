@@ -146,3 +146,35 @@ class FTX(es_query_builder.QueryBuilder):
                 hit['_source']['_score'] = hit['_score']
                 result[index].append(hit['_source'])
             return result
+
+    def get_protein_ko_count(self, q, num, **kwargs):
+        """Get protein index with no ko_number field for up to num hits.
+        
+        Args:
+            q (:obj:`str`): query message
+            index (:obj:`str`): index in which query will be performed
+            num (:obj:`int`): number of hits needed
+
+        Return:
+            (:obj:`dict`): obj of index hits {'index': []}
+        """
+        result = {}
+        index = 'protein'
+        must_not = {"bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "ko_number"
+                            }
+                        }
+                    }}
+        result[index] = []
+        r = self.bool_query(q, index, must_not=must_not, size=num, **kwargs)
+        hits = r['hits']['hits']
+        if hits == []:
+            result[index] = []
+            return result
+        else:
+            for hit in hits:
+                hit['_source']['_score'] = hit['_score']
+                result[index].append(hit['_source'])
+            return result
