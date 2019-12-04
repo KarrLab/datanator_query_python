@@ -148,7 +148,7 @@ class FTX(es_query_builder.QueryBuilder):
             return result
 
     def get_protein_ko_count(self, q, num, **kwargs):
-        """Get protein index with no ko_number field for up to num hits.
+        """Get protein index with different ko_number field for up to num hits.
         
         Args:
             q (:obj:`str`): query message
