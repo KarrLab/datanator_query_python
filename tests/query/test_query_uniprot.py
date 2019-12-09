@@ -31,3 +31,8 @@ class TestUniprot(unittest.TestCase):
         gene_name_1, protein_name_1 = self.src.get_gene_protein_name_by_oln('somenonesense')
         self.assertEqual(gene_name_1, None)
         self.assertEqual(protein_name_1, None)
+
+    def test_get_protein_name_by_gn(self):
+        input_0 = 'accA'
+        species = 272623
+        pass

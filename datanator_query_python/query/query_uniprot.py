@@ -51,4 +51,30 @@ class QueryUniprot:
             return None, None
         else:
             return doc['gene_name'], doc['protein_name']
+
+    def get_protein_name_by_gn(self, gene_name, species=None, projection={'_id': 0}):
+        """Get documents by gene name.
+        
+        Args:
+            gene_name (:obj:`str`): gene name.
+            species (:obj:`list`): NCBI taxonomy id. Defaults to None.
+            projection (:obj:`dict`, optional): Pymongo projection. Defaults to {'_id': 0}.
+
+        Return:
+            (:obj:`tuple` of :obj:`str`): gene_name and protein_name
+        """
+        con_0 = {'gene_name': gene_name}
+        con_1 = {'gene_name_alt': gene_name}
+        con_2 = {'gene_name_orf': gene_name}
+        con_3 = {'gene_name_oln': gene_name}
+        name_search = {'$or': [con_0, con_1, con_2, con_3]}
+        if species is None:
+            query = {'gene_name': gene_name}
+        else:
+            query = {'$and': [name_search, {'ncbi_taxonomy_id': {'$in': species}}]}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return None
+        else:
+            return doc['protein_name']
         
