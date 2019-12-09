@@ -36,7 +36,7 @@ class QueryUniprot:
         
         Args:
             oln (:obj:`str`): Ordered locus name.
-            species (:obj:`int`): NCBI taxonomy id. Defaults to None.
+            species (:obj:`list`): NCBI taxonomy id. Defaults to None.
             projection (:obj:`dict`, optional): Pymongo projection. Defaults to {'_id': 0}.
 
         Return:
@@ -45,7 +45,7 @@ class QueryUniprot:
         if species is None:
             query = {'gene_name_oln': oln}
         else:
-            query = {'$and': [{'gene_name_oln': oln}, {'ncbi_taxonomy_id': species}]}
+            query = {'$and': [{'gene_name_oln': oln}, {'ncbi_taxonomy_id': {'$in': species}}]}
         doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
         if doc is None:
             return None, None
