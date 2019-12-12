@@ -28,3 +28,7 @@ class TestQueryRna(unittest.TestCase):
         for doc in docs_0:
             self.assertEqual(len(doc['halflives']), 2)
         
+    def test_get_doc_by_protein_name(self):
+        protein_name_0 = 'Hydrogenase maturation factor'
+        _, count_0 = self.src.get_doc_by_protein_name(protein_name_0)
+        self.assertEqual(count_0, 3)
