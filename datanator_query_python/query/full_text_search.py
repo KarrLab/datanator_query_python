@@ -152,7 +152,6 @@ class FTX(es_query_builder.QueryBuilder):
         
         Args:
             q (:obj:`str`): query message
-            index (:obj:`str`): index in which query will be performed
             num (:obj:`int`): number of hits needed
 
         Return:
