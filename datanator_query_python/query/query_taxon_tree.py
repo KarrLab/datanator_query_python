@@ -82,10 +82,10 @@ class QueryTaxonTree(query_nosql.DataQuery):
         result_id = []
         result_name = []
         projection = {'_id': 0, 'anc_id': 1, 'anc_name': 1}
-        query = {'tax_name': {'$in': names}}
-        docs = self.collection.find(filter=query, collation=self.collation,
-                                    projection=projection)
-        for doc in docs:
+        for name in names:
+            query = {'tax_name': name}
+            doc = self.collection.find_one(filter=query, collation=self.collation,
+                                        projection=projection)
             result_id.append(doc['anc_id'])
             result_name.append(doc['anc_name'])
         return result_id, result_name
@@ -127,13 +127,14 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 ancestor: closest common ancestor's name
                 distance: each organism's distance to the ancestor
         '''
-        if org_format == 'name':
-            anc_ids, anc_names = self.get_anc_by_name([org1, org2])
-        else:
-            anc_ids, anc_names = self.get_anc_by_id([org1, org2])
+        if org1.upper() == org2.upper():
+            return (org1, [0, 0])
 
-        if org1 == org2:
-            return ('org1', [0, 0])
+        if org_format == 'name':
+            anc_ids, _ = self.get_anc_by_name([org1, org2])
+        else:
+            anc_ids, _ = self.get_anc_by_id([org1, org2])
+
         org1_anc = anc_ids[0]
         org2_anc = anc_ids[1]
 

@@ -68,10 +68,12 @@ class TestQueryTaxonTree(unittest.TestCase):
     # @unittest.skip('passed')
     def test_get_common_ancestor(self):
         names = ['Candidatus Diapherotrites', 'Candidatus Forterrea multitransposorum CG_2015-17_Forterrea_25_41']
-        ancestor, distances = self.src.get_common_ancestor(names[0], names[1])
-        self.assertEqual(ancestor, 1783276)
+        _, distances = self.src.get_common_ancestor(names[0], names[1])
+        # self.assertEqual(1783276)
         self.assertEqual(distances[0], 1)
         self.assertEqual(distances[1], 4)
+        _, distances = self.src.get_common_ancestor('escherichia coli', 'Escherichia coli')
+        self.assertEqual([0, 0], distances)
 
     def test_get_rank(self):
         ids = [131567, 2759, 33154, 33208, 6072, 33213, 33511, 7711, 9526, 314295, 9604, 207598, 9605, 9606]
