@@ -56,18 +56,19 @@ class QueryTaxonTree(query_nosql.DataQuery):
     def get_name_by_id(self, ids):
         ''' Get organisms' names given their tax_ids
             Args:
-                ids: organisms' tax_ids
+                ids (:obj:`list`): list of organisms' tax_ids
             Return:
-                names: organisms' names
+                (:obj:`dict`): organisms' ids and names
         '''
-        names = []
-        projection = {'_id': 0, 'tax_name': 1}
+        names = {}
+        projection = {'_id': 0, 'tax_name': 1, 'tax_id': 1}
         query = {'tax_id': {'$in': ids}}
         docs = self.collection.find(filter=query, projection=projection)
         if docs is None:
-            return ['not in database']
+            return {'0': 'none in database'}
         for doc in docs:
-            names.append(doc['tax_name'])
+            _id = doc['tax_id']
+            names[_id] = doc['tax_name']
         return names
 
     def get_anc_by_name(self, names):

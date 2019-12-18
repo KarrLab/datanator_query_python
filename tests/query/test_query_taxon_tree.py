@@ -39,7 +39,7 @@ class TestQueryTaxonTree(unittest.TestCase):
     def test_get_name_by_id(self):
         ids = [743725, 2107591]
         names = self.src.get_name_by_id(ids)
-        self.assertEqual(names[0], 'Candidatus Diapherotrites')
+        self.assertEqual(names[743725], 'Candidatus Diapherotrites')
 
     def test_get_ids_by_name(self):
         name_0 = 'Escherichia coli'
