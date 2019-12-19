@@ -5,6 +5,7 @@ import json
 from pymongo.collation import Collation, CollationStrength
 import pymongo
 
+
 class QueryTaxonTree(query_nosql.DataQuery):
     '''Queries specific to taxon_tree collection
     '''
@@ -65,7 +66,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
         query = {'tax_id': {'$in': ids}}
         docs = self.collection.find(filter=query, projection=projection)
         if docs is None:
-            return {'0': 'none in database'}
+            return {-1: 'none in database'}
         for doc in docs:
             _id = doc['tax_id']
             names[_id] = doc['tax_name']
@@ -98,7 +99,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 ids: list of organism's ids e.g.[12345, 234456]
 
             Return:
-                result: list of ancestors in order of the farthest to the closest
+                (:obj:`tuple` of :obj:`list`): list of ancestors in order of the farthest to the closest
         '''
         result_name = []
         result_id = []
