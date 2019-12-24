@@ -177,8 +177,11 @@ class QueryProtein:
         docs = self.collection.find(filter=query, projection=projection)
 
         for doc in docs:
-            ko_number = doc.get('ko_number', 'no number')
-            ko_name = doc.get('ko_name', ['no name'])
+            ko_number = doc.get('ko_number')
+            ko_name = doc.get('ko_name')
+            if ko_number is None or ko_number == 'nan':
+                ko_number = 'no number'
+                ko_name = ['no name']           
             uniprot_id = doc['uniprot_id']
             abundance_status = 'abundances' in doc
             index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
