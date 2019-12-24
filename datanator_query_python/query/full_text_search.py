@@ -136,7 +136,8 @@ class FTX(es_query_builder.QueryBuilder):
         result = {}
         result[index] = []
         body = self.build_simple_query_string_body(q, **kwargs)
-        r = self.build_es().search(index=index, body=body, size=num)
+        from_ = kwargs.get('from_', 0)
+        r = self.build_es().search(index=index, body=body, size=num, from_=from_)
         hits = r['hits']['hits']
         if hits == []:
             result[index] = []
