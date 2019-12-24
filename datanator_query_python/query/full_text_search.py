@@ -151,8 +151,9 @@ class FTX(es_query_builder.QueryBuilder):
         """Get protein index with different ko_number field for up to num hits.
         
         Args:
-            q (:obj:`str`): query message
-            num (:obj:`int`): number of hits needed
+            q (:obj:`str`): query message.
+            num (:obj:`int`): number of hits needed.
+            **from_ (:obj:`int`): starting offset (default: 0).
 
         Return:
             (:obj:`dict`): obj of index hits {'index': []}
@@ -195,7 +196,8 @@ class FTX(es_query_builder.QueryBuilder):
         body = self.build_bool_query_body(must=must, must_not=must_not)
         body['aggs'] = aggregation
         body['size'] = 0
-        r = self.build_es().search(index=index, body=body, size=num)
+        from_ = kwargs.get('from_', 0)
+        r = self.build_es().search(index=index, body=body, size=num, from_=from_)
         return r['aggregations']
         # hits = r['hits']['hits']
         # if hits == []:
