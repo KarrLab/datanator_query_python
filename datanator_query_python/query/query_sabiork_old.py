@@ -259,3 +259,11 @@ class QuerySabioOld(query_nosql.DataQuery):
         docs = self.collection.find(filter=query, projection=projection)
         count = self.collection.count_documents(query)
         return count, docs
+
+    def get_unique_entries(self):
+        """Get number of unique curated entries.
+
+        Return:
+            (:obj:`int`): Number of unique entries.
+        """
+        return len(self.collection.distinct('kinlaw_id'))

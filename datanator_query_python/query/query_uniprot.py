@@ -5,10 +5,11 @@ from pymongo.collation import Collation, CollationStrength
 class QueryUniprot:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
-                 database='datanator', collection_str=None):
+                 database='datanator', collection_str=None, readPreference='nearest'):
 
         self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                                  password=password, authSource=authSource, db=database)
+                                                  password=password, authSource=authSource, db=database,
+                                                  readPreference=readPreference)
         self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 

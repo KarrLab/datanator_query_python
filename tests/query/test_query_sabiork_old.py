@@ -118,3 +118,7 @@ class TestQuerySabioOld(unittest.TestCase):
             ids_0.append(doc['kinlaw_id'])
         self.assertTrue(41 in ids_0)
         self.assertEqual(0, count)
+
+    def test_get_unique_reactions(self):
+        result = self.src.get_unique_entries()
+        self.assertEqual(60193, result)
