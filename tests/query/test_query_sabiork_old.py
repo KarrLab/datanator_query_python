@@ -122,3 +122,7 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_unique_reactions(self):
         result = self.src.get_unique_entries()
         self.assertEqual(60193, result)
+
+    def test_get_unique_organisms(self):
+        result = self.src.get_unique_organisms()
+        self.assertEqual(983, result)

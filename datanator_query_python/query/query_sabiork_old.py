@@ -267,3 +267,11 @@ class QuerySabioOld(query_nosql.DataQuery):
             (:obj:`int`): Number of unique entries.
         """
         return len(self.collection.distinct('kinlaw_id'))
+
+    def get_unique_organisms(self):
+        """Get number of unique organisms.
+
+        Return:
+            (:obj:`int`): Number of unique organisms.
+        """
+        return len(self.collection.distinct('taxon_id'))
