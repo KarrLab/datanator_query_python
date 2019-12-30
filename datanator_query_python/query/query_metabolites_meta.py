@@ -1,6 +1,8 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from . import query_nosql
 import numpy as np
+from pymongo.collation import Collation, CollationStrength
+
 
 class QueryMetabolitesMeta(query_nosql.DataQuery):
     '''Queries specific to metabolites_meta collection
@@ -20,6 +22,7 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
             self.collection_str)
         self.file_manager = file_util.FileUtil()
         self.chem_manager = chem_util.ChemUtil()
+        self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_metabolite_synonyms(self, compounds):
         ''' Find synonyms of a compound
@@ -225,3 +228,11 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
                 result.append(replaced)
 
         return raw, result
+
+    def get_unique_metabolites(self):
+        """Get number of unique metabolites.
+
+        Return:
+            (:obj:`int`): number of unique metabolites.
+        """
+        return len(self.collection.distinct('InChI_Key', collation=self.collation))
