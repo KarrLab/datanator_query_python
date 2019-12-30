@@ -779,3 +779,19 @@ class QueryProtein:
             checked_ids.append(cur_id)
 
         return result
+
+    def get_unique_protein(self):
+        """Get number of unique proteins in collection
+
+        Return:
+            (:obj:`int`): number of unique proteins.
+        """
+        return len(self.collection.distinct('uniprot_id', collation=self.collation))
+    
+    def get_unique_organism(self):
+        """Get number of unique organisms in collection.
+
+        Return:
+            (:obj:`int`): number of unique organisms.
+        """
+        return len(self.collection.distinct('ncbi_taxonomy_id'))
