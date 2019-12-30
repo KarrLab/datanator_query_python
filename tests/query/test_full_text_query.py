@@ -152,7 +152,7 @@ class TestFTX(unittest.TestCase):
                         }
                     }}
         result = self.src.bool_query(query_message, index, must_not=must_not)
-        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K00001')
+        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K13954')
 
     def test_get_protein_ko_count(self):
         query_message = 'alcohol dehydrogenase'
