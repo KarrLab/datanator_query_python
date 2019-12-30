@@ -127,3 +127,20 @@ class QueryMetabolites(mongo_util.MongoUtil):
             doc['_id'] = str(doc['_id'])
             result.append(doc)
         return result
+
+    def get_concentration_count(self):
+        """Get number of metabolites with concentration values.
+
+        Return:
+            (:obj:`int`): Number of metabolites with concentrations.
+        """
+        query = {'concentrations.concentration': {'$exists': True}}
+        projection = {'inchikey': 1}
+        x = set()
+        ecmdb_concentration = self.collection_ecmdb.find(filter=query, projection=projection)
+        ymdb_concentration = self.collection_ymdb.find(filter=query, projection=projection)
+        for m in ecmdb_concentration:
+            x.add(m['inchikey'])
+        for m in ymdb_concentration:
+            x.add(m['inchikey'])
+        return len(x)

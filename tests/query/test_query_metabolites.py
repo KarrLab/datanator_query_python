@@ -56,5 +56,8 @@ class TestQueryMetabolites(unittest.TestCase):
                     'description': 'Species name not supported yet.'}])
         self.assertEqual(len(result_2), 1)
         self.assertEqual(len(result_3), 2)
-        print(result_3[1])
         self.assertEqual(len(result_4), 1)
+
+    def test_get_concentration_count(self):
+        result = self.src.get_concentration_count()
+        self.assertEqual(1586, result)
