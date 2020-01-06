@@ -179,7 +179,7 @@ class FTX(es_query_builder.QueryBuilder):
                             },
                         "aggs": {
                             "top_ko": {
-                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
+                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'abundances']}, 'size': 1}
                             },
                                 "top_hit" : {
                                 "max": {
