@@ -743,7 +743,9 @@ class QueryProtein:
             'species_name': 1,
             'uniprot_id': 1,
             '_id': 0,
-            'ancestor_taxon_id': 1
+            'ancestor_taxon_id': 1,
+            'protein_name': 1,
+            'gene_name': 1
         }
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         if docs is not None:
@@ -755,7 +757,7 @@ class QueryProtein:
 
         projection = {'abundances': 1, 'ncbi_taxonomy_id': 1, 'species_name': 1,
                     'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1, 'ko_number': 1,
-                    'ko_name': 1}
+                    'ko_name': 1, 'protein_name': 1, 'gene_name': 1}
         for level in range(levels):
             cur_id = ancestor_ids[-(level+1)]
 
