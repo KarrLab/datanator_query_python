@@ -545,7 +545,7 @@ class QueryProtein:
             '_id': 0,
             'ancestor_taxon_id': 1
         }
-        protein = self.collection.find_one(query, projection=projection, collation=self.collation)
+        protein = self.collection.find_one(query, projection=projection)
         if protein is None:
             return [{'distance': -1, 'documents': []}]
         elif protein.get('ko_number') is None:
@@ -581,7 +581,7 @@ class QueryProtein:
             length = len(common_ancestors)
 
             query = {'$and': [{'ancestor_taxon_id': {'$all': common_ancestors} },{'ncbi_taxonomy_id': {'$nin': checked_ids} },
-                              {'ancestor_taxon_id': {'$nin': checked_ids} }, {'ko_number': ko_number},
+                              {'ancestor_taxon_id': {'$nin': checked_ids} }, {'ko_number': ko_number.upper()},
                               {'abundances': {'$exists': True} }]}
 
             equivalents = self.collection.find(filter=query, projection=projection)
@@ -743,9 +743,11 @@ class QueryProtein:
             'species_name': 1,
             'uniprot_id': 1,
             '_id': 0,
-            'ancestor_taxon_id': 1
+            'ancestor_taxon_id': 1,
+            'protein_name': 1,
+            'gene_name': 1
         }
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         if docs is not None:
             for doc in docs:
                 result[0]['documents'].append(doc)
@@ -755,7 +757,7 @@ class QueryProtein:
 
         projection = {'abundances': 1, 'ncbi_taxonomy_id': 1, 'species_name': 1,
                     'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1, 'ko_number': 1,
-                    'ko_name': 1}
+                    'ko_name': 1, 'protein_name': 1, 'gene_name': 1}
         for level in range(levels):
             cur_id = ancestor_ids[-(level+1)]
 

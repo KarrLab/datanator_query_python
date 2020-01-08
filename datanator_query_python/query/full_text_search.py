@@ -209,3 +209,73 @@ class FTX(es_query_builder.QueryBuilder):
         #         hit['_source']['_score'] = hit['_score']
         #         result[index].append(hit['_source'])
         #     return result
+
+    def get_protein_ko_count_abundance(self, q, num, **kwargs):
+        """Get protein index with different ko_number field for up to num hits,
+        provided at least one of the proteins under ko_number has abundance info.
+        
+        Args:
+            q (:obj:`str`): query message.
+            num (:obj:`int`): number of hits needed.
+            **from_ (:obj:`int`): starting offset (default: 0).
+
+        Return:
+            (:obj:`dict`): obj of index hits {'index': []}
+        """
+        result = {}
+        index = 'protein'
+        must_not = {"bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "ko_number"
+                            }
+                        }
+                    }}
+        aggregation = {
+                        "top_kos": {
+                            "terms": {
+                                "field": "ko_number",
+                                "order": {
+                                    "top_hit": "desc"
+                                },
+                                "size": num
+                            },
+                        "aggs": {
+                            "top_ko": {
+                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
+                            },
+                                "top_hit" : {
+                                "max": {
+                                    "script": {
+                                        "source": "_score"
+                                    }
+                                }
+                            }
+                        }
+                        }
+                    }
+        result[index] = []
+        sqs_body = self.build_simple_query_string_body(q, **kwargs)
+        must = sqs_body['query']
+        must = [must]
+        must.append({"exists": {"field": "abundances"}})
+        body = self.build_bool_query_body(must=must, must_not=must_not)
+        body['aggs'] = aggregation
+        body['size'] = 0
+        from_ = kwargs.get('from_', 0)
+        r = self.build_es().search(index=index, body=body, size=num, from_=from_)
+        r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
+        ko_abundance = set()
+        ko_all = set()
+        for bucket_abundance in r['aggregations']['top_kos']['buckets']:
+            ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source']['ko_number'])
+            
+        for bucket_all in r_all['top_kos']['buckets']:
+            ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source']['ko_number'])
+        intersects = ko_abundance.intersection(ko_all)
+        for s in r['aggregations']['top_kos']['buckets']:
+            if s['top_ko']['hits']['hits'][0]['_source']['ko_number'] in intersects:
+                s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
+            else:
+                s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
+        return r['aggregations']    
