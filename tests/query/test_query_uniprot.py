@@ -36,3 +36,6 @@ class TestUniprot(unittest.TestCase):
         input_0 = 'accA'
         species = 272623
         pass
+
+    def test_get_gene_protein_name_by_embl(self):
+        pass

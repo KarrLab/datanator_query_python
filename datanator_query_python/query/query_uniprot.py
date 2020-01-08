@@ -83,15 +83,15 @@ class QueryUniprot:
         """Get documents by EMBL or RefSeq.
         
         Args:
-            embl (:obj:`str`): EMBL information.
+            embl (:obj:`list`): EMBL information.
             species (:obj:`list`): NCBI taxonomy id. Defaults to None.
             projection (:obj:`dict`, optional): Pymongo projection. Defaults to {'_id': 0}.
 
         Return:
             (:obj:`tuple` of :obj:`str`): gene_name and protein_name
         """
-        con_0 = {'sequence_refseq': embl}
-        con_1 = {'sequence_embl': embl}
+        con_0 = {'sequence_refseq': {'$in': embl}}
+        con_1 = {'sequence_embl': {'$in': embl}}
         if species is None:
             query = {'$and': [con_0, con_1]}
         else:
@@ -102,3 +102,19 @@ class QueryUniprot:
         else:
             return doc['gene_name'], doc['protein_name']
         
+    def get_names_by_gene_name(self, gene_name):
+        """Get standard gene name by gene name.
+        
+        Args:
+            gene_name (:obj:`list` of :obj:`str`): list of gene names belonging to one protein.
+
+        Return:
+            (:obj:`tuple` of :obj:`str`): standard gene_name, protein_name
+        """
+        query = {'gene_name': {'$in': gene_name}}
+        projection = {'uniprot_id': 1, 'gene_name': 1, 'protein_name': 1}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return None, None
+        else:
+            return doc['gene_name'], doc['protein_name']

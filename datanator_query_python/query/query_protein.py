@@ -337,7 +337,6 @@ class QueryProtein:
             _ids.append(entry['uniprot_id'])
         return self.get_kinlaw_by_id(_ids)
 
-
     def get_abundance_by_id(self, _id):
         '''
         	Get protein abundance information by uniprot_id.
@@ -377,7 +376,6 @@ class QueryProtein:
         for doc in docs:
             result.append(doc)
         return result
-
 
     def get_proximity_abundance_taxon(self, _id, max_distance=3):
         '''
@@ -435,7 +433,6 @@ class QueryProtein:
             result[distance-1]['ancestor_names'] = close_names
 
         return result
-
 
     def get_equivalent_protein(self, _id, max_distance, max_depth=float('inf')):
         '''
