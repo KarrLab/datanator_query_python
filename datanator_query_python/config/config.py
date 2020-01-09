@@ -19,7 +19,7 @@ class Config:
     PRODUCTION = os.getenv("PRODUCTION", False)
     USERNAME = os.getenv("MONGO_USERNAME")
     PASSWORD = os.getenv("MONGO_PASSWORD")
-    SERVER = os.getenv("MONGO_DATANATOR_SERVER")
+    SERVER = os.getenv("MONGO_DATANATOR_SERVER").split(',')
     PORT = os.getenv("MONGO_PORT")
     REPLSET = os.getenv("MONGO_REPL")
     AUTHDB = os.getenv("MONGO_AUTHDB")
