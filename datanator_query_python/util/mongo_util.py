@@ -10,26 +10,15 @@ class MongoUtil:
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='test',
                  verbose=False, max_entries=float('inf'), username = None, 
                  password = None, authSource = 'admin', readPreference='nearest'):
-        if readPreference == 'primary':
-            readPreference = Primary()
-        elif readPreference == 'primary_preferred':
-            readPreference = PrimaryPreferred()
-        elif readPreference == 'secondary':
-            readPreference = Secondary()
-        elif readPreference == 'secondary_preferred':
-            readPreference = SecondaryPreferred()
-        else:
-            readPreference = Nearest()
         self.client = pymongo.MongoClient(
             host=MongoDB, replicaSet=replicaSet, 
             username=username, password=password,
-            authSource=authSource, readPreference=readPreference)  
-        self.db_obj = self.client.get_database(db, read_preference=readPreference)
+            authSource=authSource, readPreference=readPreference)
+        self.db_obj = self.client.get_database(db)
 
     def list_all_collections(self):
         '''List all non-system collections within database
         '''
-
         return self.db_obj.list_collection_names()
 
     def con_db(self, collection_str):
