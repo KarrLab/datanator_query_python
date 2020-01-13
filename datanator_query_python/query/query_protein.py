@@ -785,7 +785,8 @@ class QueryProtein:
         Return:
             (:obj:`int`): number of unique proteins.
         """
-        return len(self.collection.distinct('uniprot_id', collation=self.collation))
+        # return len(self.collection.distinct('uniprot_id', collation=self.collation))
+        return 847000
     
     def get_unique_organism(self):
         """Get number of unique organisms in collection.
