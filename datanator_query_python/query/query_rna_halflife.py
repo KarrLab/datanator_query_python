@@ -5,7 +5,7 @@ from pymongo.collation import Collation, CollationStrength
 class QueryRNA(mongo_util.MongoUtil):
 
     def __init__(self, server=None, username=None, password=None, verbose=False,
-                 db=None, collection_str=None, authDB='admin', readPreference=None):
+                 db=None, collection_str=None, authDB='admin', readPreference='nearest'):
         super().__init__(MongoDB=server, db=db, username=username,
                         password=password, authSource=authDB, readPreference=readPreference,
                         verbose=verbose)
@@ -28,12 +28,15 @@ class QueryRNA(mongo_util.MongoUtil):
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
 
-    def get_doc_by_protein_name(self, protein_name, projection={'_id': 0}):
+    def get_doc_by_protein_name(self, protein_name, projection={'_id': 0},
+                                _from=0, size=0):
         """Get document by protein name
         
         Args:
             protein_name (:obj:`str`): name of the protein
             projection (:obj:`dict`, optional): mongodb query result projection. Defaults to {'_id': 0}.
+            _from (:obj:`int`): first page (0-indexed).
+            size (:obj:`int`): number of items per page.
 
         Return:
             (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`):
@@ -43,6 +46,7 @@ class QueryRNA(mongo_util.MongoUtil):
         con_1 = {'protein_name': protein_name}
         con_2 = {'protein_synonyms': protein_name}
         query = {'$or': [con_0, con_1, con_2]}
-        docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
+        docs = self.collection.find(filter=query, projection=projection, collation=self.collation,
+                                    skip=_from, limit=size)
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count

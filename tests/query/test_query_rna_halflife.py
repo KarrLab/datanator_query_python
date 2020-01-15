@@ -15,7 +15,7 @@ class TestQueryRna(unittest.TestCase):
         cls.col_str = 'rna_halflife'
         cls.src = query_rna_halflife.QueryRNA(server=MongoDB, username=username, password=password,
                                             verbose=True, db=db, collection_str=cls.col_str,
-                                            readPreference='primary')
+                                            readPreference='nearest')
 
     @classmethod
     def tearDownClass(cls):
