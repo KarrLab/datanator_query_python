@@ -92,9 +92,9 @@ class QueryFrontEnd:
         
         
         for entry in ecmdb_data:
-            entry["tanitomo_similarity"] = id_to_score[entry["m2m_id"]]
+            entry["tanimoto_similarity"] = id_to_score[entry["m2m_id"]]
         for entry in ymdb_data:
-            entry["tanitomo_similarity"] = id_to_score[entry["ymdb_id"]]
+            entry["tanimoto_similarity"] = id_to_score[entry["ymdb_id"]]
 
         return(ecmdb_data, ymdb_data)
 
@@ -107,9 +107,9 @@ class QueryFrontEnd:
 
 
         for entry in ecmdb_data:
-            entry["tanitomo_similarity"] = 1
+            entry["tanimoto_similarity"] = 1
         for entry in ymdb_data:
-            entry["tanitomo_similarity"] = 1
+            entry["tanimoto_similarity"] = 1
 
 
         response = []
