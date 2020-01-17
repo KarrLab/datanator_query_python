@@ -86,11 +86,17 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         projection = {'_id': 0, 'inchi': 1, 'm2m_id': 1, 'ymdb_id': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'synonyms': compound},
+            cursor = self.collection.find_one({'$or': [{'synonyms': compound},
+                                                       {'name': compound}]},
                                               projection=projection, collation=collation)
-            inchi.append(
-                {"inchi": cursor['inchi'], "m2m_id": cursor.get('m2m_id', None),
-                 "ymdb_id": cursor.get('ymdb_id', None)})
+            if cursor is None:
+                inchi.append(
+                    {"inchi": 'No inchi found.', "m2m_id": 'No ECMDB record found.',
+                    "ymdb_id": 'No YMDB record found.'})
+            else:                
+                inchi.append(
+                    {"inchi": cursor['inchi'], "m2m_id": cursor.get('m2m_id', None),
+                    "ymdb_id": cursor.get('ymdb_id', None)})
         return inchi
 
     def get_ids_from_hash(self, hashed_inchi):
