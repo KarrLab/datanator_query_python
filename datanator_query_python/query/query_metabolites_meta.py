@@ -153,9 +153,13 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         projection = {'_id': 0, 'InChI_Key': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'synonyms': compound},
+            cursor = self.collection.find_one({'$or': [{'synonyms': compound},
+                                                        {'name': compound}]},
                                               projection=projection, collation=collation)
-            hashed_inchi.append(cursor['InChI_Key'])
+            if cursor is None:
+                hashed_inchi.append('No inchi key found.')
+            else:
+                hashed_inchi.append(cursor['InChI_Key'])
         return hashed_inchi
 
     def get_metabolite_name_by_hash(self, compounds):
