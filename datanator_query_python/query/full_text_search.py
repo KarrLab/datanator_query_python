@@ -238,20 +238,27 @@ class FTX(es_query_builder.QueryBuilder):
                                 "order": {
                                     "top_hit": "desc"
                                 },
-                                "size": num
+                                "size": (kwargs.get('from_', 0) + 1) * num
                             },
-                        "aggs": {
-                            "top_ko": {
-                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
-                            },
+                            "aggs": {
+                                "top_ko": {
+                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, "size": 1}
+                                },
                                 "top_hit" : {
-                                "max": {
-                                    "script": {
-                                        "source": "_score"
+                                    "max": {
+                                        "script": {
+                                            "source": "_score"
+                                        }
+                                    }
+                                },
+                                "score_bucket_sort": {
+                                    "bucket_sort":{
+                                        "sort": [{"top_hit.value": {"order": "desc"}}],
+                                        "size": num,
+                                        "from": kwargs.get('from_', 0) * num
                                     }
                                 }
                             }
-                        }
                         }
                     }
         result[index] = []
