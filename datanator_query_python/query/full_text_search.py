@@ -239,7 +239,7 @@ class FTX(es_query_builder.QueryBuilder):
                                 "order": {
                                     "top_hit": "desc"
                                 },
-                                "size": (kwargs.get('from_', 0) + 1) * num
+                                "size": kwargs.get('from_', 0) + num
                             },
                             "aggs": {
                                 "top_ko": {
@@ -256,7 +256,7 @@ class FTX(es_query_builder.QueryBuilder):
                                     "bucket_sort":{
                                         "sort": [{"top_hit.value": {"order": "desc"}}],
                                         "size": num,
-                                        "from": kwargs.get('from_', 0) * num
+                                        "from": kwargs.get('from_', 0)
                                     }
                                 }
                             }
@@ -271,7 +271,7 @@ class FTX(es_query_builder.QueryBuilder):
         body['aggs'] = aggregation
         body['size'] = 0
         from_ = kwargs.get('from_', 0)
-        r = self.build_es().search(index=index, body=body, size=num, from_=from_)
+        r = self.build_es().search(index=index, body=body)
         r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
         ko_abundance = set()
         ko_all = set()
