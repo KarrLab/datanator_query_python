@@ -30,7 +30,8 @@ class FTX(es_query_builder.QueryBuilder):
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
         es = self.build_es()
-        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=False)
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=False,
+        _source_includes=kwargs.get('_source_includes'))
         return r
 
     def bool_query(self, query_message, index, must=None, should=None, must_not=None, _filter=None, **kwargs):
