@@ -140,6 +140,7 @@ class FTX(es_query_builder.QueryBuilder):
         from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body, size=num, from_=from_)
         hits = r['hits']['hits']
+        result[index+'_total'] = r['hits']['total']
         if hits == []:
             result[index] = []
             return result
