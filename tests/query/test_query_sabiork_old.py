@@ -129,5 +129,6 @@ class TestQuerySabioOld(unittest.TestCase):
 
     def test_get_rxn_with_prm(self):
         kinlaw_ids = [48880, 48882, 48887, 48889, 42]
-        result = self.src.get_rxn_with_prm(kinlaw_ids)
+        result, have = self.src.get_rxn_with_prm(kinlaw_ids)
         self.assertEqual(len(result), 1)
+        self.assertEqual(have, [42])

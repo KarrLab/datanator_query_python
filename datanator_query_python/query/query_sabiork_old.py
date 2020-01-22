@@ -284,16 +284,18 @@ class QuerySabioOld(query_nosql.DataQuery):
             kinlaw_ids (:obj:`list` of :obj:`int`): List of kinlaw IDs.
 
         Return:
-            (:obj:`list` of :obj:`dict`): list of rxn documents.
+            (:obj:`tuple` of :obj:`list` of :obj:`dict` and :obj:`list` of :obj:`int`): list of rxn documents, and ids that have parameter
         """
         result = []
+        have = []
         con_0 = {'parameter.observed_name': {'$in': ['Km', 'kcat']}}
         con_1 = {'kinlaw_id': {'$in': kinlaw_ids}}
         query = {'$and': [con_0, con_1]}
         projection = {'_id': 0}
         cursor = self.collection.find(filter=query, projection=projection, collation=self.collation)
         if cursor is None:
-            return result
+            return result, have
         for r in cursor:
             result.append(r)
-        return result
+            have.append(r['kinlaw_id'])
+        return result, have
