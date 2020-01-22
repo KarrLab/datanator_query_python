@@ -276,12 +276,14 @@ class QuerySabioOld(query_nosql.DataQuery):
         """
         return len(self.collection.distinct('taxon_id'))
 
-    def get_rxn_with_prm(self, kinlaw_ids):
+    def get_rxn_with_prm(self, kinlaw_ids, _from=0, size=10):
         """Given a list of kinlaw ids, return documents where
         kinlaw has at least one Km or kcat.
         
         Args:
             kinlaw_ids (:obj:`list` of :obj:`int`): List of kinlaw IDs.
+            _from (:obj:`int`): record offset. Defaults to 0.
+            size (:obj:`int`): number of records to be returned. Defaults to 10.
 
         Return:
             (:obj:`tuple` of :obj:`list` of :obj:`dict` and :obj:`list` of :obj:`int`): list of rxn documents, and ids that have parameter
@@ -292,7 +294,8 @@ class QuerySabioOld(query_nosql.DataQuery):
         con_1 = {'kinlaw_id': {'$in': kinlaw_ids}}
         query = {'$and': [con_0, con_1]}
         projection = {'_id': 0}
-        cursor = self.collection.find(filter=query, projection=projection, collation=self.collation)
+        cursor = self.collection.find(filter=query, projection=projection, collation=self.collation,
+                                      skip=_from, limit=size)
         if cursor is None:
             return result, have
         for r in cursor:
