@@ -275,3 +275,25 @@ class QuerySabioOld(query_nosql.DataQuery):
             (:obj:`int`): Number of unique organisms.
         """
         return len(self.collection.distinct('taxon_id'))
+
+    def get_rxn_with_prm(self, kinlaw_ids):
+        """Given a list of kinlaw ids, return documents where
+        kinlaw has at least one Km or kcat.
+        
+        Args:
+            kinlaw_ids (:obj:`list` of :obj:`int`): List of kinlaw IDs.
+
+        Return:
+            (:obj:`list` of :obj:`dict`): list of rxn documents.
+        """
+        result = []
+        con_0 = {'parameter.observed_name': {'$in': ['Km', 'kcat']}}
+        con_1 = {'kinlaw_id': {'$in': kinlaw_ids}}
+        query = {'$and': [con_0, con_1]}
+        projection = {'_id': 0}
+        cursor = self.collection.find(filter=query, projection=projection, collation=self.collation)
+        if cursor is None:
+            return result
+        for r in cursor:
+            result.append(r)
+        return result

@@ -126,3 +126,8 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_unique_organisms(self):
         result = self.src.get_unique_organisms()
         self.assertEqual(983, result)
+
+    def test_get_rxn_with_prm(self):
+        kinlaw_ids = [48880, 48882, 48887, 48889, 42]
+        result = self.src.get_rxn_with_prm(kinlaw_ids)
+        self.assertEqual(len(result), 1)
