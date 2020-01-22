@@ -34,7 +34,8 @@ class FTX(es_query_builder.QueryBuilder):
         _source_includes=kwargs.get('_source_includes'))
         return r
 
-    def bool_query(self, query_message, index, must=None, should=None, must_not=None, _filter=None, **kwargs):
+    def bool_query(self, query_message, index, must=None, should=None, must_not=None, _filter=None, 
+                   minimum_should_match=0, **kwargs):
         ''' Perform boolean query in elasticsearch
             (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html)
             
@@ -45,6 +46,7 @@ class FTX(es_query_builder.QueryBuilder):
                 _filter (:obj:`list` or :obj:`dict`, optional): Body for filter. Defaults to None.
                 should (:obj:`list` or :obj:`dict`, optional): Body for should. Defaults to None.
                 must_not (:obj:`list` or :obj:`dict`, optional): Body for must_not. Defaults to None.
+                minimum_should_match (:obj:`int`): Specify the number or percentage of should clauses returned documents must match. Defaults to 0.
                 **size (:obj:`int`): number of hits to be returned
                 **from_ (:obj:`int`): starting offset (default: 0)
                 **scroll (:obj:`str`): specify how long a consistent view of the index should be maintained for scrolled search
@@ -58,7 +60,8 @@ class FTX(es_query_builder.QueryBuilder):
             must = [must].append(part_must)
         else:
             must.append(part_must)
-        body = self.build_bool_query_body(must=must, should=should, _filter=_filter, must_not=must_not)
+        body = self.build_bool_query_body(must=must, should=should, _filter=_filter, must_not=must_not,
+                                          minimum_should_match=minimum_should_match)
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
         es = self.build_es()
@@ -183,7 +186,7 @@ class FTX(es_query_builder.QueryBuilder):
                             "top_ko": {
                                 "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
                             },
-                                "top_hit" : {
+                            "top_hit" : {
                                 "max": {
                                     "script": {
                                         "source": "_score"
@@ -261,7 +264,8 @@ class FTX(es_query_builder.QueryBuilder):
                                     }
                                 }
                             }
-                        }
+                        },
+                        "total_buckets": {'cardinality': {'field': 'ko_number'}}
                     }
         result[index] = []
         sqs_body = self.build_simple_query_string_body(q, **kwargs)
@@ -271,7 +275,6 @@ class FTX(es_query_builder.QueryBuilder):
         body = self.build_bool_query_body(must=must, must_not=must_not)
         body['aggs'] = aggregation
         body['size'] = 0
-        from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body)
         r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
         ko_abundance = set()
@@ -287,4 +290,30 @@ class FTX(es_query_builder.QueryBuilder):
                 s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
             else:
                 s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
-        return r['aggregations']    
+        return r['aggregations']
+
+    def get_rxn_oi(self, query_message, minimum_should_match=0, from_=0,
+                  size=10):
+        """Get reaction where at km or kcat exists.
+        
+        Args:
+            query_message (:obj:`str`): query message.
+            minimum_should_match (:obj:`int`): specify the number or percentage of should clauses returned documents must match. Defaults to 0.
+            from_ (:obj:`int`): es offset. Defaults to 0.
+            size (:obj:`int`): es return size. Defaults to 10.
+        """
+        result = {}
+        should = [{"term": {"parameter.observed_name": "Km"}},
+                  {"term": {"parameter.observed_name": "kcat"}}]
+        r = self.bool_query(query_message, 'sabio_rk', should=should, minimum_should_match=minimum_should_match,
+                            from_=from_, size=size)
+        hits = r['hits']['hits']
+        result['sabio_rk_total'] = r['hits']['total']
+        result['sabio_rk'] = []
+        if hits == []:
+            return result
+        else:
+            for hit in hits:
+                hit['_source']['_score'] = hit['_score']
+                result['sabio_rk'].append(hit['_source'])
+            return result

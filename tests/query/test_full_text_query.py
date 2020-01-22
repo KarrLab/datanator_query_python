@@ -138,7 +138,7 @@ class TestFTX(unittest.TestCase):
         num_1 = 14
         result_0 = self.src.get_single_index_count(r_0, index, num_0)
         result_1 = self.src.get_single_index_count(r_0, index, num_1)
-        self.assertEqual(result_0, {index: []})
+        self.assertEqual(result_0, {'ecmdb': [], 'ecmdb_total': {'value': 363, 'relation': 'eq'}})
         self.assertEqual(len(result_1[index]), num_1)
 
     def test_bool_query(self):
@@ -158,3 +158,8 @@ class TestFTX(unittest.TestCase):
         query_message = 'alcohol dehydrogenase'
         result = self.src.get_protein_ko_count(query_message, 15)
         self.assertEqual(len(result['top_kos']['buckets']), 15)
+
+    def test_get_rxn_oi(self):
+        query_message = 'atp'
+        result = self.src.get_rxn_oi(query_message)
+        self.assertEqual(result['sabio_rk_total'], {'value': 10000, 'relation': 'gte'})
