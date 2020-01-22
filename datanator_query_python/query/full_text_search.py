@@ -262,7 +262,7 @@ class FTX(es_query_builder.QueryBuilder):
                                 }
                             }
                         },
-                        "total_buckets": {'value_count': {'field': 'ko_number'}}
+                        "total_buckets": {'cardinality': {'field': 'ko_number'}}
                     }
         result[index] = []
         sqs_body = self.build_simple_query_string_body(q, **kwargs)
