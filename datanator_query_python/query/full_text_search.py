@@ -183,7 +183,7 @@ class FTX(es_query_builder.QueryBuilder):
                             "top_ko": {
                                 "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
                             },
-                                "top_hit" : {
+                            "top_hit" : {
                                 "max": {
                                     "script": {
                                         "source": "_score"
@@ -261,7 +261,8 @@ class FTX(es_query_builder.QueryBuilder):
                                     }
                                 }
                             }
-                        }
+                        },
+                        "total_buckets": {'value_count': {'field': 'ko_number'}}
                     }
         result[index] = []
         sqs_body = self.build_simple_query_string_body(q, **kwargs)
@@ -271,7 +272,6 @@ class FTX(es_query_builder.QueryBuilder):
         body = self.build_bool_query_body(must=must, must_not=must_not)
         body['aggs'] = aggregation
         body['size'] = 0
-        from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body)
         r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
         ko_abundance = set()
