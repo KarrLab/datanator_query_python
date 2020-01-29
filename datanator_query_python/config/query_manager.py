@@ -49,7 +49,7 @@ class TaxonManager:
 class FtxManager:
 
     def ftx_manager(self):
-        return full_text_search.FTX(profile_name=config.FtxConfig.FTX_AWS_PROFILE)
+        return full_text_search.FTX(profile_name=config.FtxConfig.REST_FTX_AWS_PROFILE)
 
 
 def uniprot_manager():
