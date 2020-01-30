@@ -24,3 +24,9 @@ class TestKOC(unittest.TestCase):
         self.assertEqual(self.src.get_org_code_by_ncbi(_id), 'hsa')
         _id = 1234556
         self.assertEqual(self.src.get_org_code_by_ncbi(_id), 'No code found.')
+
+    def test_get_ncbi_by_org_code(self):
+        org = 'ATH'
+        self.assertEqual(self.src.get_ncbi_by_org_code(org), 3702)
+        org = 'nonsense'
+        self.assertEqual(self.src.get_ncbi_by_org_code(org), -1)

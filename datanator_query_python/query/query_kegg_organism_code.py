@@ -29,3 +29,20 @@ class QueryKOC:
             return 'No code found.'
         else:
             return result.get('kegg_organism_id')
+
+    def get_ncbi_by_org_code(self, org_code):
+        """Get kegg organism code by NCBI Taxonomy ID.
+        
+        Args:
+            org_code (:obj:`int`): Kegg organism code.
+
+        Return:
+            (:obj:`int`): NCBI Taxonomy ID.
+        """
+        projection = {'_id': 0, 'ncbi_taxonomy_id': 1}
+        query = {'kegg_organism_id': org_code}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return -1
+        else:
+            return doc['ncbi_taxonomy_id']
