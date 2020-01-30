@@ -1,4 +1,5 @@
 from datanator_query_python.util import mongo_util
+from pymongo.collation import Collation, CollationStrength
 
 
 class QueryKO:
@@ -14,6 +15,7 @@ class QueryKO:
         self.verbose = verbose
         self.client, self.db, self.collection = mongo_manager.con_db(
             'kegg_orthology_new')
+        self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_ko_by_name(self, name):
         '''Get a gene's ko number by its gene name
@@ -50,3 +52,23 @@ class QueryKO:
             return [None]
         definitions = doc['definition']['name']
         return definitions
+
+    def get_gene_ortholog_by_id_org(self, kegg_id, org):
+        """Get kegg gene id given kegg_id and organism code.
+        
+        Args:
+            kegg_id (:obj:`str`): Kegg ortholog id.
+            org (:obj:`str`): Kegg organism code.
+
+        Return:
+            (:obj:`str`): gene id.
+        """
+        con_0 = {'kegg_orthology_id': kegg_id}
+        con_1 = {'gene_ortholog.organism': org}
+        query = {'$and': [con_0, con_1]}
+        projection = {'_id': 0, 'gene_ortholog.$': 1}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return {}
+        else:
+            return doc['gene_ortholog'][0]['gene_id'][0]

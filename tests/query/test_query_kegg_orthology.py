@@ -41,3 +41,9 @@ class TestQueryKO(unittest.TestCase):
         self.assertTrue('glyoxylate reductase' in result_0)
         result_1 = self.src.get_def_by_kegg_id('somenonsense')
         self.assertEqual([None], result_1)
+
+    def test_get_gene_ortholog_by_id_org(self):
+        _id = 'K00053'
+        organism = 'ath'
+        result = self.src.get_gene_ortholog_by_id_org(_id, organism)
+        self.assertEqual(result, 'AT3G58610')
