@@ -32,10 +32,10 @@ class TestUniprot(unittest.TestCase):
         self.assertEqual(gene_name_1, None)
         self.assertEqual(protein_name_1, None)
 
-    def test_get_protein_name_by_gn(self):
-        input_0 = 'accA'
-        species = 272623
-        pass
-
-    def test_get_gene_protein_name_by_embl(self):
-        pass
+    def test_get_id_by_org_gene(self):
+        org_gene = 'aly:ARALYDRAFT_486312'
+        _, count = self.src.get_id_by_org_gene(org_gene)
+        self.assertEqual(count, 0)
+        org_gene = 'ath:AT3G58610'
+        _, count = self.src.get_id_by_org_gene(org_gene)
+        self.assertEqual(count, 1)

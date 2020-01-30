@@ -1,4 +1,5 @@
 from datanator_query_python.util import mongo_util
+from datanator_query_python.query import query_kegg_organism_code
 from pymongo.collation import Collation, CollationStrength
 
 
@@ -10,6 +11,8 @@ class QueryUniprot:
         self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
                                                   password=password, authSource=authSource, db=database,
                                                   readPreference=readPreference)
+        self.koc_manager = query_kegg_organism_code.QueryKOC(username=username, password=password,
+        server=server, authSource=authSource, collection_str='kegg_organism_code', readPreference=readPreference)
         self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
@@ -118,3 +121,27 @@ class QueryUniprot:
             return None, None
         else:
             return doc['gene_name'], doc['protein_name']
+
+    def get_id_by_org_gene(self, org_gene):
+        """Convert kegg org_gene into uniprot id.
+        
+        Args:
+            org_gene (:obj:`str`): Kegg org_gene format, e.g. aly:ARALYDRAFT_486312.
+
+        Return:
+            (:obj:`str`): Uniprot ID.
+        """
+        _list = org_gene.split(':')
+        org = _list[0]
+        gene_name = _list[1]
+        con_0 = {'gene_name': gene_name}
+        con_1 = {'gene_name_alt': gene_name}
+        con_2 = {'gene_name_orf': gene_name}
+        con_3 = {'gene_name_oln': gene_name}
+        name_search = {'$or': [con_0, con_1, con_2, con_3]}
+        ncbi_id = self.koc_manager.get_ncbi_by_org_code(org)
+        query = {'$and': [name_search, {'ncbi_taxonomy_id': ncbi_id}]}
+        projection = {'_id': 0, 'uniprot_id': 1}
+        docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
+        count = self.collection.count_documents(query, collation=self.collation)
+        return docs, count
