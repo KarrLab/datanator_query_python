@@ -39,3 +39,9 @@ class TestUniprot(unittest.TestCase):
         org_gene = 'ath:AT3G58610'
         _, count = self.src.get_id_by_org_gene(org_gene)
         self.assertEqual(count, 1)
+
+    def test_get_info_by_entrez_id(self):
+        _id = '374073'
+        self.assertEqual('Q75QI0', self.src.get_info_by_entrez_id(_id))
+        _id = 'adfasdfaslkf'
+        self.assertEqual(None, self.src.get_info_by_entrez_id(_id))

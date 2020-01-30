@@ -145,3 +145,20 @@ class QueryUniprot:
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
+
+    def get_info_by_entrez_id(self, entrez_id):
+        """Get protein info by gene entrez information
+        
+        Args:
+            entrez_id (:obj:`str`): Gene entrez id.
+
+        Return:
+            (:obj:`str`): Uniprot ID.
+        """
+        query = {'entrez_id': entrez_id}
+        projection = {'_id': 0, 'uniprot_id': 1}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return None
+        else:
+            return doc['uniprot_id']
