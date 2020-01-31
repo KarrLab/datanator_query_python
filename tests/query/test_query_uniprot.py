@@ -45,3 +45,5 @@ class TestUniprot(unittest.TestCase):
         self.assertEqual('Q75QI0', self.src.get_info_by_entrez_id(_id))
         _id = 'adfasdfaslkf'
         self.assertEqual(None, self.src.get_info_by_entrez_id(_id))
+        _id = '158506'
+        self.assertEqual('Q8N7E2', self.src.get_info_by_entrez_id(_id))
