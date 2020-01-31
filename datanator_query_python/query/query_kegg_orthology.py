@@ -71,4 +71,8 @@ class QueryKO:
         if doc is None:
             return {}
         else:
-            return doc['gene_ortholog'][0]['gene_id'][0]
+            obj = doc['gene_ortholog'][0]['gene_id']
+            if isinstance(obj, str):
+                return obj.split('(')[0]
+            else:
+                return obj[0].split('(')[0]
