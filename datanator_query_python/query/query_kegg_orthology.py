@@ -68,11 +68,9 @@ class QueryKO:
         query = {'$and': [con_0, con_1]}
         projection = {'_id': 0, 'gene_ortholog.$': 1}
         doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
-        if doc is None:
+        if doc is None or isinstance(doc['gene_ortholog'], dict):
             return {}
         else:
-            if isinstance(doc['gene_ortholog'], dict):
-                return doc['gene_ortholog']['gene_id'].split('(')[0]
             obj = doc['gene_ortholog'][0]['gene_id']
             if isinstance(obj, str):
                 return obj.split('(')[0]
