@@ -14,7 +14,7 @@ class QueryKO:
         self.max_entries = max_entries
         self.verbose = verbose
         self.client, self.db, self.collection = mongo_manager.con_db(
-            'kegg_orthology_new')
+            'kegg_orthology')
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_ko_by_name(self, name):
@@ -53,26 +53,25 @@ class QueryKO:
         definitions = doc['definition']['name']
         return definitions
 
-    def get_gene_ortholog_by_id_org(self, kegg_id, org):
-        """Get kegg gene id given kegg_id and organism code.
+    def get_loci_by_id_org(self, kegg_id, org, gene_id):
+        """Get ortholog locus id given kegg_id, organism code and gene_id.
         
         Args:
             kegg_id (:obj:`str`): Kegg ortholog id.
             org (:obj:`str`): Kegg organism code.
+            gene_id (:obj:`str`): Gene id.
 
         Return:
-            (:obj:`str`): gene id.
+            (:obj:`str`): locus id.
         """
         con_0 = {'kegg_orthology_id': kegg_id}
         con_1 = {'gene_ortholog.organism': org}
-        query = {'$and': [con_0, con_1]}
+        con_2 = {'gene_ortholog.genetic_info.gene_id': gene_id}
+        query = {'$and': [con_0, con_1, con_2]}
         projection = {'_id': 0, 'gene_ortholog.$': 1}
         doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
-        if doc is None or isinstance(doc['gene_ortholog'], dict):
+        if doc is None:
             return {}
         else:
-            obj = doc['gene_ortholog'][0]['gene_id']
-            if isinstance(obj, str):
-                return obj.split('(')[0]
-            else:
-                return obj[0].split('(')[0]
+            obj = doc['gene_ortholog'][0]['genetic_info']
+            return next((item['locus_id'] for item in obj if item["gene_id"] == gene_id), None)

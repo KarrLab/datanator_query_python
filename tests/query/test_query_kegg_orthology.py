@@ -42,8 +42,12 @@ class TestQueryKO(unittest.TestCase):
         result_1 = self.src.get_def_by_kegg_id('somenonsense')
         self.assertEqual([None], result_1)
 
-    def test_get_gene_ortholog_by_id_org(self):
-        _id = 'K00053'
-        organism = 'ath'
-        result = self.src.get_gene_ortholog_by_id_org(_id, organism)
-        self.assertEqual(result, 'AT3G58610')
+    def test_get_loci_by_id_org(self):
+        _id = 'K00016'
+        organism = 'HsA'
+        gene_id = 'LDHAL6A'
+        gene_id_null = 'alksjdf;a'
+        result = self.src.get_loci_by_id_org(_id, organism, gene_id)
+        self.assertEqual(result, '160287')
+        result = self.src.get_loci_by_id_org(_id, organism, gene_id_null)
+        self.assertEqual(result, {})
