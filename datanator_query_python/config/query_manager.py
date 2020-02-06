@@ -1,7 +1,7 @@
 from datanator_query_python.config import config
 from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
                                          query_sabiork_old, query_taxon_tree, full_text_search,
-                                         query_uniprot, query_rna_halflife)
+                                         query_uniprot, query_rna_halflife, query_kegg_orthology)
 
 class Manager:
 
@@ -63,3 +63,11 @@ class RnaManager:
         return query_rna_halflife.QueryRNA(username=config.Config.USERNAME, password=config.Config.PASSWORD,
         server=config.Config.SERVER, authDB=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
         db='datanator', collection_str='rna_halflife')
+
+
+class KeggManager:
+
+    def kegg_manager(self):
+        return query_kegg_orthology.QueryKO(username=config.Config.USERNAME, password=config.Config.PASSWORD,
+        server=config.Config.SERVER, authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
+        verbose=False)
