@@ -86,7 +86,7 @@ class QueryKO:
         Return:
             (:obj:`tuple` of :obj:`pymongo.Cursor` and :obj:`int`): pymongo Cursor obj and number of documents found.
         """
-        projection['"__order"'] = 0
+        projection['__order'] = 0
         query = {'kegg_orthology_id': {'$in': kegg_ids}}
         pipeline = [
              {'$match': {'kegg_orthology_id': {'$in': kegg_ids}}},
