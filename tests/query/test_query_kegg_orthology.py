@@ -51,3 +51,9 @@ class TestQueryKO(unittest.TestCase):
         self.assertEqual(result, '160287')
         result = self.src.get_loci_by_id_org(_id, organism, gene_id_null)
         self.assertEqual(result, {})
+
+    def test_get_meta_by_kegg_id(self):
+        kegg_ids = ['k00018', 'k00016', 'k00019', 'no_id']
+        docs, count = self.src.get_meta_by_kegg_id(kegg_ids)
+        self.assertEqual(count, 3)
+        self.assertEqual(list(docs)[0]['kegg_orthology_id'], 'K00018')

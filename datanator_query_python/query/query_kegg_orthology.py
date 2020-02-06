@@ -75,3 +75,25 @@ class QueryKO:
         else:
             obj = doc['gene_ortholog'][0]['genetic_info']
             return next((item['locus_id'] for item in obj if item["gene_id"] == gene_id), None)
+
+    def get_meta_by_kegg_id(self, kegg_ids, projection={'_id': 0, 'gene_ortholog': 0}):
+        """Get meta given kegg ids
+        
+        Args:
+            kegg_ids (:obj:`list` of :obj:`str`): List of kegg ids.
+            projection (:obj:`dict`): MongoDB result projection.
+
+        Return:
+            (:obj:`tuple` of :obj:`pymongo.Cursor` and :obj:`int`): pymongo Cursor obj and number of documents found.
+        """
+        projection['"__order"'] = 0
+        query = {'kegg_orthology_id': {'$in': kegg_ids}}
+        pipeline = [
+             {'$match': {'kegg_orthology_id': {'$in': kegg_ids}}},
+             {'$addFields': {"__order": {'$indexOfArray': [kegg_ids, "$kegg_orthology_id" ]}}},
+             {'$sort': {"__order": 1}},
+             {"$project": projection}
+            ]
+        docs = self.collection.aggregate(pipeline, collation=self.collation)
+        count = self.collection.count_documents(query, collation=self.collation)
+        return docs, count
