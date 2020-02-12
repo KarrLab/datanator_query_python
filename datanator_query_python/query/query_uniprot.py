@@ -1,3 +1,6 @@
+import pandas
+import requests
+import io
 from datanator_query_python.util import mongo_util
 from datanator_query_python.query import query_kegg_organism_code
 from pymongo.collation import Collation, CollationStrength
@@ -162,3 +165,67 @@ class QueryUniprot:
             return None
         else:
             return doc['uniprot_id']
+        
+    def get_similar_proteins(self, uniprot_id, identity=90):
+        """This section provides links to proteins that are similar to the protein sequence(s) 
+        described in this entry at different levels of sequence identity thresholds (100%, 90% and 50%)
+        based on their membership in UniProt Reference Clusters (UniRef).
+        (Queries MongoDB first, if not in MongoDB, query uniprot.org, insert results into the 
+        corresponding document).
+
+        Args:
+            uniprot_id (:obj:`str`): Uniprot ID of the protein
+            identity (:obj:`float`, optional): [description]. Defaults to 90 (%).
+
+        Return:
+            (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
+        """
+        projection = {'uniprot_id': 1, 'similar_proteins': 1}
+        doc = self.collection.find_one({'uniprot_id': uniprot_id}, projection=projection,
+                                        collation=self.collation)
+        similar_proteins = doc.get('similar_proteins')
+        if similar_proteins is not None:
+            key = 'identity_' + identity
+            proteins = similar_proteins.get(key)
+            if proteins is not None:
+                return proteins
+            else:
+                pass
+
+    def get_similar_proteins_from_uniprot(self, uniprot_id, identity=90, limit=10):
+        """This section provides links to proteins that are similar to the protein sequence(s) 
+        described in this entry at different levels of sequence identity thresholds (100%, 90% and 50%)
+        based on their membership in UniProt Reference Clusters (UniRef).
+
+        Args:
+            uniprot_id (:obj:`str`): Uniprot ID of the protein
+            identity (:obj:`float`, optional): Identity score. Defaults to 90 (%). Can only be 100, 90, or 50.
+            limit (:obj:`int`, optional): Max number of results. Defaults to 10.
+
+        Return:
+            (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
+        """
+        if identity not in [100, 90, 50]:
+            return []
+        fields = '&columns=id'
+        percent = identity / 100
+        url = 'https://www.uniprot.org/uniprot/?query=cluster:(uniprot:{}*%20identity:{})%20not%20id:{}'.format(uniprot_id, percent, uniprot_id)
+        url += '&sort=score'
+        url += fields
+        url += '&format=tab'
+        url += '&compress=no'
+        url += '&limit={}'.format(limit)
+        try:
+            response = requests.get(url, stream=False)
+            response.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            pass         
+
+        try:
+            data = pandas.read_csv(io.BytesIO(response.content), delimiter='\t', encoding='utf-8', low_memory=False)
+        except pandas.errors.EmptyDataError:
+            return []
+        except UnboundLocalError:
+            return []
+        data.columns = ['uniprot_id']
+        return data['uniprot_id'].tolist()        
