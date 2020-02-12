@@ -54,7 +54,8 @@ class FtxManager:
 
 def uniprot_manager():
     return query_uniprot.QueryUniprot(username=config.Config.USERNAME, password=config.Config.PASSWORD,
-    server=config.Config.SERVER, authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE)
+    server=config.Config.SERVER, authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
+    collection_str='uniprot')
 
 
 class RnaManager:
