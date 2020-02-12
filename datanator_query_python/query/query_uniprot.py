@@ -180,17 +180,29 @@ class QueryUniprot:
         Return:
             (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
         """
+        def query_update_return(uniprot_id, identity, key):
+            """search on uniprot.org and insert results into mongo.
+            """
+            _list = self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
+            self.collection.update_one({'uniprot_id': uniprot_id},
+                                        {'$set': {'similar_proteins.{}'.format(key): _list}}, collation=self.collation, upsert=False)
+            return _list
+
         projection = {'uniprot_id': 1, 'similar_proteins': 1}
         doc = self.collection.find_one({'uniprot_id': uniprot_id}, projection=projection,
                                         collation=self.collation)
+        if doc is None:
+            return []
+        key = 'identity_' + str(identity)
         similar_proteins = doc.get('similar_proteins')
-        if similar_proteins is not None:
-            key = 'identity_' + identity
+        if similar_proteins is not None:            
             proteins = similar_proteins.get(key)
-            if proteins is not None:
+            if proteins is not None: # in mongo
                 return proteins
-            else:
-                pass
+            else: # search on uniprot.org and insert results into mongo
+                return query_update_return(uniprot_id, identity, key)
+        else:
+            return query_update_return(uniprot_id, identity, key)
 
     def get_similar_proteins_from_uniprot(self, uniprot_id, identity=90, limit=10):
         """This section provides links to proteins that are similar to the protein sequence(s) 
