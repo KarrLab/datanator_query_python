@@ -175,7 +175,7 @@ class QueryUniprot:
 
         Args:
             uniprot_id (:obj:`str`): Uniprot ID of the protein
-            identity (:obj:`float`, optional): [description]. Defaults to 90 (%).
+            identity (:obj:`float`, optional): Identity score. Defaults to 90 (%). Can only be 100, 90, or 50. 
 
         Return:
             (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
@@ -192,7 +192,7 @@ class QueryUniprot:
         doc = self.collection.find_one({'uniprot_id': uniprot_id}, projection=projection,
                                         collation=self.collation)
         if doc is None:
-            return []
+            return self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
         key = 'identity_' + str(identity)
         similar_proteins = doc.get('similar_proteins')
         if similar_proteins is not None:            
