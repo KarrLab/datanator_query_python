@@ -18,4 +18,3 @@ requirements_parser
 karr_lab_aws_manager==0.0.20
 pandas
 requests
-io
