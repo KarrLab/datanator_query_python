@@ -1,5 +1,6 @@
 import pandas
 import requests
+from pymongo.errors import OperationFailure
 import io
 from datanator_query_python.util import mongo_util
 from datanator_query_python.query import query_kegg_organism_code
@@ -184,8 +185,11 @@ class QueryUniprot:
             """search on uniprot.org and insert results into mongo.
             """
             _list = self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
-            self.collection.update_one({'uniprot_id': uniprot_id},
-                                        {'$set': {'similar_proteins.{}'.format(key): _list}}, collation=self.collation, upsert=False)
+            try:
+                self.collection.update_one({'uniprot_id': uniprot_id},
+                                            {'$set': {'similar_proteins.{}'.format(key): _list}}, collation=self.collation, upsert=False)
+            except OperationFailure:
+                return _list
             return _list
 
         projection = {'uniprot_id': 1, 'similar_proteins': 1}
