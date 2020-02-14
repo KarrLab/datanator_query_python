@@ -279,6 +279,8 @@ class FTX(es_query_builder.QueryBuilder):
         r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
         ko_abundance = set()
         ko_all = set()
+        for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
+            r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
         for bucket_abundance in r['aggregations']['top_kos']['buckets']:
             ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source']['ko_number'])
             
@@ -286,10 +288,13 @@ class FTX(es_query_builder.QueryBuilder):
             ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source']['ko_number'])
         intersects = ko_abundance.intersection(ko_all)
         for s in r['aggregations']['top_kos']['buckets']:
-            if s['top_ko']['hits']['hits'][0]['_source']['ko_number'] in intersects:
+            ko_str = s['top_ko']['hits']['hits'][0]['_source']['ko_number']
+            if ko_str in intersects:
                 s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
+                s['top_ko']['hits']['hits'][0]['_source']['ko_number'] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
             else:
                 s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
+                s['top_ko']['hits']['hits'][0]['_source']['ko_number'] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
         return r['aggregations']
 
     def get_rxn_oi(self, query_message, minimum_should_match=0, from_=0,
