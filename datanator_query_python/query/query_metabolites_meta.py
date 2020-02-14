@@ -178,6 +178,9 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         for compound in compounds:
             cursor = self.collection.find_one({'InChI_Key': compound},
                                               projection=projection)
+            if cursor is None:
+                result.append(['None'])
+                continue
             if not isinstance(cursor['synonyms'], list):
                 cursor['synonyms'] = [cursor['synonyms']]
             result.append(cursor.get('synonyms', ['None']))

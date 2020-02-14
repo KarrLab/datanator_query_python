@@ -227,13 +227,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''Given the ncbi_id, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
-            Args:
-                _id (:obj:`int`): ncbi_id of the organism.
-                front_end (:obj:`bool`): meets front_end request
+        Args:
+            _id (:obj:`int`): ncbi_id of the organism.
+            front_end (:obj:`bool`): meets front_end request
 
-            Return:
-                (:obj:`list` of :obj:`dict`): canonical organisms and distances
-                e.g. [{'a':1}, {'b': 3}, ...]
+        Return:
+            (:obj:`list` of :obj:`dict`): canonical organisms and distances
+            e.g. [{'a':1}, {'b': 3}, ...]
         '''
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
@@ -258,13 +258,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''Given the name of species, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
-            Args:
-                name (:obj:`str`): name of the organism.
-                front_end (:obj:`bool`): meets front_end request
+        Args:
+            name (:obj:`str`): name of the organism.
+            front_end (:obj:`bool`): meets front_end request
 
-            Return:
-                (:obj:`list` of :obj:`dict`): canonical organisms and distances
-                e.g. [{'a':1}, {'b': 3}, ...]
+        Return:
+            (:obj:`list` of :obj:`dict`): canonical organisms and distances
+            e.g. [{'a':1}, {'b': 3}, ...]
         '''
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
