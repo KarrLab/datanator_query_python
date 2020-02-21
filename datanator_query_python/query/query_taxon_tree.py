@@ -285,3 +285,22 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if front_end:
             result.append({anc['anc_name'][0]: len(anc['anc_name'])})
         return result
+
+    def under_category(self, src_tax_id, target_tax_id):
+        """Given source taxonomy id, check if it is among the
+        children of target tax id.
+        
+        Args:
+            src_tax_id (:obj:`int`): source oragnism taxonomic ID.
+            target_tax_id (:obj:`int`): target organism taxonomic ID.
+
+        Return:
+            (:obj:`bool`): whether source is under target organism.
+        """
+        query = {'tax_id': src_tax_id}
+        projection = {'anc_id': 1}
+        doc = self.collection.find_one(filter=query, projection=projection)
+        if doc is not None:
+            return target_tax_id in doc['anc_id']
+        else:
+            return False
