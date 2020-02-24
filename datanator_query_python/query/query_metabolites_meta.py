@@ -259,7 +259,7 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         Return:
             (:obj:`dict`): meta information object.
         """
-        projection = {'_id': 0, 'reaction_participants': 0}
+        projection = {'_id': 0, 'reaction_participants': 0, 'similar_compounds': 0}
         query = {'InChI_Key': inchi_key}
         doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
         if doc is None:
