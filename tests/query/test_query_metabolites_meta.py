@@ -104,3 +104,7 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
     def test_get_unique_metabolites(self):
         result = self.src.get_unique_metabolites()
         self.assertEqual(5225, result)
+
+    def test_get_metabolites_meta(self):
+        self.assertEqual(self.src.get_metabolites_meta('lafj;aj'), {})
+        self.assertEqual(self.src.get_metabolites_meta('QHKABHOOEWYVLI-UHFFFAOYSA-N')['chebi_id'], '16530')
