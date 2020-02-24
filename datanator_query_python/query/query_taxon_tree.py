@@ -227,13 +227,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''Given the ncbi_id, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
-            Args:
-                _id (:obj:`int`): ncbi_id of the organism.
-                front_end (:obj:`bool`): meets front_end request
+        Args:
+            _id (:obj:`int`): ncbi_id of the organism.
+            front_end (:obj:`bool`): meets front_end request
 
-            Return:
-                (:obj:`list` of :obj:`dict`): canonical organisms and distances
-                e.g. [{'a':1}, {'b': 3}, ...]
+        Return:
+            (:obj:`list` of :obj:`dict`): canonical organisms and distances
+            e.g. [{'a':1}, {'b': 3}, ...]
         '''
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
@@ -258,13 +258,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''Given the name of species, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
-            Args:
-                name (:obj:`str`): name of the organism.
-                front_end (:obj:`bool`): meets front_end request
+        Args:
+            name (:obj:`str`): name of the organism.
+            front_end (:obj:`bool`): meets front_end request
 
-            Return:
-                (:obj:`list` of :obj:`dict`): canonical organisms and distances
-                e.g. [{'a':1}, {'b': 3}, ...]
+        Return:
+            (:obj:`list` of :obj:`dict`): canonical organisms and distances
+            e.g. [{'a':1}, {'b': 3}, ...]
         '''
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
@@ -285,3 +285,22 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if front_end:
             result.append({anc['anc_name'][0]: len(anc['anc_name'])})
         return result
+
+    def under_category(self, src_tax_id, target_tax_id):
+        """Given source taxonomy id, check if it is among the
+        children of target tax id.
+        
+        Args:
+            src_tax_id (:obj:`int`): source oragnism taxonomic ID.
+            target_tax_id (:obj:`int`): target organism taxonomic ID.
+
+        Return:
+            (:obj:`bool`): whether source is under target organism.
+        """
+        query = {'tax_id': src_tax_id}
+        projection = {'anc_id': 1}
+        doc = self.collection.find_one(filter=query, projection=projection)
+        if doc is not None:
+            return target_tax_id in doc['anc_id']
+        else:
+            return False

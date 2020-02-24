@@ -19,7 +19,7 @@ class TestQueryTaxonTree(unittest.TestCase):
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
             verbose=True, max_entries=20, username = cls.username, password = cls.password,
-            readPreference='primary')
+            readPreference='nearest')
 
     @classmethod
     def tearDownClass(cls):
@@ -97,6 +97,12 @@ class TestQueryTaxonTree(unittest.TestCase):
         self.assertEqual(result_0[0], {'Homo sapiens': 0})     
         self.assertEqual(result_0[-1], {'cellular organisms': 30})
 
+    def test_under_category(self):
+        src_tax_id = 550690
+        target_tax_id = 1236
+        self.assertTrue(self.src.under_category(src_tax_id, target_tax_id))
+        self.assertFalse(self.src.under_category(src_tax_id, 1234))
+        self.assertFalse(self.src.under_category(111111111111, 1234))
 
 class TestQueryTaxonTreeMock(unittest.TestCase):
 
