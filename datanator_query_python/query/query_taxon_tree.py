@@ -359,6 +359,11 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
         org1_anc = anc_ids[0]
         org2_anc = anc_ids[1]
+        
+        if org1_anc == [-1]:
+            return {str(org1): -1, str(org2): -1, 'reason': 'No such organism found: {}'.format(org1)}
+        elif org2_anc == [-1]:
+            return {str(org1): -1, str(org2): -1, 'reason': 'No such organism found: {}'.format(org2)}
 
         rank1_anc = self.get_rank(org1_anc)
         rank2_anc = self.get_rank(org2_anc)
@@ -368,7 +373,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
         ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
         if ancestor == '':
-            return ('No common ancestor', [-1, -1])
+            return {str(org1): -1, str(org2): -1, 'reason': 'No common ancestor'}
         idx_org1 = canon_anc_1.index(ancestor)
         idx_org2 = canon_anc_2.index(ancestor)
 
