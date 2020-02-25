@@ -1,4 +1,6 @@
 import setuptools
+import datanator_query_python._version
+
 try:
     import pkg_utils
 except ImportError:
@@ -18,7 +20,7 @@ md = pkg_utils.get_package_metadata(dirname, name)
 # install package
 setuptools.setup(
     name=name,
-    version=md.version,
+    version=datanator_query_python._version.__version__,
     description='A package to query and format the data in the integrated Datanator database',
     long_description=md.long_description,
     url="https://github.com/KarrLab/" + name,
