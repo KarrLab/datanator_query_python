@@ -45,7 +45,7 @@ class QueryMetabolites(mongo_util.MongoUtil):
             readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
 
-    def get_conc_from_inchi(self, inchi, inchi_key=False, consensus=False):
+    def get_conc_from_inchi(self, inchi, inchi_key=False, consensus=False, projection={'_id': 0}):
         ''' Given inchi, find the metabolite's concentration
             values.
 
@@ -64,8 +64,6 @@ class QueryMetabolites(mongo_util.MongoUtil):
         else:
             hashed_inchi = inchi
         query = {'InChI_Key': inchi}
-        projection = {'_id': 0, 'concentrations': 1, 'name': 1, 'species': 1,
-        'description': 1, 'inchikey': 1}
         result = []
 
         ids = self.metabolites_meta_manager.get_ids_from_hash(hashed_inchi)
