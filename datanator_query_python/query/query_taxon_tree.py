@@ -336,3 +336,43 @@ class QueryTaxonTree(query_nosql.DataQuery):
             else:
                 result.append(False)
         return result
+
+    def get_canon_common_ancestor(self, org1, org2):
+        ''' Get the closest common ancestor between
+            two organisms and their distances to the 
+            said ancestor
+            Args:
+                org1: organism 1
+                org2: organism 2
+                org_format: the format of organism eg tax_id or tax_name
+            Return:
+                ancestor: closest common ancestor's name
+                distance: each organism's distance to the ancestor
+        '''
+        if org1 is None or org2 is None:
+            return ('Enter organism information', [0, 0])
+
+        if org1 == org2:
+            return (org1, [0, 0])
+
+        anc_ids, _ = self.get_anc_by_id([org1, org2])
+
+        org1_anc = anc_ids[0]
+        org2_anc = anc_ids[1]
+
+        rank1_anc = self.get_rank(org1_anc)
+        rank2_anc = self.get_rank(org2_anc)
+
+        canon_anc_1 = [org1_anc.pop(i) for i, (anc, rank) in enumerate(zip(org1_anc, rank1_anc)) if rank == '+']
+        canon_anc_2 = [org2_anc.pop(i) for i, (anc, rank) in enumerate(zip(org2_anc, rank2_anc)) if rank == '+']
+
+        ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
+        if ancestor == '':
+            return ('No common ancestor', [-1, -1])
+        idx_org1 = canon_anc_1.index(ancestor)
+        idx_org2 = canon_anc_2.index(ancestor)
+
+        distance1 = len(canon_anc_1) - (idx_org1)
+        distance2 = len(canon_anc_2) - (idx_org2)
+
+        return {str(org1): distance1, str(org2): distance2}

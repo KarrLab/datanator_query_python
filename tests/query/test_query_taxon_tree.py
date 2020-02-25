@@ -110,6 +110,12 @@ class TestQueryTaxonTree(unittest.TestCase):
         result = self.src.each_under_category(src_ids, target_id)
         self.assertEqual([True, True, False, True, True], result)
 
+    def test_get_canon_common_ancestor(self):
+        org_1 = 743725
+        org_2 = 2107591
+        result = self.src.get_canon_common_ancestor(org_1, org_2)
+        self.assertEqual(result, {'743725': 1, '2107591': 2})
+
 
 class TestQueryTaxonTreeMock(unittest.TestCase):
 
