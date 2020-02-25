@@ -326,6 +326,8 @@ class QueryTaxonTree(query_nosql.DataQuery):
              {"$project": projection}
             ]
         docs = self.collection.aggregate(pipeline)
+        if docs is None:
+            return [False]
         for doc in docs:
             if doc is None:
                 result.append(False)
