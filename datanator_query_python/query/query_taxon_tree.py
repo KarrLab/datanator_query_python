@@ -304,3 +304,33 @@ class QueryTaxonTree(query_nosql.DataQuery):
             return target_tax_id in doc['anc_id']
         else:
             return False
+
+    def each_under_category(self, src_tax_ids, target_tax_id):
+        """Given a list of source organism IDs, check if each ID
+        is the child of target organism.
+        
+        Args:
+            src_tax_ids (:obj:`list` of :obj:`int`): List of NCBI Taxonomy IDs.
+            target_tax_id (:obj:`int`): Target organism ID.
+
+        Return:
+            (:obj:`list` of :obj:`bool`): Boolean indicating if source is the child or target.
+        """
+        projection = {'anc_id': 1, '_id': 0}
+        result = []
+        # projection['__order'] = 0
+        pipeline = [
+             {'$match': {'tax_id': {'$in': src_tax_ids}}},
+             {'$addFields': {"__order": {'$indexOfArray': [src_tax_ids, "$tax_id"]}}},
+             {'$sort': {"__order": 1}},
+             {"$project": projection}
+            ]
+        docs = self.collection.aggregate(pipeline)
+        for doc in docs:
+            if doc is None:
+                result.append(False)
+            elif target_tax_id in doc['anc_id']:
+                result.append(True)
+            else:
+                result.append(False)
+        return result
