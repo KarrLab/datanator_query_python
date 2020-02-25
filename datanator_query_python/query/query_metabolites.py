@@ -45,19 +45,25 @@ class QueryMetabolites(mongo_util.MongoUtil):
             readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
 
-    def get_conc_from_inchi(self, inchi, consensus=False):
+    def get_conc_from_inchi(self, inchi, inchi_key=False, consensus=False):
         ''' Given inchi, find the metabolite's concentration
             values.
+
             Args: 
-                inchi (`obj`: str): inchi of metabolite
+                inchi (:obj:`str`): inchi or inchi key of metabolite.
+                inchi_key (:obj:`bool`): input is InChI Key or not.
                 consensus (`obj`: bool): whether to return consensus values or list of
-                                        individual values
+                                        individual values.
+            
             Return:
-                result (`obj`: list of `obj`: dict): concentration values separated by collections
+                (`obj`: list of `obj`: dict): concentration values separated by collections
                 e.g. [{'ymdb': }, {'ecmdb': }]
         '''
-        hashed_inchi = self.chem_manager.inchi_to_inchikey(inchi)
-        query = {'InChI_Key': hashed_inchi}
+        if not inchi_key:
+            hashed_inchi = self.chem_manager.inchi_to_inchikey(inchi)
+        else:
+            hashed_inchi = inchi
+        query = {'InChI_Key': inchi}
         projection = {'_id': 0, 'concentrations': 1, 'name': 1, 'species': 1,
         'description': 1, 'inchikey': 1}
         result = []
