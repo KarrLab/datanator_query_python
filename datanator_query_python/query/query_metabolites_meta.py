@@ -249,3 +249,20 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
             (:obj:`int`): number of unique metabolites.
         """
         return len(self.collection.distinct('InChI_Key', collation=self.collation))
+
+    def get_metabolites_meta(self, inchi_key):
+        """Get metabolite's meta information given inchi_key.
+
+        Args:
+            (:obj:`str`): InChI Key of metabolites
+
+        Return:
+            (:obj:`dict`): meta information object.
+        """
+        projection = {'_id': 0, 'reaction_participants': 0, 'similar_compounds': 0}
+        query = {'InChI_Key': inchi_key}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return {}
+        else:
+            return doc

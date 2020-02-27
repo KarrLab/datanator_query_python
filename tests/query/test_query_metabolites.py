@@ -40,6 +40,9 @@ class TestQueryMetabolites(unittest.TestCase):
         inchi_1 = 'InChI=1S/C8H11NO2/c9-4-3-6-1-2-7(10)8(11)5-6/h1-2,5,10-11H,3-4,9H2'
         result_2 = self.src.get_conc_from_inchi(inchi_1)
         self.assertEqual(len(result_2), 1)
+        inchi_key = 'TYEYBOSBBBHJIV-UHFFFAOYSA-N'
+        result = self.src.get_conc_from_inchi(inchi_key, inchi_key=True)
+        print(result)
 
     def test_get_meta_from_inchis(self):
         self.assertTrue(ObjectId('000000000000000000000000') < ObjectId('5ca29231d4378913c58e07d7'))

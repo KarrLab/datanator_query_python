@@ -1,9 +1,6 @@
 # description
 README.rst
 
-# version
-include datanator_query_python/VERSION
-
 # license
 include LICENSE
 
