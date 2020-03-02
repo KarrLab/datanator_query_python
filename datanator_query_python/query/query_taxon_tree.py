@@ -132,7 +132,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if org1 is None or org2 is None:
             return ('Enter organism information', [0, 0])
 
-        if org1.upper() == org2.upper():
+        if org1 == org2:
             return (org1, [0, 0])
 
         if org_format == 'name':
