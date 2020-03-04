@@ -337,7 +337,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 result.append(False)
         return result
 
-    def get_canon_common_ancestor(self, org1, org2):
+    def get_canon_common_ancestor(self, org1, org2, org_format='tax_id'):
         ''' Get the closest common ancestor between
             two organisms and their distances to the 
             said ancestor
@@ -355,10 +355,18 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if org1 == org2:
             return (org1, [0, 0])
 
-        anc_ids, _ = self.get_anc_by_id([org1, org2])
-
-        org1_anc = anc_ids[0]
-        org2_anc = anc_ids[1]
+        if org_format == 'tax_id':
+            anc_ids, anc_names = self.get_anc_by_id([org1, org2])
+            org1_anc = anc_ids[0]
+            org1_anc_name = anc_names[0]
+            org2_anc = anc_ids[1]
+            org2_anc_name = anc_names[1]
+        elif org_format == 'tax_name':
+            anc_ids, anc_names = self.get_anc_by_name([org1, org2])
+            org1_anc = anc_ids[0]
+            org1_anc_name = anc_names[0]
+            org2_anc = anc_ids[1]
+            org2_anc_name = anc_names[1]
         
         if org1_anc == [-1]:
             return {str(org1): -1, str(org2): -1, 'reason': 'No such organism found: {}'.format(org1)}
@@ -367,12 +375,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
         rank1_anc = self.get_rank(org1_anc)
         rank2_anc = self.get_rank(org2_anc)
-
-        canon_anc_1 = [org1_anc.pop(i) for i, (anc, rank) in enumerate(zip(org1_anc, rank1_anc)) if rank == '+']
-        canon_anc_2 = [org2_anc.pop(i) for i, (anc, rank) in enumerate(zip(org2_anc, rank2_anc)) if rank == '+']
+        canon_anc_1 = []
+        canon_anc_2 = []
+        [canon_anc_1.append(anc) for (anc, rank) in zip(org1_anc_name, rank1_anc) if rank != '+']
+        [canon_anc_2.append(anc) for (anc, rank) in zip(org2_anc_name, rank2_anc) if rank != '+']
 
         ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
-        if ancestor == '':
+        if ancestor == '':                
             return {str(org1): -1, str(org2): -1, 'reason': 'No common ancestor'}
         idx_org1 = canon_anc_1.index(ancestor)
         idx_org2 = canon_anc_2.index(ancestor)
@@ -380,4 +389,5 @@ class QueryTaxonTree(query_nosql.DataQuery):
         distance1 = len(canon_anc_1) - (idx_org1)
         distance2 = len(canon_anc_2) - (idx_org2)
 
-        return {str(org1): distance1, str(org2): distance2}
+        return {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
+        str(org2)+'_canon_ancestors':canon_anc_2}

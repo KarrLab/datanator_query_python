@@ -111,10 +111,13 @@ class TestQueryTaxonTree(unittest.TestCase):
         self.assertEqual([True, True, False, True, True], result)
 
     def test_get_canon_common_ancestor(self):
+        self.maxDiff = None
         org_1 = 743725
         org_2 = 2107591
         result = self.src.get_canon_common_ancestor(org_1, org_2)
-        self.assertEqual(result, {'743725': 1, '2107591': 2})
+        self.assertEqual(result, {'743725': -1, '2107591': -1, 'reason': 'No common ancestor'})
+        result = self.src.get_canon_common_ancestor('homo sapiens', 'gallus gallus', org_format='tax_name')
+        self.assertEqual(['Metazoa','Chordata','Aves','Galliformes','Phasianidae','Gallus'], result['gallus gallus_canon_ancestors'])
 
 
 class TestQueryTaxonTreeMock(unittest.TestCase):
