@@ -111,7 +111,7 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_kinlaw_by_rxn_name(self):
         substrate_name_0 = ['Riboflavin-5-phosphate', 'nonsense', '2-Hydroxypentanoate']
         product_name_0 = ['reduced FMN', 'alpha-Ketovaleric acid']
-        count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, limit=1)
+        count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, limit=2)
         count, _ = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, bound='tight')
         ids_0 = []
         for doc in docs_0:
