@@ -18,3 +18,4 @@ requirements_parser
 karr_lab_aws_manager==0.0.21
 pandas
 requests
+pytest

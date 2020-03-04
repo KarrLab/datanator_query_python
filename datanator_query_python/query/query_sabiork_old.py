@@ -123,7 +123,7 @@ class QuerySabioOld(query_nosql.DataQuery):
 
     def get_kinlaw_by_rxn(self, substrates, products, dof=0,
                           projection={'kinlaw_id': 1, '_id': 0},
-                          bound='loose'):
+                          bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchikey
 
