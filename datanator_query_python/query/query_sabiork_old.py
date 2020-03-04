@@ -228,7 +228,7 @@ class QuerySabioOld(query_nosql.DataQuery):
 
     def get_kinlaw_by_rxn_name(self, substrates, products,
                                 projection={'kinlaw_id': 1},
-                                bound='loose'):
+                                bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' names
 
@@ -256,7 +256,7 @@ class QuerySabioOld(query_nosql.DataQuery):
             query = {'$and': [s_constraint, p_constraint]}
         else:
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
         count = self.collection.count_documents(query)
         return count, docs
 
