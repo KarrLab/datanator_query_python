@@ -2,19 +2,18 @@ from datanator_query_python.util import mongo_util
 from pymongo.collation import Collation, CollationStrength
 
 
-class QueryKO:
+class QueryKO(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True,
                  readPreference='nearest'):
 
-        mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                             password=password, authSource=authSource, db=database,
-                                             readPreference=readPreference)
+        super().__init__(MongoDB=server, username=username,
+                        password=password, authSource=authSource, db=database,
+                        readPreference=readPreference)
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = mongo_manager.con_db(
-            'kegg_orthology')
+        self.client, self.db, self.collection = self.con_db('kegg_orthology')
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_ko_by_name(self, name):

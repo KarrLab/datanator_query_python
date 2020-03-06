@@ -1,24 +1,25 @@
 from datanator_query_python.util import mongo_util, file_util
-from datanator_query_python.query import query_taxon_tree
+from datanator_query_python.query import query_taxon_tree, query_kegg_orthology
 from pymongo.collation import Collation, CollationStrength
 import json
 
 
-class QueryProtein:
+class QueryProtein(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='uniprot',
                  readPreference='nearest'):
 
-        self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                             password=password, authSource=authSource, db=database,
-                                             readPreference=readPreference)
+        super().__init__(MongoDB=server, username=username,
+                        password=password, authSource=authSource, db=database,
+                        readPreference=readPreference)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
             authSource=authSource, db=database)
+        self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource)
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
+        self.client, self.db, self.collection = self.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.collection_str = collection_str
 
@@ -52,6 +53,11 @@ class QueryProtein:
             'species_name': '99999999'}
 
         for doc in docs:
+            ko_number = doc.get('ko_number')
+            if ko_number is not None:
+                D, c = self.kegg_manager.get_meta_by_kegg_id([ko_number])
+                if c != 0:
+                    doc['kegg_meta'] = [d for d in D]    
             result.append(doc)
         return result
 

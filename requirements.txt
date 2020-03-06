@@ -16,6 +16,6 @@ python_dotenv
 pytz >= 2019.1
 requirements_parser
 karr_lab_aws_manager==0.0.21
-pandas
+pandas >= 1.0.1
 requests
 pytest
