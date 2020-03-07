@@ -93,3 +93,9 @@ class TestQuerySabio(unittest.TestCase):
         result = self.src.get_kinlaw_by_environment(
             taxon, [True], ph_range, temp_range, {}, observed_type)
         self.assertEqual(len(result), 1040)
+
+    def test_get_subunit_by_id(self):
+        kinlaw_id = 21
+        self.assertEqual('P20932', self.src.get_subunit_by_id(kinlaw_id))
+        kinlaw_id = 1
+        self.assertEqual('No subunit information.', self.src.get_subunit_by_id(kinlaw_id))
