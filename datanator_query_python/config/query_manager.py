@@ -1,6 +1,8 @@
 from datanator_query_python.config import config
 from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
-                                         query_sabiork_old, query_taxon_tree, full_text_search)
+                                         query_sabiork_old, query_taxon_tree, full_text_search,
+                                         query_uniprot, query_rna_halflife, query_kegg_orthology,
+                                         query_metabolites_meta)
 
 class Manager:
 
@@ -48,4 +50,30 @@ class TaxonManager:
 class FtxManager:
 
     def ftx_manager(self):
-        return full_text_search.FTX(profile_name=config.FtxConfig.FTX_AWS_PROFILE)
+        return full_text_search.FTX(profile_name=config.FtxConfig.REST_FTX_AWS_PROFILE)
+
+
+def uniprot_manager():
+    return query_uniprot.QueryUniprot(username=config.Config.USERNAME, password=config.Config.PASSWORD,
+    server=config.Config.SERVER, authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
+    collection_str='uniprot')
+
+def metabolites_meta_manager():
+    return query_metabolites_meta.QueryMetabolitesMeta(MongoDB=config.Config.SERVER, db='datanator', username=config.Config.USERNAME,
+    password=config.Config.PASSWORD, authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE)
+
+
+class RnaManager:
+
+    def rna_manager(self):
+        return query_rna_halflife.QueryRNA(username=config.Config.USERNAME, password=config.Config.PASSWORD,
+        server=config.Config.SERVER, authDB=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
+        db='datanator', collection_str='rna_halflife')
+
+
+class KeggManager:
+
+    def kegg_manager(self):
+        return query_kegg_orthology.QueryKO(username=config.Config.USERNAME, password=config.Config.PASSWORD,
+        server=config.Config.SERVER, authSource=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
+        verbose=False)

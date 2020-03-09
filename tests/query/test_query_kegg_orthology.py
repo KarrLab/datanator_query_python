@@ -41,3 +41,19 @@ class TestQueryKO(unittest.TestCase):
         self.assertTrue('glyoxylate reductase' in result_0)
         result_1 = self.src.get_def_by_kegg_id('somenonsense')
         self.assertEqual([None], result_1)
+
+    def test_get_loci_by_id_org(self):
+        _id = 'K00016'
+        organism = 'HsA'
+        gene_id = 'LDHAL6A'
+        gene_id_null = 'alksjdf;a'
+        result = self.src.get_loci_by_id_org(_id, organism, gene_id)
+        self.assertEqual(result, '160287')
+        result = self.src.get_loci_by_id_org(_id, organism, gene_id_null)
+        self.assertEqual(result, {})
+
+    def test_get_meta_by_kegg_id(self):
+        kegg_ids = ['k00018', 'k00016', 'k00019', 'no_id']
+        docs, count = self.src.get_meta_by_kegg_id(kegg_ids)
+        self.assertEqual(count, 3)
+        self.assertEqual(list(docs)[0]['kegg_orthology_id'], 'K00018')

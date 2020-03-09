@@ -30,7 +30,42 @@ class FTX(es_query_builder.QueryBuilder):
         from_ = kwargs.get('from_', 0)
         size = kwargs.get('size', 10)
         es = self.build_es()
-        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=True)
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=False,
+        _source_includes=kwargs.get('_source_includes'))
+        return r
+
+    def bool_query(self, query_message, index, must=None, should=None, must_not=None, _filter=None, 
+                   minimum_should_match=0, **kwargs):
+        ''' Perform boolean query in elasticsearch
+            (https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html)
+            
+            Args:
+                query_message (:obj:`str`): simple string for querying
+                index (:obj:`str`): comma separated string to indicate indices in which query will be done.
+                must (:obj:`list` or :obj:`dict`, optional): Body for must. Defaults to None.
+                _filter (:obj:`list` or :obj:`dict`, optional): Body for filter. Defaults to None.
+                should (:obj:`list` or :obj:`dict`, optional): Body for should. Defaults to None.
+                must_not (:obj:`list` or :obj:`dict`, optional): Body for must_not. Defaults to None.
+                minimum_should_match (:obj:`int`): Specify the number or percentage of should clauses returned documents must match. Defaults to 0.
+                **size (:obj:`int`): number of hits to be returned
+                **from_ (:obj:`int`): starting offset (default: 0)
+                **scroll (:obj:`str`): specify how long a consistent view of the index should be maintained for scrolled search
+                (https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-scroll).
+        '''
+        simple_str_query_body = self.build_simple_query_string_body(query_message, **kwargs)
+        part_must = simple_str_query_body['query']
+        if must is None:
+            must = part_must
+        elif isinstance(must, dict):
+            must = [must].append(part_must)
+        else:
+            must.append(part_must)
+        body = self.build_bool_query_body(must=must, should=should, _filter=_filter, must_not=must_not,
+                                          minimum_should_match=minimum_should_match)
+        from_ = kwargs.get('from_', 0)
+        size = kwargs.get('size', 10)
+        es = self.build_es()
+        r = es.search(index=index, body=json.dumps(body), from_=from_, size=size, explain=False)
         return r
 
     def get_index_in_page(self, r, index):
@@ -105,8 +140,10 @@ class FTX(es_query_builder.QueryBuilder):
         result = {}
         result[index] = []
         body = self.build_simple_query_string_body(q, **kwargs)
-        r = self.build_es().search(index=index, body=body, size=num)
+        from_ = kwargs.get('from_', 0)
+        r = self.build_es().search(index=index, body=body, size=num, from_=from_)
         hits = r['hits']['hits']
+        result[index+'_total'] = r['hits']['total']
         if hits == []:
             result[index] = []
             return result
@@ -114,4 +151,174 @@ class FTX(es_query_builder.QueryBuilder):
             for hit in hits:
                 hit['_source']['_score'] = hit['_score']
                 result[index].append(hit['_source'])
+            return result
+
+    def get_protein_ko_count(self, q, num, **kwargs):
+        """Get protein index with different ko_number field for up to num hits.
+        
+        Args:
+            q (:obj:`str`): query message.
+            num (:obj:`int`): number of hits needed.
+            **from_ (:obj:`int`): starting offset (default: 0).
+
+        Return:
+            (:obj:`dict`): obj of index hits {'index': []}
+        """
+        result = {}
+        index = 'protein'
+        must_not = {"bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "ko_number"
+                            }
+                        }
+                    }}
+        aggregation = {
+                        "top_kos": {
+                            "terms": {
+                                "field": "ko_number",
+                                "order": {
+                                    "top_hit": "desc"
+                                },
+                                "size": num
+                            },
+                        "aggs": {
+                            "top_ko": {
+                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
+                            },
+                            "top_hit" : {
+                                "max": {
+                                    "script": {
+                                        "source": "_score"
+                                    }
+                                }
+                            }
+                        }
+                        }
+                    }
+        result[index] = []
+        sqs_body = self.build_simple_query_string_body(q, **kwargs)
+        must = sqs_body['query']
+        body = self.build_bool_query_body(must=must, must_not=must_not)
+        body['aggs'] = aggregation
+        body['size'] = 0
+        from_ = kwargs.get('from_', 0)
+        r = self.build_es().search(index=index, body=body, size=num, from_=from_)
+        return r['aggregations']
+        # hits = r['hits']['hits']
+        # if hits == []:
+        #     result[index] = []
+        #     return result
+        # else:
+        #     for hit in hits:
+        #         hit['_source']['_score'] = hit['_score']
+        #         result[index].append(hit['_source'])
+        #     return result
+
+    def get_protein_ko_count_abundance(self, q, num, **kwargs):
+        """Get protein index with different ko_number field for up to num hits,
+        provided at least one of the proteins under ko_number has abundance info.
+        
+        Args:
+            q (:obj:`str`): query message.
+            num (:obj:`int`): number of hits needed.
+            **from_ (:obj:`int`): starting offset (default: 0).
+
+        Return:
+            (:obj:`dict`): obj of index hits {'index': []}
+        """
+        result = {}
+        index = 'protein'
+        must_not = {"bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "ko_number"
+                            }
+                        }
+                    }}
+        aggregation = {
+                        "top_kos": {
+                            "terms": {
+                                "field": "ko_number",
+                                "order": {
+                                    "top_hit": "desc"
+                                },
+                                "size": kwargs.get('from_', 0) + num
+                            },
+                            "aggs": {
+                                "top_ko": {
+                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, "size": 1}
+                                },
+                                "top_hit" : {
+                                    "max": {
+                                        "script": {
+                                            "source": "_score"
+                                        }
+                                    }
+                                },
+                                "score_bucket_sort": {
+                                    "bucket_sort":{
+                                        "sort": [{"top_hit.value": {"order": "desc"}}],
+                                        "size": num,
+                                        "from": kwargs.get('from_', 0)
+                                    }
+                                }
+                            }
+                        },
+                        "total_buckets": {'cardinality': {'field': 'ko_number'}}
+                    }
+        result[index] = []
+        sqs_body = self.build_simple_query_string_body(q, **kwargs)
+        must = sqs_body['query']
+        must = [must]
+        must.append({"exists": {"field": "abundances"}})
+        body = self.build_bool_query_body(must=must, must_not=must_not)
+        body['aggs'] = aggregation
+        body['size'] = 0
+        r = self.build_es().search(index=index, body=body)
+        r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
+        ko_abundance = set()
+        ko_all = set()
+        for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
+            r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
+        for bucket_abundance in r['aggregations']['top_kos']['buckets']:
+            ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source']['ko_number'])
+            
+        for bucket_all in r_all['top_kos']['buckets']:
+            ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source']['ko_number'])
+        intersects = ko_abundance.intersection(ko_all)
+        for s in r['aggregations']['top_kos']['buckets']:
+            ko_str = s['top_ko']['hits']['hits'][0]['_source']['ko_number']
+            if ko_str in intersects:
+                s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
+                s['top_ko']['hits']['hits'][0]['_source']['ko_number'] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
+            else:
+                s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
+                s['top_ko']['hits']['hits'][0]['_source']['ko_number'] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
+        return r['aggregations']
+
+    def get_rxn_oi(self, query_message, minimum_should_match=0, from_=0,
+                  size=10):
+        """Get reaction where at km or kcat exists.
+        
+        Args:
+            query_message (:obj:`str`): query message.
+            minimum_should_match (:obj:`int`): specify the number or percentage of should clauses returned documents must match. Defaults to 0.
+            from_ (:obj:`int`): es offset. Defaults to 0.
+            size (:obj:`int`): es return size. Defaults to 10.
+        """
+        result = {}
+        should = [{"term": {"parameter.observed_name": "Km"}},
+                  {"term": {"parameter.observed_name": "kcat"}}]
+        r = self.bool_query(query_message, 'sabio_rk', should=should, minimum_should_match=minimum_should_match,
+                            from_=from_, size=size)
+        hits = r['hits']['hits']
+        result['sabio_rk_total'] = r['hits']['total']
+        result['sabio_rk'] = []
+        if hits == []:
+            return result
+        else:
+            for hit in hits:
+                hit['_source']['_score'] = hit['_score']
+                result['sabio_rk'].append(hit['_source'])
             return result

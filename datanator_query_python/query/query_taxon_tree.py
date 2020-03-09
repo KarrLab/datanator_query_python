@@ -5,6 +5,7 @@ import json
 from pymongo.collation import Collation, CollationStrength
 import pymongo
 
+
 class QueryTaxonTree(query_nosql.DataQuery):
     '''Queries specific to taxon_tree collection
     '''
@@ -56,18 +57,19 @@ class QueryTaxonTree(query_nosql.DataQuery):
     def get_name_by_id(self, ids):
         ''' Get organisms' names given their tax_ids
             Args:
-                ids: organisms' tax_ids
+                ids (:obj:`list`): list of organisms' tax_ids
             Return:
-                names: organisms' names
+                (:obj:`dict`): organisms' ids and names
         '''
-        names = []
-        projection = {'_id': 0, 'tax_name': 1}
+        names = {}
+        projection = {'_id': 0, 'tax_name': 1, 'tax_id': 1}
         query = {'tax_id': {'$in': ids}}
         docs = self.collection.find(filter=query, projection=projection)
         if docs is None:
-            return ['not in database']
+            return {-1: 'none in database'}
         for doc in docs:
-            names.append(doc['tax_name'])
+            _id = doc['tax_id']
+            names[_id] = doc['tax_name']
         return names
 
     def get_anc_by_name(self, names):
@@ -82,10 +84,10 @@ class QueryTaxonTree(query_nosql.DataQuery):
         result_id = []
         result_name = []
         projection = {'_id': 0, 'anc_id': 1, 'anc_name': 1}
-        query = {'tax_name': {'$in': names}}
-        docs = self.collection.find(filter=query, collation=self.collation,
-                                    projection=projection)
-        for doc in docs:
+        for name in names:
+            query = {'tax_name': name}
+            doc = self.collection.find_one(filter=query, collation=self.collation,
+                                        projection=projection)
             result_id.append(doc['anc_id'])
             result_name.append(doc['anc_name'])
         return result_id, result_name
@@ -97,7 +99,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 ids: list of organism's ids e.g.[12345, 234456]
 
             Return:
-                result: list of ancestors in order of the farthest to the closest
+                (:obj:`tuple` of :obj:`list`): list of ancestors in order of the farthest to the closest
         '''
         result_name = []
         result_id = []
@@ -127,13 +129,17 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 ancestor: closest common ancestor's name
                 distance: each organism's distance to the ancestor
         '''
-        if org_format == 'name':
-            anc_ids, anc_names = self.get_anc_by_name([org1, org2])
-        else:
-            anc_ids, anc_names = self.get_anc_by_id([org1, org2])
+        if org1 is None or org2 is None:
+            return ('Enter organism information', [0, 0])
 
-        if org1 == org2:
-            return ('org1', [0, 0])
+        if org_format == 'name':
+            if org1.upper() == org2.upper():
+                return (org1, [0, 0])
+            else:
+                anc_ids, _ = self.get_anc_by_name([org1, org2])
+        else:
+            anc_ids, _ = self.get_anc_by_id([org1, org2])
+
         org1_anc = anc_ids[0]
         org2_anc = anc_ids[1]
 
@@ -221,13 +227,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''Given the ncbi_id, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
-            Args:
-                _id (:obj:`int`): ncbi_id of the organism.
-                front_end (:obj:`bool`): meets front_end request
+        Args:
+            _id (:obj:`int`): ncbi_id of the organism.
+            front_end (:obj:`bool`): meets front_end request
 
-            Return:
-                (:obj:`list` of :obj:`dict`): canonical organisms and distances
-                e.g. [{'a':1}, {'b': 3}, ...]
+        Return:
+            (:obj:`list` of :obj:`dict`): canonical organisms and distances
+            e.g. [{'a':1}, {'b': 3}, ...]
         '''
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
@@ -252,13 +258,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''Given the name of species, return canonically-ranked ancestors
             along the lineage and their non-canonical distances
 
-            Args:
-                name (:obj:`str`): name of the organism.
-                front_end (:obj:`bool`): meets front_end request
+        Args:
+            name (:obj:`str`): name of the organism.
+            front_end (:obj:`bool`): meets front_end request
 
-            Return:
-                (:obj:`list` of :obj:`dict`): canonical organisms and distances
-                e.g. [{'a':1}, {'b': 3}, ...]
+        Return:
+            (:obj:`list` of :obj:`dict`): canonical organisms and distances
+            e.g. [{'a':1}, {'b': 3}, ...]
         '''
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1, '_id': 0, 'tax_name': 1}
@@ -279,3 +285,109 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if front_end:
             result.append({anc['anc_name'][0]: len(anc['anc_name'])})
         return result
+
+    def under_category(self, src_tax_id, target_tax_id):
+        """Given source taxonomy id, check if it is among the
+        children of target tax id.
+        
+        Args:
+            src_tax_id (:obj:`int`): source oragnism taxonomic ID.
+            target_tax_id (:obj:`int`): target organism taxonomic ID.
+
+        Return:
+            (:obj:`bool`): whether source is under target organism.
+        """
+        query = {'tax_id': src_tax_id}
+        projection = {'anc_id': 1}
+        doc = self.collection.find_one(filter=query, projection=projection)
+        if doc is not None:
+            return target_tax_id in doc['anc_id']
+        else:
+            return False
+
+    def each_under_category(self, src_tax_ids, target_tax_id):
+        """Given a list of source organism IDs, check if each ID
+        is the child of target organism.
+        
+        Args:
+            src_tax_ids (:obj:`list` of :obj:`int`): List of NCBI Taxonomy IDs.
+            target_tax_id (:obj:`int`): Target organism ID.
+
+        Return:
+            (:obj:`list` of :obj:`bool`): Boolean indicating if source is the child or target.
+        """
+        projection = {'anc_id': 1, '_id': 0}
+        result = []
+        # projection['__order'] = 0
+        pipeline = [
+             {'$match': {'tax_id': {'$in': src_tax_ids}}},
+             {'$addFields': {"__order": {'$indexOfArray': [src_tax_ids, "$tax_id"]}}},
+             {'$sort': {"__order": 1}},
+             {"$project": projection}
+            ]
+        docs = self.collection.aggregate(pipeline)
+        if docs is None:
+            return [False]
+        for doc in docs:
+            if doc is None:
+                result.append(False)
+            elif target_tax_id in doc['anc_id']:
+                result.append(True)
+            else:
+                result.append(False)
+        return result
+
+    def get_canon_common_ancestor(self, org1, org2, org_format='tax_id'):
+        ''' Get the closest common ancestor between
+            two organisms and their distances to the 
+            said ancestor
+            Args:
+                org1: organism 1
+                org2: organism 2
+                org_format: the format of organism eg tax_id or tax_name
+            Return:
+                ancestor: closest common ancestor's name
+                distance: each organism's distance to the ancestor
+        '''
+        if org1 is None or org2 is None:
+            return ('Enter organism information', [0, 0])
+
+        if org1 == org2:
+            return (org1, [0, 0])
+
+        if org_format == 'tax_id':
+            anc_ids, anc_names = self.get_anc_by_id([org1, org2])
+            org1_anc = anc_ids[0]
+            org1_anc_name = anc_names[0]
+            org2_anc = anc_ids[1]
+            org2_anc_name = anc_names[1]
+        elif org_format == 'tax_name':
+            anc_ids, anc_names = self.get_anc_by_name([org1, org2])
+            org1_anc = anc_ids[0]
+            org1_anc_name = anc_names[0]
+            org2_anc = anc_ids[1]
+            org2_anc_name = anc_names[1]
+        
+        if org1_anc == [-1]:
+            return {str(org1): -1, str(org2): -1, 'reason': 'No such organism found: {}'.format(org1)}
+        elif org2_anc == [-1]:
+            return {str(org1): -1, str(org2): -1, 'reason': 'No such organism found: {}'.format(org2)}
+
+        rank1_anc = self.get_rank(org1_anc)
+        rank2_anc = self.get_rank(org2_anc)
+        canon_anc_1 = []
+        canon_anc_2 = []
+        [canon_anc_1.append(anc) for (anc, rank) in zip(org1_anc_name, rank1_anc) if rank != '+']
+        [canon_anc_2.append(anc) for (anc, rank) in zip(org2_anc_name, rank2_anc) if rank != '+']
+
+        ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
+        if ancestor == '':                
+            return {str(org1): -1, str(org2): -1, 'reason': 'No common ancestor'}
+        idx_org1 = canon_anc_1.index(ancestor)
+        idx_org2 = canon_anc_2.index(ancestor)
+
+        distance1 = len(canon_anc_1) - (idx_org1)
+        distance2 = len(canon_anc_2) - (idx_org2)
+
+        return {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
+        str(org2)+'_canon_ancestors':canon_anc_2}

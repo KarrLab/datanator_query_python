@@ -123,7 +123,7 @@ class QuerySabioOld(query_nosql.DataQuery):
 
     def get_kinlaw_by_rxn(self, substrates, products, dof=0,
                           projection={'kinlaw_id': 1, '_id': 0},
-                          bound='loose'):
+                          bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchikey
 
@@ -228,9 +228,9 @@ class QuerySabioOld(query_nosql.DataQuery):
 
     def get_kinlaw_by_rxn_name(self, substrates, products,
                                 projection={'kinlaw_id': 1},
-                                bound='loose'):
+                                bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
-            rxn participants' inchikey
+            rxn participants' names
 
             Args:
                 substrates (:obj:`list`): list of substrates' names
@@ -256,6 +256,49 @@ class QuerySabioOld(query_nosql.DataQuery):
             query = {'$and': [s_constraint, p_constraint]}
         else:
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
         count = self.collection.count_documents(query)
         return count, docs
+
+    def get_unique_entries(self):
+        """Get number of unique curated entries.
+
+        Return:
+            (:obj:`int`): Number of unique entries.
+        """
+        return len(self.collection.distinct('kinlaw_id'))
+
+    def get_unique_organisms(self):
+        """Get number of unique organisms.
+
+        Return:
+            (:obj:`int`): Number of unique organisms.
+        """
+        return len(self.collection.distinct('taxon_id'))
+
+    def get_rxn_with_prm(self, kinlaw_ids, _from=0, size=10):
+        """Given a list of kinlaw ids, return documents where
+        kinlaw has at least one Km or kcat.
+        
+        Args:
+            kinlaw_ids (:obj:`list` of :obj:`int`): List of kinlaw IDs.
+            _from (:obj:`int`): record offset. Defaults to 0.
+            size (:obj:`int`): number of records to be returned. Defaults to 10.
+
+        Return:
+            (:obj:`tuple` of :obj:`list` of :obj:`dict` and :obj:`list` of :obj:`int`): list of rxn documents, and ids that have parameter
+        """
+        result = []
+        have = []
+        con_0 = {'parameter.observed_name': {'$in': ['Km', 'kcat']}}
+        con_1 = {'kinlaw_id': {'$in': kinlaw_ids}}
+        query = {'$and': [con_0, con_1]}
+        projection = {'_id': 0}
+        cursor = self.collection.find(filter=query, projection=projection, collation=self.collation,
+                                      skip=_from, limit=size)
+        if cursor is None:
+            return result, have
+        for r in cursor:
+            result.append(r)
+            have.append(r['kinlaw_id'])
+        return result, have

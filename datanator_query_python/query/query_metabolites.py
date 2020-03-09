@@ -45,21 +45,25 @@ class QueryMetabolites(mongo_util.MongoUtil):
             readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
 
-    def get_conc_from_inchi(self, inchi, consensus=False):
+    def get_conc_from_inchi(self, inchi, inchi_key=False, consensus=False, projection={'_id': 0}):
         ''' Given inchi, find the metabolite's concentration
             values.
+
             Args: 
-                inchi (`obj`: str): inchi of metabolite
+                inchi (:obj:`str`): inchi or inchi key of metabolite.
+                inchi_key (:obj:`bool`): input is InChI Key or not.
                 consensus (`obj`: bool): whether to return consensus values or list of
-                                        individual values
+                                        individual values.
+            
             Return:
-                result (`obj`: list of `obj`: dict): concentration values separated by collections
+                (`obj`: list of `obj`: dict): concentration values separated by collections
                 e.g. [{'ymdb': }, {'ecmdb': }]
         '''
-        hashed_inchi = self.chem_manager.inchi_to_inchikey(inchi)
-        query = {'InChI_Key': hashed_inchi}
-        projection = {'_id': 0, 'concentrations': 1, 'name': 1, 'species': 1,
-        'description': 1, 'inchikey': 1}
+        if not inchi_key:
+            hashed_inchi = self.chem_manager.inchi_to_inchikey(inchi)
+        else:
+            hashed_inchi = inchi
+        query = {'InChI_Key': inchi}
         result = []
 
         ids = self.metabolites_meta_manager.get_ids_from_hash(hashed_inchi)
@@ -127,3 +131,20 @@ class QueryMetabolites(mongo_util.MongoUtil):
             doc['_id'] = str(doc['_id'])
             result.append(doc)
         return result
+
+    def get_concentration_count(self):
+        """Get number of metabolites with concentration values.
+
+        Return:
+            (:obj:`int`): Number of metabolites with concentrations.
+        """
+        query = {'concentrations.concentration': {'$exists': True}}
+        projection = {'inchikey': 1}
+        x = set()
+        ecmdb_concentration = self.collection_ecmdb.find(filter=query, projection=projection)
+        ymdb_concentration = self.collection_ymdb.find(filter=query, projection=projection)
+        for m in ecmdb_concentration:
+            x.add(m['inchikey'])
+        for m in ymdb_concentration:
+            x.add(m['inchikey'])
+        return len(x)

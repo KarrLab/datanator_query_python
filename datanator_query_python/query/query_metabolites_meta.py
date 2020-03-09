@@ -1,6 +1,8 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from . import query_nosql
 import numpy as np
+from pymongo.collation import Collation, CollationStrength
+
 
 class QueryMetabolitesMeta(query_nosql.DataQuery):
     '''Queries specific to metabolites_meta collection
@@ -20,6 +22,7 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
             self.collection_str)
         self.file_manager = file_util.FileUtil()
         self.chem_manager = chem_util.ChemUtil()
+        self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_metabolite_synonyms(self, compounds):
         ''' Find synonyms of a compound
@@ -83,11 +86,17 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         projection = {'_id': 0, 'inchi': 1, 'm2m_id': 1, 'ymdb_id': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'synonyms': compound},
+            cursor = self.collection.find_one({'$or': [{'synonyms': compound},
+                                                       {'name': compound}]},
                                               projection=projection, collation=collation)
-            inchi.append(
-                {"inchi": cursor['inchi'], "m2m_id": cursor.get('m2m_id', None),
-                 "ymdb_id": cursor.get('ymdb_id', None)})
+            if cursor is None:
+                inchi.append(
+                    {"inchi": 'No inchi found.', "m2m_id": 'No ECMDB record found.',
+                    "ymdb_id": 'No YMDB record found.'})
+            else:                
+                inchi.append(
+                    {"inchi": cursor['inchi'], "m2m_id": cursor.get('m2m_id', None),
+                    "ymdb_id": cursor.get('ymdb_id', None)})
         return inchi
 
     def get_ids_from_hash(self, hashed_inchi):
@@ -144,9 +153,13 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         projection = {'_id': 0, 'InChI_Key': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'synonyms': compound},
+            cursor = self.collection.find_one({'$or': [{'synonyms': compound},
+                                                        {'name': compound}]},
                                               projection=projection, collation=collation)
-            hashed_inchi.append(cursor['InChI_Key'])
+            if cursor is None:
+                hashed_inchi.append('No inchi key found.')
+            else:
+                hashed_inchi.append(cursor['InChI_Key'])
         return hashed_inchi
 
     def get_metabolite_name_by_hash(self, compounds):
@@ -165,6 +178,9 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         for compound in compounds:
             cursor = self.collection.find_one({'InChI_Key': compound},
                                               projection=projection)
+            if cursor is None:
+                result.append(['None'])
+                continue
             if not isinstance(cursor['synonyms'], list):
                 cursor['synonyms'] = [cursor['synonyms']]
             result.append(cursor.get('synonyms', ['None']))
@@ -225,3 +241,28 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
                 result.append(replaced)
 
         return raw, result
+
+    def get_unique_metabolites(self):
+        """Get number of unique metabolites.
+
+        Return:
+            (:obj:`int`): number of unique metabolites.
+        """
+        return len(self.collection.distinct('InChI_Key', collation=self.collation))
+
+    def get_metabolites_meta(self, inchi_key):
+        """Get metabolite's meta information given inchi_key.
+
+        Args:
+            (:obj:`str`): InChI Key of metabolites
+
+        Return:
+            (:obj:`dict`): meta information object.
+        """
+        projection = {'_id': 0, 'reaction_participants': 0, 'similar_compounds': 0}
+        query = {'InChI_Key': inchi_key}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is None:
+            return {}
+        else:
+            return doc

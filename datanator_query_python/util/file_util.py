@@ -147,13 +147,15 @@ class FileUtil:
 
     def get_common(self, list1, list2):
         ''' Given two lists, find the closest
-            common ancestor
+            common ancestor.
+
             Args:
-                list1: [a, b, c, f, g] 
-                list2: [a, b, d, e]
+                list1(:obj:`list`): [a, b, c, f, g] 
+                list2(:obj:`list`): [a, b, d, e]
+
             Return:
-                result: the closest common ancestor, in
-                        the above example would be b
+                (:obj:`obj`): the closest common ancestor, in
+                the above example would be b.
         '''
         ancestor = ''
         for a, b in zip(list1, list2):

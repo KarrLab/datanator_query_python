@@ -19,7 +19,7 @@ class TestQueryTaxonTree(unittest.TestCase):
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
             verbose=True, max_entries=20, username = cls.username, password = cls.password,
-            readPreference='primary')
+            readPreference='nearest')
 
     @classmethod
     def tearDownClass(cls):
@@ -39,7 +39,7 @@ class TestQueryTaxonTree(unittest.TestCase):
     def test_get_name_by_id(self):
         ids = [743725, 2107591]
         names = self.src.get_name_by_id(ids)
-        self.assertEqual(names[0], 'Candidatus Diapherotrites')
+        self.assertEqual(names[743725], 'Candidatus Diapherotrites')
 
     def test_get_ids_by_name(self):
         name_0 = 'Escherichia coli'
@@ -68,10 +68,12 @@ class TestQueryTaxonTree(unittest.TestCase):
     # @unittest.skip('passed')
     def test_get_common_ancestor(self):
         names = ['Candidatus Diapherotrites', 'Candidatus Forterrea multitransposorum CG_2015-17_Forterrea_25_41']
-        ancestor, distances = self.src.get_common_ancestor(names[0], names[1])
-        self.assertEqual(ancestor, 1783276)
+        _, distances = self.src.get_common_ancestor(names[0], names[1])
+        # self.assertEqual(1783276)
         self.assertEqual(distances[0], 1)
         self.assertEqual(distances[1], 4)
+        _, distances = self.src.get_common_ancestor('escherichia coli', 'Escherichia coli')
+        self.assertEqual([0, 0], distances)
 
     def test_get_rank(self):
         ids = [131567, 2759, 33154, 33208, 6072, 33213, 33511, 7711, 9526, 314295, 9604, 207598, 9605, 9606]
@@ -94,6 +96,28 @@ class TestQueryTaxonTree(unittest.TestCase):
         result_0 = self.src.get_canon_rank_distance_by_name(name, front_end=True)
         self.assertEqual(result_0[0], {'Homo sapiens': 0})     
         self.assertEqual(result_0[-1], {'cellular organisms': 30})
+
+    def test_under_category(self):
+        src_tax_id = 550690
+        target_tax_id = 1236
+        self.assertTrue(self.src.under_category(src_tax_id, target_tax_id))
+        self.assertFalse(self.src.under_category(src_tax_id, 1234))
+        self.assertFalse(self.src.under_category(111111111111, 1234))
+
+    def test_each_under_category(self):
+        src_ids = [1803500, 2093792, 1104576, 1974382, 1974383]
+        target_id = 743724
+        result = self.src.each_under_category(src_ids, target_id)
+        self.assertEqual([True, True, False, True, True], result)
+
+    def test_get_canon_common_ancestor(self):
+        self.maxDiff = None
+        org_1 = 743725
+        org_2 = 2107591
+        result = self.src.get_canon_common_ancestor(org_1, org_2)
+        self.assertEqual(result, {'743725': -1, '2107591': -1, 'reason': 'No common ancestor'})
+        result = self.src.get_canon_common_ancestor('homo sapiens', 'gallus gallus', org_format='tax_name')
+        self.assertEqual(['Metazoa','Chordata','Aves','Galliformes','Phasianidae','Gallus'], result['gallus gallus_canon_ancestors'])
 
 
 class TestQueryTaxonTreeMock(unittest.TestCase):

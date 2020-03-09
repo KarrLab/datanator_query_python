@@ -130,6 +130,8 @@ class TestQueryProtein(unittest.TestCase):
         name = 'special name'
         result = self.src.get_info_by_text_abundances(name)
         self.assertEqual(result[0]['uniprot_ids'], {'uniprot7': False, 'uniprot0': True})
+        name = 'Nucleoside diphosphate kinase'
+        result = self.src_1.get_info_by_text_abundances(name)
 
     def test_get_info_by_taxonid(self):
         _id = 6
@@ -252,3 +254,12 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_equivalent_kegg_with_anchor(self):
         result_0 = self.src_1.get_equivalent_kegg_with_anchor('K03154','Thermus thermophilus HB27', 3, max_depth=2)
         self.assertTrue(len(result_0[0]['documents']) > 0)
+
+    @unittest.skip('passed')
+    def test_get_unique_protein(self):
+        result = self.src_1.get_unique_protein()
+        print(result)
+
+    def test_get_unique_organism(self):
+        result = self.src_1.get_unique_organism()
+        print(result)

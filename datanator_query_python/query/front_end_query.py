@@ -92,9 +92,9 @@ class QueryFrontEnd:
         
         
         for entry in ecmdb_data:
-            entry["tanitomo_similarity"] = id_to_score[entry["m2m_id"]]
+            entry["tanimoto_similarity"] = id_to_score[entry["m2m_id"]]
         for entry in ymdb_data:
-            entry["tanitomo_similarity"] = id_to_score[entry["ymdb_id"]]
+            entry["tanimoto_similarity"] = id_to_score[entry["ymdb_id"]]
 
         return(ecmdb_data, ymdb_data)
 
@@ -107,9 +107,9 @@ class QueryFrontEnd:
 
 
         for entry in ecmdb_data:
-            entry["tanitomo_similarity"] = 1
+            entry["tanimoto_similarity"] = 1
         for entry in ymdb_data:
-            entry["tanitomo_similarity"] = 1
+            entry["tanimoto_similarity"] = 1
 
 
         response = []
@@ -125,11 +125,11 @@ class QueryFrontEnd:
         _, dist = self.tax_db.get_common_ancestor(organism, "Escherichia coli")
         for doc in ecmdb_data:
             doc["taxon_distance"] = dist[0]
+            doc["canon_taxon_distance"] = self.tax_db.get_canon_common_ancestor(organism, "Escherichia coli", org_format='tax_name')
         anc, dist = self.tax_db.get_common_ancestor(organism, "Saccharomyces cerevisiae")
         for doc in ymdb_data:
             doc["taxon_distance"] = dist[0]
-
-
+            doc["canon_taxon_distance"] = self.tax_db.get_canon_common_ancestor(organism, "Saccharomyces cerevisiae", org_format='tax_name')
 
         _, result_name = self.tax_db.get_anc_by_name([organism])
         result_name[0].append(organism)

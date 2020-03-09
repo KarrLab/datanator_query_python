@@ -103,7 +103,7 @@ class TestQuerySabioOld(unittest.TestCase):
         result_0 = self.src.get_info_by_entryid(entry_id_0)
         result_1 = self.src.get_info_by_entryid(entry_id_0, target_organism='homo sapiens')
         self.assertTrue(len(result_0) <= 10)
-        self.assertEqual(result_1[0]['taxon_distance'], 9)
+        self.assertEqual(result_1[0]['taxon_distance'], 8)
         entry_id_1 = 82
         result = self.src.get_info_by_entryid(entry_id_1)
         self.assertTrue(len(result) == 10)
@@ -111,10 +111,24 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_kinlaw_by_rxn_name(self):
         substrate_name_0 = ['Riboflavin-5-phosphate', 'nonsense', '2-Hydroxypentanoate']
         product_name_0 = ['reduced FMN', 'alpha-Ketovaleric acid']
-        _, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0)
+        count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, limit=2)
         count, _ = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, bound='tight')
         ids_0 = []
         for doc in docs_0:
             ids_0.append(doc['kinlaw_id'])
         self.assertTrue(41 in ids_0)
         self.assertEqual(0, count)
+
+    def test_get_unique_reactions(self):
+        result = self.src.get_unique_entries()
+        self.assertEqual(60193, result)
+
+    def test_get_unique_organisms(self):
+        result = self.src.get_unique_organisms()
+        self.assertEqual(983, result)
+
+    def test_get_rxn_with_prm(self):
+        kinlaw_ids = [48880, 48882, 48887, 48889, 42]
+        result, have = self.src.get_rxn_with_prm(kinlaw_ids)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(have, [42])

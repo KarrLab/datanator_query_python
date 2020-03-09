@@ -63,19 +63,17 @@ class TestFTX(unittest.TestCase):
         es_0 = es.search(index=index_0, body=body_0)
         self.assertEqual(es_0['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
 
-    # @unittest.skip('skip')
+    @unittest.skip('skip')
     def test_simple_query_string(self):
         query_0 = 'mock_value_3*'
         field_0 = ['mock_key_bulk', 'number']
         index_0 = 'test_0,test_1'
         r = self.src.simple_query_string(query_0, index_0, fields=field_0)
-        print(r)
         self.assertEqual(r['hits']['hits'][0]['_source'], {'number': 3, 'mock_key_bulk': 'mock_value_3', 'uniprot_id': 'P3'})
         query_1 = "Escherichia coli"
         index_1 = "ecmdb,ymdb,metabolites_meta,protein,sabio_rk"
         field_1 = ['protein_name', 'species','synonyms', 'enzymes', 'ko_name', 'gene_name', 'name']
         r_1 = self.src.simple_query_string(query_1, index_1, fields=field_1)
-        print(r_1)
 
 
     @unittest.skip('skip')
@@ -132,13 +130,36 @@ class TestFTX(unittest.TestCase):
         self.assertEqual(result_2, {'ecmdb': [], 'ymdb': []})
         self.assertEqual(len(result_3['protein']), 10)
 
-    @unittest.skip('skip')
-    def get_get_single_index_count(self):
+    # @unittest.skip('skip')
+    def test_get_single_index_count(self):
         index = 'ecmdb'
         r_0 = 'glucose'
         num_0 = 0
         num_1 = 14
         result_0 = self.src.get_single_index_count(r_0, index, num_0)
         result_1 = self.src.get_single_index_count(r_0, index, num_1)
-        self.assertEqual(result_0, {index: []})
-        self.assertEqual(len(result_1[index].values()), num_1)
+        self.assertEqual(result_0, {'ecmdb': [], 'ecmdb_total': {'value': 363, 'relation': 'eq'}})
+        self.assertEqual(len(result_1[index]), num_1)
+
+    def test_bool_query(self):
+        query_message = 'alcohol dehydrogenase'
+        index = 'protein'
+        must_not = {"bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "ko_number"
+                            }
+                        }
+                    }}
+        result = self.src.bool_query(query_message, index, must_not=must_not)
+        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K13954')
+
+    def test_get_protein_ko_count(self):
+        query_message = 'alcohol dehydrogenase'
+        result = self.src.get_protein_ko_count(query_message, 15)
+        self.assertEqual(len(result['top_kos']['buckets']), 15)
+
+    def test_get_rxn_oi(self):
+        query_message = 'atp'
+        result = self.src.get_rxn_oi(query_message)
+        self.assertEqual(result['sabio_rk_total'], {'value': 10000, 'relation': 'gte'})

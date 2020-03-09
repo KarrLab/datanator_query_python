@@ -1,4 +1,5 @@
 import pymongo
+from pymongo.read_preferences import Primary, PrimaryPreferred, Secondary, SecondaryPreferred, Nearest
 from bson import decode_all
 import hashlib
 from genson import SchemaBuilder
@@ -11,14 +12,13 @@ class MongoUtil:
                  password = None, authSource = 'admin', readPreference='nearest'):
         self.client = pymongo.MongoClient(
             host=MongoDB, replicaSet=replicaSet, 
-            username = username, password = password,
-            authSource = authSource, readPreference=readPreference)  
+            username=username, password=password,
+            authSource=authSource, readPreference=readPreference)
         self.db_obj = self.client.get_database(db)
 
     def list_all_collections(self):
         '''List all non-system collections within database
         '''
-
         return self.db_obj.list_collection_names()
 
     def con_db(self, collection_str):

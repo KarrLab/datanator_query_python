@@ -264,3 +264,26 @@ class QuerySabio(query_nosql.DataQuery):
             result.append(doc)
         
         return result
+
+    def get_subunit_by_id(self, _id):
+        """Get protein subunit information by kinlaw_id.
+        
+        Args:
+            _id (:obj:`int`): kinlaw_id.
+
+        Return:
+            (:obj:`str`): uniprot_id.
+        """
+        false = 'No subunit information.'
+        projection = {'enzyme': 1, '_id': 0}
+        doc = self.collection.find_one({'kinlaw_id': _id}, projection=projection)
+        enzyme = doc['enzyme']
+        if enzyme != []:
+            subunits = enzyme[0].get('subunits')
+            if subunits != []:
+                uniprot_id = subunits[0].get('uniprot', false)
+                return uniprot_id
+            else:
+                return false
+        else:
+            return false

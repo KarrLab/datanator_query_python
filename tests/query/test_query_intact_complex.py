@@ -29,6 +29,7 @@ class TestQueryCorum(unittest.TestCase):
         cls.src.db.drop_collection('test_query_intact_complex')
         cls.src.client.close()
 
+    @unittest.skip('needed write op to db')
     def test_get_complex_with_ncbi(self):
         result_0 = self.src.get_complex_with_ncbi(9606)
         result_1 = self.src.get_complex_with_ncbi(9607)

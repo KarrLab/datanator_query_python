@@ -1,28 +1,26 @@
 import setuptools
+import datanator_query_python._version
+
 try:
     import pkg_utils
 except ImportError:
-    import pip._internal
-    pip._internal.main(['install', 'pkg_utils'])
+    import subprocess
+    import sys
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "pkg_utils"])
     import pkg_utils
 import os
 
 name = 'datanator_query_python'
 dirname = os.path.dirname(__file__)
-package_data = {
-    name: [
-        'VERSION',
-    ],
-}
 
 # get package metadata
-md = pkg_utils.get_package_metadata(
-    dirname, name, package_data_filename_patterns=package_data)
+md = pkg_utils.get_package_metadata(dirname, name)
 
 # install package
 setuptools.setup(
     name=name,
-    version=md.version,
+    version=datanator_query_python._version.__version__,
     description='A package to query and format the data in the integrated Datanator database',
     long_description=md.long_description,
     url="https://github.com/KarrLab/" + name,

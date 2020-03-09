@@ -1,24 +1,25 @@
 from datanator_query_python.util import mongo_util, file_util
-from datanator_query_python.query import query_taxon_tree
+from datanator_query_python.query import query_taxon_tree, query_kegg_orthology
 from pymongo.collation import Collation, CollationStrength
 import json
 
 
-class QueryProtein:
+class QueryProtein(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
-                 database='datanator', max_entries=float('inf'), verbose=True, collection_str='protein',
+                 database='datanator', max_entries=float('inf'), verbose=True, collection_str='uniprot',
                  readPreference='nearest'):
 
-        self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                             password=password, authSource=authSource, db=database,
-                                             readPreference=readPreference)
+        super().__init__(MongoDB=server, username=username,
+                        password=password, authSource=authSource, db=database,
+                        readPreference=readPreference)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
             authSource=authSource, db=database)
+        self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource)
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
+        self.client, self.db, self.collection = self.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.collection_str = collection_str
 
@@ -52,6 +53,11 @@ class QueryProtein:
             'species_name': '99999999'}
 
         for doc in docs:
+            ko_number = doc.get('ko_number')
+            if ko_number is not None:
+                D, c = self.kegg_manager.get_meta_by_kegg_id([ko_number])
+                if c != 0:
+                    doc['kegg_meta'] = [d for d in D]    
             result.append(doc)
         return result
 
@@ -177,8 +183,11 @@ class QueryProtein:
         docs = self.collection.find(filter=query, projection=projection)
 
         for doc in docs:
-            ko_number = doc.get('ko_number', 'no number')
-            ko_name = doc.get('ko_name', ['no name'])
+            ko_number = doc.get('ko_number')
+            ko_name = doc.get('ko_name')
+            if ko_number is None or ko_number == 'nan':
+                ko_number = 'no number'
+                ko_name = ['no name']           
             uniprot_id = doc['uniprot_id']
             abundance_status = 'abundances' in doc
             index = self.file_manager.search_dict_index(result, 'ko_number', ko_number)
@@ -334,7 +343,6 @@ class QueryProtein:
             _ids.append(entry['uniprot_id'])
         return self.get_kinlaw_by_id(_ids)
 
-
     def get_abundance_by_id(self, _id):
         '''
         	Get protein abundance information by uniprot_id.
@@ -374,7 +382,6 @@ class QueryProtein:
         for doc in docs:
             result.append(doc)
         return result
-
 
     def get_proximity_abundance_taxon(self, _id, max_distance=3):
         '''
@@ -432,7 +439,6 @@ class QueryProtein:
             result[distance-1]['ancestor_names'] = close_names
 
         return result
-
 
     def get_equivalent_protein(self, _id, max_distance, max_depth=float('inf')):
         '''
@@ -542,7 +548,7 @@ class QueryProtein:
             '_id': 0,
             'ancestor_taxon_id': 1
         }
-        protein = self.collection.find_one(query, projection=projection, collation=self.collation)
+        protein = self.collection.find_one(query, projection=projection)
         if protein is None:
             return [{'distance': -1, 'documents': []}]
         elif protein.get('ko_number') is None:
@@ -578,7 +584,7 @@ class QueryProtein:
             length = len(common_ancestors)
 
             query = {'$and': [{'ancestor_taxon_id': {'$all': common_ancestors} },{'ncbi_taxonomy_id': {'$nin': checked_ids} },
-                              {'ancestor_taxon_id': {'$nin': checked_ids} }, {'ko_number': ko_number},
+                              {'ancestor_taxon_id': {'$nin': checked_ids} }, {'ko_number': ko_number.upper()},
                               {'abundances': {'$exists': True} }]}
 
             equivalents = self.collection.find(filter=query, projection=projection)
@@ -740,9 +746,11 @@ class QueryProtein:
             'species_name': 1,
             'uniprot_id': 1,
             '_id': 0,
-            'ancestor_taxon_id': 1
+            'ancestor_taxon_id': 1,
+            'protein_name': 1,
+            'gene_name': 1
         }
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         if docs is not None:
             for doc in docs:
                 result[0]['documents'].append(doc)
@@ -752,7 +760,7 @@ class QueryProtein:
 
         projection = {'abundances': 1, 'ncbi_taxonomy_id': 1, 'species_name': 1,
                     'uniprot_id': 1, '_id': 0, 'ancestor_taxon_id': 1, 'ko_number': 1,
-                    'ko_name': 1}
+                    'ko_name': 1, 'protein_name': 1, 'gene_name': 1}
         for level in range(levels):
             cur_id = ancestor_ids[-(level+1)]
 
@@ -776,3 +784,20 @@ class QueryProtein:
             checked_ids.append(cur_id)
 
         return result
+
+    def get_unique_protein(self):
+        """Get number of unique proteins in collection
+
+        Return:
+            (:obj:`int`): number of unique proteins.
+        """
+        # return len(self.collection.distinct('uniprot_id', collation=self.collation))
+        return 847000
+    
+    def get_unique_organism(self):
+        """Get number of unique organisms in collection.
+
+        Return:
+            (:obj:`int`): number of unique organisms.
+        """
+        return len(self.collection.distinct('ncbi_taxonomy_id'))
