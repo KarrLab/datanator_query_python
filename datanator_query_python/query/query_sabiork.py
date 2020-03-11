@@ -280,7 +280,7 @@ class QuerySabio(query_nosql.DataQuery):
         enzyme = doc['enzyme']
         if enzyme != [] and enzyme is not None:
             subunits = enzyme[0].get('subunits')
-            if subunits != []:
+            if subunits != [] and subunits is not None:
                 uniprot_id = subunits[0].get('uniprot', false)
                 return uniprot_id
             else:
