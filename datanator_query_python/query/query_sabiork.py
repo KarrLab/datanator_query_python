@@ -278,9 +278,9 @@ class QuerySabio(query_nosql.DataQuery):
         projection = {'enzyme': 1, '_id': 0}
         doc = self.collection.find_one({'kinlaw_id': _id}, projection=projection)
         enzyme = doc['enzyme']
-        if enzyme != []:
+        if enzyme != [] and enzyme is not None:
             subunits = enzyme[0].get('subunits')
-            if subunits != []:
+            if subunits != [] and subunits is not None:
                 uniprot_id = subunits[0].get('uniprot', false)
                 return uniprot_id
             else:
