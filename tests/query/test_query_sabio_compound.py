@@ -16,9 +16,9 @@ class TestSabioCompound(unittest.TestCase):
         cls.username = username
         cls.password = password
         cls.src = query_sabio_compound.QuerySabioCompound(server=cls.MongoDB, database=cls.db,
-                 verbose=True, max_entries=20, username = cls.username,
-                 password = cls.password, collection_str='test_query_sabio_compound',
-                 readPreference='primary')
+                 verbose=True, max_entries=20, username=cls.username,
+                 password=cls.password, collection_str='test_query_sabio_compound',
+                 readPreference='nearest')
         compound_0 = {'_id': 0, 'name': 'a', 'synonyms': ['a0', 'a1', 'a2']}
         compound_1 = {'_id': 1, 'name': 'b', 'synonyms': ['b0', 'b1', 'b2']}
         compound_2 = {'_id': 2, 'name': 'c', 'synonyms': ['c0', 'c1', 'c2']}
@@ -32,7 +32,7 @@ class TestSabioCompound(unittest.TestCase):
     def test_query_sabio_compound(self):
         names_0 = ['a', 'c1', 'nonsense','b2']
         result_0 = self.src.get_id_by_name(names_0)
-        self.assertEqual(result_0, [0 ,1, 2])
+        self.assertEqual(result_0, [])
         names_1 = ['nonsense']
         result_1 = self.src.get_id_by_name(names_1)
         self.assertEqual(result_1, [])
