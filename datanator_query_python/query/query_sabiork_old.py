@@ -302,3 +302,21 @@ class QuerySabioOld(query_nosql.DataQuery):
             result.append(r)
             have.append(r['kinlaw_id'])
         return result, have
+
+    def get_reaction_by_subunit(self, _ids):
+        """Get reactions by enzyme subunit uniprot IDs
+        
+        Args:
+            _ids (:obj:`list` of :obj:`str`): List of uniprot IDs.
+
+        Return:
+            (:obj:`list` of :obj:`Obj`): List of reaction documents.
+        """
+        projection = {'_id': 0}
+        pipeline = [
+             {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
+             {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]}}},
+             {'$sort': {"__order": 1}},
+             {"$project": projection}
+            ]
+        pass
