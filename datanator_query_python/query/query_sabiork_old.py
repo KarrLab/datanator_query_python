@@ -310,8 +310,9 @@ class QuerySabioOld(query_nosql.DataQuery):
             _ids (:obj:`list` of :obj:`str`): List of uniprot IDs.
 
         Return:
-            (:obj:`list` of :obj:`Obj`): List of reaction documents.
+            (:obj:`list` of :obj:`str`): List of kinlaw IDs.
         """
+        result = []
         projection = {'_id': 0}
         pipeline = [
              {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
@@ -319,4 +320,9 @@ class QuerySabioOld(query_nosql.DataQuery):
              {'$sort': {"__order": 1}},
              {"$project": projection}
             ]
-        pass
+        docs = self.collection.aggregate(pipeline)
+        if docs is None:
+            return ['No reaction found.']
+        for doc in docs:
+            result.append(doc['kinlaw_id'])
+        return result
