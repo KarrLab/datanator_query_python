@@ -128,6 +128,10 @@ class TestQueryTaxonTree(unittest.TestCase):
         org_4 = 4932
         result = self.src.get_canon_common_ancestor(org_3, org_4)
         self.assertEqual(result, {'9606': 7, '4932': 7, '9606_canon_ancestors': ['Eukaryota', 'Metazoa', 'Chordata', 'Mammalia', 'Primates', 'Hominidae', 'Homo'], '4932_canon_ancestors': ['Eukaryota', 'Fungi', 'Ascomycota', 'Saccharomycetes', 'Saccharomycetales', 'Saccharomycetaceae', 'Saccharomyces']})
+        org_5 = 83333
+        org_6 = 562
+        result_0 = self.src.get_canon_common_ancestor(org_5, org_6)
+        print(result_0)
 
 
 class TestQueryTaxonTreeMock(unittest.TestCase):

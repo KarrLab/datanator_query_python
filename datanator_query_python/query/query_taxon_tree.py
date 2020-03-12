@@ -350,10 +350,10 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 (:obj:`Obj`)
         '''
         if org1 is None or org2 is None:
-            return ('Enter organism information', [0, 0])
+            return {str(org1): -1, str(org2): -1, 'reason': 'Needs two organisms.'}
 
-        if org1 == org2:
-            return (org1, [0, 0])
+        # if org1 == org2:
+        #     return (org1, [0, 0])
 
         if org_format == 'tax_id':
             anc_ids, anc_names = self.get_anc_by_id([org1, org2])

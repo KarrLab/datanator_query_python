@@ -824,7 +824,7 @@ class QueryProtein(mongo_util.MongoUtil):
 
         result = []
         for i in range(max_distance):
-            result.append({'distance': i + 1, 'documents': []})
+            result.append({'distance': i , 'documents': []})
 
         projection = {
             'ko_number': 1,
