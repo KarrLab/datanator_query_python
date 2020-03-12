@@ -251,8 +251,8 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(ko_number_1, None)
         self.assertEqual(ko_name_1, [])
 
-    def test_get_equivalent_kegg_with_anchor(self):
-        result_0 = self.src_1.get_equivalent_kegg_with_anchor('K03154','Thermus thermophilus HB27', 3, max_depth=2)
+    def test_get_equivalent_kegg_with_anchor_obsolete(self):
+        result_0 = self.src_1.get_equivalent_kegg_with_anchor_obsolete('K03154','Thermus thermophilus HB27', 3, max_depth=2)
         self.assertTrue(len(result_0[0]['documents']) > 0)
 
     @unittest.skip('passed')
@@ -263,3 +263,7 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_unique_organism(self):
         result = self.src_1.get_unique_organism()
         print(result)
+
+    def test_get_equivalent_kegg_with_anchor(self):
+        result_0 = self.src_1.get_equivalent_kegg_with_anchor('K03154','Thermus thermophilus HB27', 3)
+        print(result_0)        

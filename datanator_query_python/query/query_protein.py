@@ -700,7 +700,7 @@ class QueryProtein(mongo_util.MongoUtil):
         else:
             return None, []
 
-    def get_equivalent_kegg_with_anchor(self, ko, anchor, max_distance, max_depth=float('inf')):
+    def get_equivalent_kegg_with_anchor_obsolete(self, ko, anchor, max_distance, max_depth=float('inf')):
         '''
             Get replacement abundance value by taxonomic distance
             with the same kegg_orthology number.
@@ -801,3 +801,51 @@ class QueryProtein(mongo_util.MongoUtil):
             (:obj:`int`): number of unique organisms.
         """
         return len(self.collection.distinct('ncbi_taxonomy_id'))
+
+    def get_equivalent_kegg_with_anchor(self, ko, anchor, max_distance):
+        '''Get replacement abundance value by taxonomic distance
+            with the same kegg_orthology number.
+
+        Args:
+            ko (:obj:`str`): kegg orthology id to query for.
+            anchor (:obj:`str`): anchor species' name.
+            max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
+                                        proteins in results.
+            max_depth (:obj:`int`) max depth allowed from the common node.
+
+        Returns:
+            (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+            [{'distance': 0, 'documents': [{}]}
+            {'distance': 1, 'documents': [{}, {}, {} ...]}, 
+            {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
+        '''
+        if max_distance <= 0:
+            return 'Please use get_abundance_by_id to check self abundance values'
+
+        result = []
+        for i in range(max_distance):
+            result.append({'distance': i + 1, 'documents': []})
+
+        projection = {
+            'ko_number': 1,
+            'ko_name': 1,
+            'ancestor_name': 1,
+            'ncbi_taxonomy_id': 1,
+            'abundances': 1,
+            'species_name': 1,
+            'uniprot_id': 1,
+            '_id': 0,
+            'ancestor_taxon_id': 1,
+            'protein_name': 1,
+            'gene_name': 1
+        }
+        query = {'ko_number': ko}
+        docs = self.collection.find(filter=query, projection=projection)
+        for doc in docs:
+            species = doc['species_name']
+            dist_obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
+            print(dist_obj)
+            distance = dist_obj[species]
+            if distance != -1:
+                result[distance]['documents'].append(doc)
+        return result
