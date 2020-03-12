@@ -79,7 +79,7 @@ class TestQueryTaxonTree(unittest.TestCase):
         ids = [131567, 2759, 33154, 33208, 6072, 33213, 33511, 7711, 9526, 314295, 9604, 207598, 9605, 9606]
         ranks = self.src.get_rank(ids)
         self.assertEqual(ranks[3], 'kingdom')
-        self.assertEqual(ranks[1], '+')
+        self.assertEqual(ranks[1], 'superkingdom')
 
     def test_get_canon_rank_distance(self):
         _id = 9606
@@ -115,9 +115,19 @@ class TestQueryTaxonTree(unittest.TestCase):
         org_1 = 743725
         org_2 = 2107591
         result = self.src.get_canon_common_ancestor(org_1, org_2)
-        self.assertEqual(result, {'743725': -1, '2107591': -1, 'reason': 'No common ancestor'})
+        self.assertEqual(result, {'2107591': 4,
+                                '2107591_canon_ancestors': ['Archaea',
+                                'Candidatus Diapherotrites',
+                                'Candidatus Forterrea',
+                                'Candidatus Forterrea multitransposorum'],
+                                '743725': 1,
+                                '743725_canon_ancestors': ['Archaea']})
         result = self.src.get_canon_common_ancestor('homo sapiens', 'gallus gallus', org_format='tax_name')
-        self.assertEqual(['Metazoa','Chordata','Aves','Galliformes','Phasianidae','Gallus'], result['gallus gallus_canon_ancestors'])
+        self.assertEqual(['Eukaryota', 'Metazoa','Chordata','Aves','Galliformes','Phasianidae','Gallus'], result['gallus gallus_canon_ancestors'])
+        org_3 = 9606
+        org_4 = 4932
+        result = self.src.get_canon_common_ancestor(org_3, org_4)
+        self.assertEqual(result, {'9606': 7, '4932': 7, '9606_canon_ancestors': ['Eukaryota', 'Metazoa', 'Chordata', 'Mammalia', 'Primates', 'Hominidae', 'Homo'], '4932_canon_ancestors': ['Eukaryota', 'Fungi', 'Ascomycota', 'Saccharomycetes', 'Saccharomycetales', 'Saccharomycetaceae', 'Saccharomyces']})
 
 
 class TestQueryTaxonTreeMock(unittest.TestCase):

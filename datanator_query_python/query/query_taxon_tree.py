@@ -163,7 +163,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 ranks: list of ranks ['kingdom', '+', 'phylum']
         '''
         ranks = []
-        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom']
+        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
         projection = {'rank': 1}
         for _id in ids:
             query = {'tax_id': _id}
