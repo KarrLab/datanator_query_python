@@ -824,7 +824,7 @@ class QueryProtein(mongo_util.MongoUtil):
 
         result = []
         for i in range(max_distance):
-            result.append({'distance': i , 'documents': []})
+            result.append({'distance': i + 1, 'documents': []})
 
         projection = {
             'ko_number': 1,
@@ -850,5 +850,5 @@ class QueryProtein(mongo_util.MongoUtil):
             if distance != -1 and distance <= max_distance:
                 species_canon_ancestor = obj[species+'_canon_ancestors']
                 doc['canon_ancestors'] = species_canon_ancestor
-                result[distance-1]['documents'].append(doc)
+                result[distance]['documents'].append(doc)
         return result

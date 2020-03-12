@@ -350,7 +350,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 (:obj:`Obj`)
         '''
         if org1 is None or org2 is None:
-            return {str(org1): -1, str(org2): -1, 'reason': 'Needs two organisms.'}
+            return {'reason': 'Needs two organisms.'}
 
         # if org1 == org2:
         #     return (org1, [0, 0])
