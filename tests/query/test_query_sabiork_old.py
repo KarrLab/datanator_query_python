@@ -132,3 +132,8 @@ class TestQuerySabioOld(unittest.TestCase):
         result, have = self.src.get_rxn_with_prm(kinlaw_ids)
         self.assertEqual(len(result), 1)
         self.assertEqual(have, [42])
+
+    def test_get_reaction_by_subunit(self):
+        _ids = ['P20932', 'P00803']
+        result = self.src.get_reaction_by_subunit(_ids)
+        self.assertTrue(set([10, 21024]).issubset(result))
