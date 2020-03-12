@@ -802,7 +802,7 @@ class QueryProtein(mongo_util.MongoUtil):
         """
         return len(self.collection.distinct('ncbi_taxonomy_id'))
 
-    def get_equivalent_kegg_with_anchor(self, ko, anchor, max_distance):
+    def get_all_kegg(self, ko, anchor, max_distance):
         '''Get replacement abundance value by taxonomic distance
             with the same kegg_orthology number.
 
@@ -839,13 +839,16 @@ class QueryProtein(mongo_util.MongoUtil):
             'protein_name': 1,
             'gene_name': 1
         }
-        query = {'ko_number': ko}
+        con_0 = {'ko_number': ko}
+        con_1 = {'abundances': {'$exists': True}}
+        query = {'$and': [con_0, con_1]}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
             species = doc['species_name']
-            dist_obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
-            print(dist_obj)
-            distance = dist_obj[species]
-            if distance != -1:
-                result[distance]['documents'].append(doc)
+            obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
+            distance = obj[species]            
+            if distance != -1 and distance <= max_distance:
+                species_canon_ancestor = obj[species+'_canon_ancestors']
+                doc['canon_ancestors'] = species_canon_ancestor
+                result[distance-1]['documents'].append(doc)
         return result

@@ -345,9 +345,9 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 org1: organism 1
                 org2: organism 2
                 org_format: the format of organism eg tax_id or tax_name
+
             Return:
-                ancestor: closest common ancestor's name
-                distance: each organism's distance to the ancestor
+                (:obj:`Obj`)
         '''
         if org1 is None or org2 is None:
             return ('Enter organism information', [0, 0])
