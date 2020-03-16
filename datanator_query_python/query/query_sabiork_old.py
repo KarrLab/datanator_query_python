@@ -313,12 +313,14 @@ class QuerySabioOld(query_nosql.DataQuery):
             (:obj:`list` of :obj:`str`): List of kinlaw IDs.
         """
         result = []
-        projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1}
+        entry_ids = set()
+        projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1, 
+                      'kinlaw_id': 1, 'resource': 1}
         pipeline = [
              {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
              {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]},
-                            "substrates": "$reaction_participant.substrate",
-                            "products": "reaction_participant.product"}},
+                             "substrates": "$reaction_participant.substrate",
+                             "products": "reaction_participant.product"}},
              {'$sort': {"__order": 1}},
              {"$project": projection}
             ]
@@ -326,5 +328,13 @@ class QuerySabioOld(query_nosql.DataQuery):
         if docs is None:
             return ['No reaction found.']
         for doc in docs:
-            result.append(doc['kinlaw_id'])
+            try:
+                entry_id = doc['resource'][-1]['id']
+            except IndexError:
+                entry_id = -1
+            if entry_id in entry_ids:
+                continue
+            else:
+                result.append(doc)
+                entry_ids.add(entry_id)
         return result
