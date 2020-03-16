@@ -313,10 +313,12 @@ class QuerySabioOld(query_nosql.DataQuery):
             (:obj:`list` of :obj:`str`): List of kinlaw IDs.
         """
         result = []
-        projection = {'_id': 0}
+        projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1}
         pipeline = [
              {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
-             {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]}}},
+             {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]},
+                            "substrates": "$reaction_participant.substrate",
+                            "products": "reaction_participant.product"}},
              {'$sort': {"__order": 1}},
              {"$project": projection}
             ]

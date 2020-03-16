@@ -279,7 +279,8 @@ class QueryTaxonTree(query_nosql.DataQuery):
             doc = self.collection.find_one(filter=query, projection=projection)
             rank = doc.get('rank', None)
             if rank in roi:
-                result.append({doc['tax_name']: i + 1})
+                result.append({doc['tax_name']: i + 1,
+                                    'rank': rank})
             else:
                 continue
         if front_end:
