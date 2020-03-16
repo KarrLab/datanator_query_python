@@ -846,7 +846,7 @@ class QueryProtein(mongo_util.MongoUtil):
         for doc in docs:
             species = doc['species_name']
             obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
-            distance = obj[species]            
+            distance = obj[anchor]            
             if distance != -1 and distance <= max_distance:
                 species_canon_ancestor = obj[species+'_canon_ancestors']
                 doc['canon_ancestors'] = species_canon_ancestor
