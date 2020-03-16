@@ -122,16 +122,16 @@ class TestQueryTaxonTree(unittest.TestCase):
                                 'Candidatus Forterrea multitransposorum'],
                                 '743725': 1,
                                 '743725_canon_ancestors': ['Archaea']})
-        result = self.src.get_canon_common_ancestor('homo sapiens', 'gallus gallus', org_format='tax_name')
-        self.assertEqual(['Eukaryota', 'Metazoa','Chordata','Aves','Galliformes','Phasianidae','Gallus'], result['gallus gallus_canon_ancestors'])
+        result = self.src.get_canon_common_ancestor('escherichia coli', 'escherichia coli', org_format='tax_name')
+        self.assertEqual(result['escherichia coli'], 1)
         org_3 = 9606
         org_4 = 4932
         result = self.src.get_canon_common_ancestor(org_3, org_4)
         self.assertEqual(result, {'9606': 7, '4932': 7, '9606_canon_ancestors': ['Eukaryota', 'Metazoa', 'Chordata', 'Mammalia', 'Primates', 'Hominidae', 'Homo'], '4932_canon_ancestors': ['Eukaryota', 'Fungi', 'Ascomycota', 'Saccharomycetes', 'Saccharomycetales', 'Saccharomycetaceae', 'Saccharomyces']})
-        org_5 = 83333
-        org_6 = 562
-        result_0 = self.src.get_canon_common_ancestor(org_5, org_6)
-        print(result_0)
+        # org_5 = 83333
+        # org_6 = 562
+        # result_0 = self.src.get_canon_common_ancestor(org_5, org_6)
+        # print(result_0)
 
 
 class TestQueryTaxonTreeMock(unittest.TestCase):

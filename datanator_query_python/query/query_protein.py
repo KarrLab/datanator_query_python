@@ -815,7 +815,7 @@ class QueryProtein(mongo_util.MongoUtil):
 
         Returns:
             (:obj:`list` of :obj:`dict`): list of result proteins and their info 
-            [{'distance': 0, 'documents': [{}]}
+            [
             {'distance': 1, 'documents': [{}, {}, {} ...]}, 
             {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
         '''
@@ -846,9 +846,9 @@ class QueryProtein(mongo_util.MongoUtil):
         for doc in docs:
             species = doc['species_name']
             obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
-            distance = obj[anchor]            
+            distance = obj[species]            
             if distance != -1 and distance <= max_distance:
                 species_canon_ancestor = obj[species+'_canon_ancestors']
                 doc['canon_ancestors'] = species_canon_ancestor
-                result[distance]['documents'].append(doc)
+                result[distance-1]['documents'].append(doc)
         return result
