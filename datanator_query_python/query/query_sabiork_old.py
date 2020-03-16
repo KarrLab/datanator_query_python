@@ -320,7 +320,7 @@ class QuerySabioOld(query_nosql.DataQuery):
              {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
              {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]},
                              "substrates": "$reaction_participant.substrate",
-                             "products": "reaction_participant.product"}},
+                             "products": "$reaction_participant.product"}},
              {'$sort': {"__order": 1}},
              {"$project": projection}
             ]
