@@ -164,13 +164,16 @@ class QueryTaxonTree(query_nosql.DataQuery):
         '''
         ranks = []
         roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
-        projection = {'rank': 1}
+        projection = {'rank': 1, 'tax_id': 1}
         for _id in ids:
             query = {'tax_id': _id}
-            cursor = self.collection.find_one(filter = query, projection = projection)
+            cursor = self.collection.find_one(filter=query, projection=projection)
             rank = cursor.get('rank', None)
+            tax_id = cursor.get('tax_id', None)
             if rank in roi:
                 ranks.append(rank)
+            elif tax_id == 131567:
+                ranks.append('cellular organisms')
             else:
                 ranks.append('+')
 

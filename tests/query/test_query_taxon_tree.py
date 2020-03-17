@@ -116,18 +116,18 @@ class TestQueryTaxonTree(unittest.TestCase):
         org_2 = 2107591
         result = self.src.get_canon_common_ancestor(org_1, org_2)
         self.assertEqual(result, {'2107591': 4,
-                                '2107591_canon_ancestors': ['Archaea',
+                                '2107591_canon_ancestors': ['cellular organisms', 'Archaea',
                                 'Candidatus Diapherotrites',
                                 'Candidatus Forterrea',
                                 'Candidatus Forterrea multitransposorum'],
                                 '743725': 1,
-                                '743725_canon_ancestors': ['Archaea']})
+                                '743725_canon_ancestors': ['cellular organisms', 'Archaea']})
         result = self.src.get_canon_common_ancestor('escherichia coli', 'escherichia coli', org_format='tax_name')
         self.assertEqual(result['escherichia coli'], 1)
         org_3 = 9606
         org_4 = 4932
         result = self.src.get_canon_common_ancestor(org_3, org_4)
-        self.assertEqual(result, {'9606': 7, '4932': 7, '9606_canon_ancestors': ['Eukaryota', 'Metazoa', 'Chordata', 'Mammalia', 'Primates', 'Hominidae', 'Homo'], '4932_canon_ancestors': ['Eukaryota', 'Fungi', 'Ascomycota', 'Saccharomycetes', 'Saccharomycetales', 'Saccharomycetaceae', 'Saccharomyces']})
+        self.assertEqual(result, {'9606': 7, '4932': 7, '9606_canon_ancestors': ['cellular organisms', 'Eukaryota', 'Metazoa', 'Chordata', 'Mammalia', 'Primates', 'Hominidae', 'Homo'], '4932_canon_ancestors': ['cellular organisms', 'Eukaryota', 'Fungi', 'Ascomycota', 'Saccharomycetes', 'Saccharomycetales', 'Saccharomycetaceae', 'Saccharomyces']})
         # org_5 = 83333
         # org_6 = 562
         # result_0 = self.src.get_canon_common_ancestor(org_5, org_6)
