@@ -14,4 +14,4 @@ class TestQueryUniprotOrg(unittest.TestCase):
 
     def test_get_kegg_ortholog(self):
         result = self.src.get_kegg_ortholog('arCOG00119')
-        print(result)
+        self.assertEqual(result, 'K03341')
