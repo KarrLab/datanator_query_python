@@ -36,3 +36,12 @@ class QueryUniprotOrg:
             return result[0].get_text()
         else:
             return None
+
+    def get_uniprot_id(self):
+        """Get uniprot id.
+        """
+        result = self.soup.find_all(class_='basket-item namespace-uniprot')
+        if result != []:
+            return result[0]['id'].split('_')[1]
+        else:
+            return None        
