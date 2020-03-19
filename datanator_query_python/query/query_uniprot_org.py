@@ -8,33 +8,30 @@ import re
 
 class QueryUniprotOrg:
 
-    def __init__(self, api='https://www.uniprot.org/uniprot/?'):
+    def __init__(self, query, api='https://www.uniprot.org/uniprot/?', include='yes', compress='no',
+                limit=1, offset=0):
         """Init
         
         Args:
+            query (:obj:`str`): query message.
             url (:obj:`int`, optional): API url.
-        """
-        self.api = api
-
-    def get_kegg_ortholog(self, query, columns='database(KO)', include='yes', compress='no',
-                          limit=1, offset=0):
-        """Get kegg ortholog information using query message.
-
-        Args:
-            query (:obj:`str`): Query message.
-            columns (:obj:`str`, optional): comma-separated list of column names. Defaults to 'id'.
             include (:obj:`str`, optional): See description in link. Defaults to 'yes'.
             compress (:obj:`str`, optional): Return results gzipped. Defaults to 'no'.
             limit (:obj:`int`, optional): Max number of results to return. Defaults to 1.
             offset (:obj:`int`, optional): Offset of the first result. Defaults to 0.
         """
-        suffix = 'query={}&sort=score&columns={}&format={}&include={}&compress={}&limit={}&offset={}'.format(
+        columns = 'id,entry name,genes(PREFERRED),protein names,sequence,length,mass,ec,database(GeneID),reviewed,organism-id,database(KO),genes(ALTERNATIVE),genes(ORF),genes(OLN),database(EMBL),database(RefSeq),database(KEGG)'
+        suffix = 'query={}&sort=score&columns={}format={}&include={}&compress={}&limit={}&offset={}'.format(
                   query, columns, 'html', include, compress, limit, offset)
-        url = self.api + suffix
+        url = api + suffix
         response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
+        self.soup = BeautifulSoup(response.content, 'html.parser')
+
+    def get_kegg_ortholog(self):
+        """Get kegg ortholog information using query message.
+        """
         rx = re.compile(".*dbget-bin.*")
-        result = soup.find_all(href=rx)
+        result = self.soup.find_all(href=rx)
         if result != []:
             return result[0].get_text()
         else:
