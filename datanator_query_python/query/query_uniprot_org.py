@@ -2,7 +2,7 @@
 (https://www.uniprot.org/help/api_queries)
 """
 import requests
-import beautifulsoup4
+from bs4 import BeautifulSoup
 
 
 class QueryUniprotOrg:
