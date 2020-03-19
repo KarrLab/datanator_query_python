@@ -2,6 +2,7 @@
 (https://www.uniprot.org/help/api_queries)
 """
 import requests
+import beautifulsoup4
 
 
 class QueryUniprotOrg:
@@ -14,13 +15,13 @@ class QueryUniprotOrg:
         """
         self.api = api
 
-    def get_kegg_ortholog(self, query, _format='xml', columns='database(KO)', include='yes', compress='no',
+    def get_kegg_ortholog(self, query, _format='html', columns='database(KO)', include='yes', compress='no',
                           limit=1, offset=0):
         """Get kegg ortholog information using query message.
 
         Args:
             query (:obj:`str`): Query message.
-            _format (:obj:`str`, optional): Format in which to return results. Defaults to 'xml'.
+            _format (:obj:`str`, optional): Format in which to return results. Defaults to 'html'.
             columns (:obj:`str`, optional): comma-separated list of column names. Defaults to 'id'.
             include (:obj:`str`, optional): See description in link. Defaults to 'yes'.
             compress (:obj:`str`, optional): Return results gzipped. Defaults to 'no'.
