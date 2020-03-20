@@ -68,7 +68,7 @@ class RnaManager:
     def rna_manager(self):
         return query_rna_halflife.QueryRNA(username=config.Config.USERNAME, password=config.Config.PASSWORD,
         server=config.Config.SERVER, authDB=config.Config.AUTHDB, readPreference=config.Config.READ_PREFERENCE,
-        db='datanator', collection_str='rna_halflife')
+        db='datanator', collection_str='rna_halflife_new')
 
 
 class KeggManager:

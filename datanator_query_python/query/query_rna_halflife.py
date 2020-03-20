@@ -42,10 +42,8 @@ class QueryRNA(mongo_util.MongoUtil):
             (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`):
             Pymongo cursor object and number of documents returned.
         """
-        con_0 = {'function': protein_name}
-        con_1 = {'protein_name': protein_name}
-        con_2 = {'protein_synonyms': protein_name}
-        query = {'$or': [con_0, con_1, con_2]}
+        con_1 = {'protein_names': protein_name}
+        query = con_1
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation,
                                     skip=_from, limit=size)
         count = self.collection.count_documents(query, collation=self.collation)
