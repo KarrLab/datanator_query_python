@@ -1,22 +1,22 @@
 aniso8601
 attrs
-cement 
+beautifulsoup4
+cement
 click
 configparser
 genson
 glob2
 itsdangerous
 Jinja2
+karr_lab_aws_manager >= 0.0.21
 MarkupSafe
 numpy
+pandas >= 1.0.1
 pkg_utils
 pymongo
 pyrsistent
+pytest
 python_dotenv
 pytz >= 2019.1
-requirements_parser
-karr_lab_aws_manager==0.0.21
-pandas >= 1.0.1
 requests
-pytest
-beautifulsoup4
+requirements_parser
