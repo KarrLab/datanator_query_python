@@ -44,4 +44,13 @@ class QueryUniprotOrg:
         if result != []:
             return result[0]['id'].split('_')[1]
         else:
-            return None        
+            return None
+
+    def get_protein_name(self):
+        """Get protein name.
+        """
+        result = self.soup.find_all(class_='protein_names')
+        if result != []:
+            return result[0].div['title']
+        else:
+            return None

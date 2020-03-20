@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "28d63d86f30801e13a6656023584dfc9daa5d5d212adca9d6308ddfecbd07671"
+            "sha256": "84cf2ef7311c1dd687c4040f3e702dfdeb67f769fc1f6c21f4ffc4672d1022ba"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.6"
+            "python_version": "3.7"
         },
         "sources": [
             {
@@ -56,17 +56,17 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:5dd06fdc820da2d2efedb365345bc822755ba6e018ce46a2920ecda60ba48d22",
-                "sha256:9549cb07e0f2bd93be90fbf7e544de8e441e448decda8d72defceb1bd8b51686"
+                "sha256:5089aada80f023d21a99b7c10b10f0befd223aeeb60266513f322ad6655b5623",
+                "sha256:8214f8b384c03c76b3940f7a9a8b7e1dc3d7e43b12029a17fb0e68f29fff4ac3"
             ],
-            "version": "==1.12.24"
+            "version": "==1.12.25"
         },
         "botocore": {
             "hashes": [
-                "sha256:85f1c3f402925a1b896ff198b01cb55e34e7bd28f7ce5ff3450bcfe69376bddd",
-                "sha256:d27c2b800be3eb20dac1a539ddee268acdeb07f2abd3f326e2d88b528017e7ad"
+                "sha256:6639ca0f1cc49ce8bfff220cebcf582028e96de2043f83dbc6868edce00e438c",
+                "sha256:e38cdfa5928dcdf00852693292642001d816a78fb43af6b38edb194578be0d4e"
             ],
-            "version": "==1.15.24"
+            "version": "==1.15.25"
         },
         "capturer": {
             "hashes": [
@@ -130,10 +130,10 @@
         },
         "elasticsearch": {
             "hashes": [
-                "sha256:1815ee1377e7d3cf32770738a70785fe4ab1f05be28336a330ed71cb295a7c6c",
-                "sha256:2a0ca516378ae9b87ac840e7bb529ec508f3010360dd9feed605dff2a898aff5"
+                "sha256:d228b2d37ac0865f7631335268172dbdaa426adec1da3ed006dddf05134f89c8",
+                "sha256:f4bb05cfe55cf369bdcb4d86d0129d39d66a91fd9517b13cd4e4231fbfcf5c81"
             ],
-            "version": "==7.5.1"
+            "version": "==7.6.0"
         },
         "flask": {
             "hashes": [
