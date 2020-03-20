@@ -123,7 +123,7 @@ class QuerySabioOld(query_nosql.DataQuery):
 
     def get_kinlaw_by_rxn(self, substrates, products, dof=0,
                           projection={'kinlaw_id': 1, '_id': 0},
-                          bound='loose'):
+                          bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' inchikey
 
@@ -228,7 +228,7 @@ class QuerySabioOld(query_nosql.DataQuery):
 
     def get_kinlaw_by_rxn_name(self, substrates, products,
                                 projection={'kinlaw_id': 1},
-                                bound='loose'):
+                                bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' names
 
@@ -256,7 +256,7 @@ class QuerySabioOld(query_nosql.DataQuery):
             query = {'$and': [s_constraint, p_constraint]}
         else:
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
         count = self.collection.count_documents(query)
         return count, docs
 
@@ -302,3 +302,39 @@ class QuerySabioOld(query_nosql.DataQuery):
             result.append(r)
             have.append(r['kinlaw_id'])
         return result, have
+
+    def get_reaction_by_subunit(self, _ids):
+        """Get reactions by enzyme subunit uniprot IDs
+        
+        Args:
+            _ids (:obj:`list` of :obj:`str`): List of uniprot IDs.
+
+        Return:
+            (:obj:`list` of :obj:`str`): List of kinlaw IDs.
+        """
+        result = []
+        entry_ids = set()
+        projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1, 
+                      'kinlaw_id': 1, 'resource': 1}
+        pipeline = [
+             {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
+             {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]},
+                             "substrates": "$reaction_participant.substrate",
+                             "products": "$reaction_participant.product"}},
+             {'$sort': {"__order": 1}},
+             {"$project": projection}
+            ]
+        docs = self.collection.aggregate(pipeline)
+        if docs is None:
+            return ['No reaction found.']
+        for doc in docs:
+            try:
+                entry_id = doc['resource'][-1]['id']
+            except IndexError:
+                entry_id = -1
+            if entry_id in entry_ids:
+                continue
+            else:
+                result.append(doc)
+                entry_ids.add(entry_id)
+        return result

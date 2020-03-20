@@ -1,0 +1,33 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+aniso8601 = "*"
+attrs = "*"
+cement = "*"
+click = "*"
+configparser = "*"
+genson = "*"
+glob2 = "*"
+itsdangerous = "*"
+numpy = "*"
+pkg-utils = "*"
+pymongo = "*"
+pyrsistent = "*"
+python-dotenv = "*"
+pytz = ">=2019.1"
+requirements-parser = "*"
+karr-lab-aws-manager = "==0.0.21"
+pandas = ">=1.0.1"
+requests = "*"
+pytest = "*"
+Jinja2 = "*"
+MarkupSafe = "*"
+beautifulsoup4 = '*'
+
+[requires]
+python_version = "3.6"

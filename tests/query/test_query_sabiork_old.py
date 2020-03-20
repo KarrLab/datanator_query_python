@@ -111,7 +111,7 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_kinlaw_by_rxn_name(self):
         substrate_name_0 = ['Riboflavin-5-phosphate', 'nonsense', '2-Hydroxypentanoate']
         product_name_0 = ['reduced FMN', 'alpha-Ketovaleric acid']
-        _, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0)
+        count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, limit=2)
         count, _ = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, bound='tight')
         ids_0 = []
         for doc in docs_0:
@@ -132,3 +132,8 @@ class TestQuerySabioOld(unittest.TestCase):
         result, have = self.src.get_rxn_with_prm(kinlaw_ids)
         self.assertEqual(len(result), 1)
         self.assertEqual(have, [42])
+
+    def test_get_reaction_by_subunit(self):
+        _ids = ['P20932', 'P00803']
+        result = self.src.get_reaction_by_subunit(_ids)
+        self.assertEqual(31611, result[-1]['kinlaw_id'])

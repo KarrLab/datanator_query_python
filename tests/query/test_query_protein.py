@@ -22,7 +22,7 @@ class TestQueryProtein(unittest.TestCase):
                  password = cls.password, collection_str='test_query_protein', readPreference='primary')
         cls.src_1 = query_protein.QueryProtein(server=cls.MongoDB, database='datanator',
                  verbose=True, username = cls.username,
-                 password = cls.password, readPreference='primary')
+                 password = cls.password, readPreference='nearest')
         cls.src.db.drop_collection('test_query_protein')
 
         mock_doc_0 = {'uniprot_id': 'MOCK_0', 'ancestor_taxon_id': [105,104,103,102,101],
@@ -251,8 +251,8 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(ko_number_1, None)
         self.assertEqual(ko_name_1, [])
 
-    def test_get_equivalent_kegg_with_anchor(self):
-        result_0 = self.src_1.get_equivalent_kegg_with_anchor('K03154','Thermus thermophilus HB27', 3, max_depth=2)
+    def test_get_equivalent_kegg_with_anchor_obsolete(self):
+        result_0 = self.src_1.get_equivalent_kegg_with_anchor_obsolete('K03154','Thermus thermophilus HB27', 3, max_depth=2)
         self.assertTrue(len(result_0[0]['documents']) > 0)
 
     @unittest.skip('passed')
@@ -263,3 +263,7 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_unique_organism(self):
         result = self.src_1.get_unique_organism()
         print(result)
+
+    def test_get_all_kegg(self):
+        result_0 = self.src_1.get_all_kegg('K00850','Escherichia coli', 10)
+        print(result_0)        

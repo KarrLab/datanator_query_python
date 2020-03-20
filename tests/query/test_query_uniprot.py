@@ -29,6 +29,10 @@ class TestUniprot(unittest.TestCase):
         for doc in docs:
             self.assertEqual(doc['gene_name'], 'aroE')
 
+        docs, count = self.src.get_doc_by_locus('arCOG00119')
+        for doc in docs:
+            self.src.assertEqual(doc.get('ko_number', 'K03341'))
+
     def test_get_gene_protein_name_by_oln(self):
         gene_name_0, protein_name_0 = self.src.get_gene_protein_name_by_oln('CENSYa_1839')
         self.assertEqual(gene_name_0, 'cdc6')

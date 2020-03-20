@@ -132,11 +132,11 @@ class QueryTaxonTree(query_nosql.DataQuery):
         if org1 is None or org2 is None:
             return ('Enter organism information', [0, 0])
 
-        if org1.upper() == org2.upper():
-            return (org1, [0, 0])
-
         if org_format == 'name':
-            anc_ids, _ = self.get_anc_by_name([org1, org2])
+            if org1.upper() == org2.upper():
+                return (org1, [0, 0])
+            else:
+                anc_ids, _ = self.get_anc_by_name([org1, org2])
         else:
             anc_ids, _ = self.get_anc_by_id([org1, org2])
 
@@ -163,14 +163,17 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 ranks: list of ranks ['kingdom', '+', 'phylum']
         '''
         ranks = []
-        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom']
-        projection = {'rank': 1}
+        roi = ['species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom', 'superkingdom']
+        projection = {'rank': 1, 'tax_id': 1}
         for _id in ids:
             query = {'tax_id': _id}
-            cursor = self.collection.find_one(filter = query, projection = projection)
+            cursor = self.collection.find_one(filter=query, projection=projection)
             rank = cursor.get('rank', None)
+            tax_id = cursor.get('tax_id', None)
             if rank in roi:
                 ranks.append(rank)
+            elif tax_id == 131567:
+                ranks.append('cellular organisms')
             else:
                 ranks.append('+')
 
@@ -279,7 +282,8 @@ class QueryTaxonTree(query_nosql.DataQuery):
             doc = self.collection.find_one(filter=query, projection=projection)
             rank = doc.get('rank', None)
             if rank in roi:
-                result.append({doc['tax_name']: i + 1})
+                result.append({doc['tax_name']: i + 1,
+                                    'rank': rank})
             else:
                 continue
         if front_end:
@@ -337,7 +341,7 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 result.append(False)
         return result
 
-    def get_canon_common_ancestor(self, org1, org2):
+    def get_canon_common_ancestor(self, org1, org2, org_format='tax_id'):
         ''' Get the closest common ancestor between
             two organisms and their distances to the 
             said ancestor
@@ -345,20 +349,28 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 org1: organism 1
                 org2: organism 2
                 org_format: the format of organism eg tax_id or tax_name
+
             Return:
-                ancestor: closest common ancestor's name
-                distance: each organism's distance to the ancestor
+                (:obj:`Obj`)
         '''
         if org1 is None or org2 is None:
-            return ('Enter organism information', [0, 0])
+            return {'reason': 'Needs two organisms.'}
 
-        if org1 == org2:
-            return (org1, [0, 0])
+        # if org1 == org2:
+        #     return (org1, [0, 0])
 
-        anc_ids, _ = self.get_anc_by_id([org1, org2])
-
-        org1_anc = anc_ids[0]
-        org2_anc = anc_ids[1]
+        if org_format == 'tax_id':
+            anc_ids, anc_names = self.get_anc_by_id([org1, org2])
+            org1_anc = anc_ids[0]
+            org1_anc_name = anc_names[0]
+            org2_anc = anc_ids[1]
+            org2_anc_name = anc_names[1]
+        elif org_format == 'tax_name':
+            anc_ids, anc_names = self.get_anc_by_name([org1, org2])
+            org1_anc = anc_ids[0]
+            org1_anc_name = anc_names[0]
+            org2_anc = anc_ids[1]
+            org2_anc_name = anc_names[1]
         
         if org1_anc == [-1]:
             return {str(org1): -1, str(org2): -1, 'reason': 'No such organism found: {}'.format(org1)}
@@ -367,12 +379,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
 
         rank1_anc = self.get_rank(org1_anc)
         rank2_anc = self.get_rank(org2_anc)
-
-        canon_anc_1 = [org1_anc.pop(i) for i, (anc, rank) in enumerate(zip(org1_anc, rank1_anc)) if rank == '+']
-        canon_anc_2 = [org2_anc.pop(i) for i, (anc, rank) in enumerate(zip(org2_anc, rank2_anc)) if rank == '+']
+        canon_anc_1 = []
+        canon_anc_2 = []
+        [canon_anc_1.append(anc) for (anc, rank) in zip(org1_anc_name, rank1_anc) if rank != '+']
+        [canon_anc_2.append(anc) for (anc, rank) in zip(org2_anc_name, rank2_anc) if rank != '+']
 
         ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
-        if ancestor == '':
+        if ancestor == '':                
             return {str(org1): -1, str(org2): -1, 'reason': 'No common ancestor'}
         idx_org1 = canon_anc_1.index(ancestor)
         idx_org2 = canon_anc_2.index(ancestor)
@@ -380,4 +393,5 @@ class QueryTaxonTree(query_nosql.DataQuery):
         distance1 = len(canon_anc_1) - (idx_org1)
         distance2 = len(canon_anc_2) - (idx_org2)
 
-        return {str(org1): distance1, str(org2): distance2}
+        return {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
+        str(org2)+'_canon_ancestors':canon_anc_2}
