@@ -1,5 +1,6 @@
 static_analyses:
   ignore_files: []
 downstream_dependencies:
-  #- datanator_rest_api
+  - datanator
+  - datanator_rest_api
 email_notifications: []
