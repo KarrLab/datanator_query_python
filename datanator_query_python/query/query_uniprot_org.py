@@ -49,8 +49,15 @@ class QueryUniprotOrg:
     def get_protein_name(self):
         """Get protein name.
         """
-        result = self.soup.find_all(class_='protein_names')
-        if result != []:
-            return result[0].div['title']
+        result = []
+        tmp = self.soup.find_all(class_='protein_names')
+        if tmp != []:
+            result.append(tmp[0].div['title'])
+            alt_names = tmp[0].div.next_sibling.get_text()
+            atl_name_split = alt_names.strip().split(')  (')
+            for x in atl_name_split:
+                for y in (x.split(',')):
+                    result.append(y.strip())
+            return result
         else:
             return None

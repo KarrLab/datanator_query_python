@@ -23,4 +23,4 @@ class TestQueryUniprotOrg(unittest.TestCase):
 
     def test_get_protein_name(self):
         result = self.src.get_protein_name()
-        self.assertEqual('O-phosphoseryl-tRNA(Sec) selenium transferase', result)
+        self.assertTrue('O-phosphoseryl-tRNA(Sec) selenium transferase' in result)
