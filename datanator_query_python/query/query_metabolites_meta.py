@@ -271,13 +271,16 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         """Get meta info from ECMDB or YMDB
         
         Args:
-            inchi_key (:obj:`str`): inchikey of metabolite molecule.
+            inchi_key (:obj:`str`): inchikey / name of metabolite molecule.
 
         Return:
             (:obj:`Obj`): meta information.
         """
         projection = {'_id': 0, 'concentrations': 0}
-        query = {'inchikey': inchi_key}
+        con_0 = {'name': inchi_key}
+        con_1 = {'synonyms': inchi_key}
+        con_2 = {'inchikey': inchi_key}
+        query = {'$or': [con_0, con_1, con_2]}
         doc = self.e_collection.find_one(filter=query, projection=projection, collation=self.collation)
         if doc is not None:
             return doc
