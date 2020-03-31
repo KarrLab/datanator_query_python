@@ -278,7 +278,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         """
         projection = {'_id': 0, 'concentrations': 0}
         con_0 = {'name': inchi_key}
-        con_1 = {'synonyms': inchi_key}
+        con_1 = {'synonyms.synonym': inchi_key}
         con_2 = {'inchikey': inchi_key}
         query = {'$or': [con_0, con_1, con_2]}
         doc = self.e_collection.find_one(filter=query, projection=projection, collation=self.collation)
