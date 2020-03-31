@@ -3,19 +3,21 @@ from pymongo.collation import Collation, CollationStrength
 import json
 
 
-class QuerySabioCompound:
+class QuerySabioCompound(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='sabio_compound',
                  readPreference='nearest'):
 
-        self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
-                                             password=password, authSource=authSource, db=database,
-                                             readPreference=readPreference)
+        super().__init__(MongoDB=server,
+                         db=database,
+                         verbose=verbose, max_entries=max_entries, username=username,
+                         password=password, authSource=authSource, readPreference=readPreference)
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
+        self.db = self.db_obj
+        self.collection = self.db[collection_str]
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.collection_str = collection_str
 
@@ -37,6 +39,28 @@ class QuerySabioCompound:
         projection = {'_id': 1}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         for doc in docs:
-            print(doc)
             result.append(doc['_id'])
         return result
+
+    def get_inchikey_by_name(self, names):
+        """Get compound InChIKey using compound names.
+        
+        Args:
+            names (:obj:`list` of :obj:`str`): Names of compounds.
+
+        Return:
+            (:obj:`list` of :obj:`str`): List of inchikeys (not in the order of the input list).
+        """
+        result = []
+        synonym_field = 'synonyms'
+        pos_0 = {'name': {'$in': names}}
+        pos_1 = {synonym_field: {'$in': names}}
+        query = {'$or': [pos_0, pos_1]}
+        projection = {'inchi_key': 1}        
+        docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
+        if docs is None:
+            return result
+        else:
+            for doc in docs:
+                result.append(doc['inchi_key'])
+            return result

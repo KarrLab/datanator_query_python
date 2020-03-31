@@ -1,12 +1,12 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from pymongo.collation import Collation, CollationStrength
-from . import query_nosql, query_taxon_tree, query_sabio_compound
+from . import query_taxon_tree, query_sabio_compound
 import json
 import re
 from pymongo import ASCENDING, DESCENDING
 
 
-class QuerySabioOld(query_nosql.DataQuery):
+class QuerySabioOld(mongo_util.MongoUtil):
     '''Queries specific to sabio_rk collection
     '''
 
@@ -20,7 +20,7 @@ class QuerySabioOld(query_nosql.DataQuery):
                         password=password, authSource=authSource, readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
-        self.client, self.db_obj, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
         self.collection_str = collection_str
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(username=username, password=password,
         authSource=authSource, readPreference=readPreference, MongoDB=MongoDB)
@@ -241,6 +241,7 @@ class QuerySabioOld(query_nosql.DataQuery):
             Return:
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
+        print('start: get_kinlaw_by_rxn_name')
         sub_id_field = 'reaction_participant.substrate.sabio_compound_id'
         pro_id_field = 'reaction_participant.product.sabio_compound_id'
         bounded_s = {'reaction_participant.substrate': {'$size': len(substrates)}}
@@ -258,6 +259,7 @@ class QuerySabioOld(query_nosql.DataQuery):
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
         docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
         count = self.collection.count_documents(query)
+        print('finish: get_kinlaw_by_rxn_name')
         return count, docs
 
     def get_unique_entries(self):
