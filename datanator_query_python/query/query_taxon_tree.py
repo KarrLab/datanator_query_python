@@ -1,12 +1,11 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
-from . import query_nosql
 import os
 import json
 from pymongo.collation import Collation, CollationStrength
 import pymongo
 
 
-class QueryTaxonTree(query_nosql.DataQuery):
+class QueryTaxonTree(mongo_util.MongoUtil):
     '''Queries specific to taxon_tree collection
     '''
 
@@ -14,15 +13,13 @@ class QueryTaxonTree(query_nosql.DataQuery):
                 verbose=False, max_entries=float('inf'), username=None, MongoDB=None, 
                 password=None, db='datanator', authSource='admin', readPreference='nearest'):
         self.collection_str = collection_str
-        super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
-                                        db=db, verbose=verbose, max_entries=max_entries, username=username,
-                                        password=password, authSource=authSource, readPreference=readPreference)
+        super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
+                        db=db, verbose=verbose, max_entries=max_entries, username=username,
+                        password=password, authSource=authSource, readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
-        self.client, self.db_obj, self.collection = self.con_db(
-            self.collection_str)
+        self.collection = self.db_obj[self.collection_str]
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
-        self.collection_str = collection_str
 
     def get_all_species(self):
         ''' Get all organisms in taxon_tree collection
