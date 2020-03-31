@@ -1,16 +1,17 @@
-from datanator_query_python.query import query_nosql, query_metabolites_meta, query_taxon_tree
+from datanator_query_python.query import query_metabolites_meta, query_taxon_tree
 from datanator_query_python.util import mongo_util, chem_util, file_util
 import sys
 import configparser
 import os
 
-class QueryFrontEnd:
+class QueryFrontEnd(mongo_util.MongoUtil):
     def __init__(self, MongoDB=None, replSet=None, db='datanator',
                 username=None, password=None, authDB='admin', readPreference='nearest'):
-        self.test_query_manager = True
-        self.db = query_nosql.DataQuery(MongoDB=MongoDB, db=db,
-                                        username=username, password=password, authSource=authDB,
-                                        readPreference=readPreference)
+        super().__init__(MongoDB=MongoDB, db=db,
+                        username=username, password=password, authSource=authDB,
+                        readPreference=readPreference)
+        self.collection_e = self.db_obj['ecmdb']
+        self.collection_y = self.db_obj['ymdb']
         self.metab_db = query_metabolites_meta.QueryMetabolitesMeta(MongoDB=MongoDB, replicaSet=replSet, db=db,
                                                                     username=username, password=password, authSource=authDB,
                                                                     readPreference=readPreference)
@@ -22,9 +23,9 @@ class QueryFrontEnd:
         self.file_manager = file_util.FileUtil()
 
     def get_ecmdb_entries(self, m2m_ids):
-        query = { 'm2m_id': {"$in": m2m_ids} } 
+        query = {'m2m_id': {"$in": m2m_ids}} 
         projection = {'_id': 0}
-        cursor = self.db.doc_feeder(collection_str='ecmdb', query=query ,projection=projection)
+        cursor = self.collection_e.find(filter=query, projection=projection)
         list_e_coli = []
         for doc in cursor:
             if doc['concentrations']:
@@ -33,9 +34,9 @@ class QueryFrontEnd:
         return(list_e_coli)
 
     def get_ymdb_entries(self, ymdb_ids):
-        query = { 'ymdb_id': {"$in": ymdb_ids} } 
+        query = {'ymdb_id': {"$in": ymdb_ids}} 
         projection = {'_id': 0}
-        cursor2 = self.db.doc_feeder(collection_str='ymdb', query=query ,projection=projection)
+        cursor2 = self.collection_y.find(filter=query, projection=projection)
         list_yeast = []
         for doc in cursor2:
             if doc['concentrations']:
