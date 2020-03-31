@@ -242,16 +242,16 @@ class QuerySabioOld(mongo_util.MongoUtil):
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
         print('start: get_kinlaw_by_rxn_name')
-        sub_id_field = 'reaction_participant.substrate.sabio_compound_id'
-        pro_id_field = 'reaction_participant.product.sabio_compound_id'
-        bounded_s = {'reaction_participant.substrate': {'$size': len(substrates)}}
-        bounded_p = {'reaction_participant.product': {'$size': len(products)}}
+        sub_key_field = 'reaction_participant.substrate_aggregate'
+        pro_key_field = 'reaction_participant.product_aggregate'
+        bounded_s = {'reaction_participant.substrate_aggregate': {'$size': len(substrates)}}
+        bounded_p = {'reaction_participant.product_aggregate': {'$size': len(products)}}
 
-        substrate_ids = self.compound_manager.get_id_by_name(substrates)
-        product_ids = self.compound_manager.get_id_by_name(products)
+        substrate_inchikey = self.compound_manager.get_inchikey_by_name(substrates)
+        product_inchikey = self.compound_manager.get_inchikey_by_name(products)
 
-        s_constraint = {sub_id_field: {'$all': substrate_ids}}
-        p_constraint = {pro_id_field: {'$all': product_ids}}
+        s_constraint = {sub_key_field: {'$all': substrate_inchikey}}
+        p_constraint = {pro_key_field: {'$all': product_inchikey}}
 
         if bound == 'loose':
             query = {'$and': [s_constraint, p_constraint]}
