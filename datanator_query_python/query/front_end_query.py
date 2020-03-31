@@ -6,7 +6,8 @@ import os
 
 class QueryFrontEnd(mongo_util.MongoUtil):
     def __init__(self, MongoDB=None, replSet=None, db='datanator',
-                username=None, password=None, authDB='admin', readPreference='nearest'):
+                username=None, password=None, authDB='admin', readPreference='nearest',
+                verbose=True):
         super().__init__(MongoDB=MongoDB, db=db,
                         username=username, password=password, authSource=authDB,
                         readPreference=readPreference)
@@ -21,6 +22,7 @@ class QueryFrontEnd(mongo_util.MongoUtil):
                                                     readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
+        self.verbose = verbose
 
     def get_ecmdb_entries(self, m2m_ids):
         query = {'m2m_id': {"$in": m2m_ids}} 
