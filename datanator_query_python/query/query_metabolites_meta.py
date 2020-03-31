@@ -1,10 +1,9 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
-from . import query_nosql
 import numpy as np
 from pymongo.collation import Collation, CollationStrength
 
 
-class QueryMetabolitesMeta(query_nosql.DataQuery):
+class QueryMetabolitesMeta(mongo_util.MongoUtil):
     '''Queries specific to metabolites_meta collection
     '''
 
@@ -18,8 +17,7 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
                         verbose=verbose, max_entries=max_entries, username=username,
                         password=password, authSource=authSource,
                         readPreference=readPreference)
-        self.client, self.db_obj, self.collection = self.con_db(
-            self.collection_str)
+        self.collection = self.db_obj[self.collection_str]
         self.e_client, self.e_db_obj, self.e_collection = self.con_db('ecmdb')
         self.y_client, self.y_db_obj, self.y_collection = self.con_db('ymdb')        
         self.file_manager = file_util.FileUtil()
