@@ -256,7 +256,8 @@ class QuerySabioOld(mongo_util.MongoUtil):
             query = {'$and': [s_constraint, p_constraint]}
         else:
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
-        docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
+        docs = self.collection.find(filter=query, projection=projection,
+                                    skip=skip, limit=limit)
         count = self.collection.count_documents(query)
         return count, docs
 

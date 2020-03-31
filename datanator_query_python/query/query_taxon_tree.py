@@ -85,8 +85,11 @@ class QueryTaxonTree(mongo_util.MongoUtil):
             query = {'tax_name': name}
             doc = self.collection.find_one(filter=query, collation=self.collation,
                                         projection=projection)
-            result_id.append(doc['anc_id'])
-            result_name.append(doc['anc_name'])
+            if doc is not None:
+                result_id.append(doc['anc_id'])
+                result_name.append(doc['anc_name'])
+            else:
+                continue
         return result_id, result_name
 
     def get_anc_by_id(self, ids):
