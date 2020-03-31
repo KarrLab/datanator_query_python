@@ -241,7 +241,6 @@ class QuerySabioOld(mongo_util.MongoUtil):
             Return:
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
-        print('start: get_kinlaw_by_rxn_name')
         sub_key_field = 'reaction_participant.substrate_aggregate'
         pro_key_field = 'reaction_participant.product_aggregate'
         bounded_s = {'reaction_participant.substrate_aggregate': {'$size': len(substrates)}}
@@ -259,7 +258,6 @@ class QuerySabioOld(mongo_util.MongoUtil):
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
         docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
         count = self.collection.count_documents(query)
-        print('finish: get_kinlaw_by_rxn_name')
         return count, docs
 
     def get_unique_entries(self):
