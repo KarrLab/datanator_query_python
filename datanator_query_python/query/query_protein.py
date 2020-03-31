@@ -55,7 +55,7 @@ class QueryProtein(mongo_util.MongoUtil):
         for doc in docs:
             ko_number = doc.get('ko_number')
             if ko_number is not None:
-                D, c = self.kegg_manager.get_meta_by_kegg_id([ko_number])
+                D, c = self.kegg_manager.get_meta_by_kegg_ids([ko_number])
                 if c != 0:
                     doc['kegg_meta'] = [d for d in D]    
             result.append(doc)

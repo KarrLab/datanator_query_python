@@ -9,7 +9,7 @@ class QueryRNA(mongo_util.MongoUtil):
         super().__init__(MongoDB=server, db=db, username=username,
                         password=password, authSource=authDB, readPreference=readPreference,
                         verbose=verbose)
-        self.client, self.db, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
         self.collation = Collation('en', strength=CollationStrength.SECONDARY)
 
     def get_doc_by_oln(self, oln, projection={'_id': 0}):
@@ -48,3 +48,22 @@ class QueryRNA(mongo_util.MongoUtil):
                                     skip=_from, limit=size)
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
+
+    # def get_doc_by_name(self, name, projection={'_id': 0}, _from=0, size=0):
+    #     """Get document by name (search text index in kegg_orthology collection)
+        
+    #     Args:
+    #         name (:obj:`str`): name to be queried
+    #         projection (:obj:`dict`, optional): mongodb query result projection. Defaults to {'_id': 0}.
+    #         _from (:obj:`int`): first page (0-indexed).
+    #         size (:obj:`int`): number of items per page.
+
+    #     Return:
+    #         (:obj:`Obj`): kegg document.
+    #     """
+    #     expression = "\"" + name + "\""
+    #     query = {'$text': {'$search': expression}}
+    #     count = self.collection.count_documents(query)
+    #     docs, count = self.collection.find(query, {'score': {'$meta': 'textScore'}}, projection=projection,
+    #                                        skip=_from, limit=size).sort([('score', {'$meta': 'textScore'})])
+    #     return docs, count

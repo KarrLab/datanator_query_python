@@ -33,3 +33,9 @@ class TestQueryRna(unittest.TestCase):
         protein_name_0 = 'Structural maintenance of chromosomes protein 1'
         _, count_0 = self.src.get_doc_by_protein_name(protein_name_0)
         self.assertEqual(count_0, 1)
+
+    # def test_get_doc_by_name(self):
+    #     name_0 = 'Structural maintenance of chromosomes protein 1'
+    #     docs, count_0 = self.src.get_doc_by_name(name_0)
+    #     for doc in docs:
+    #         print(doc)
