@@ -1,9 +1,8 @@
-from datanator_query_python.util import chem_util, file_util
-from . import query_nosql
+from datanator_query_python.util import chem_util, file_util, mongo_util
 from pymongo.collation import Collation, CollationStrength
 
 
-class QueryPax(query_nosql.DataQuery):
+class QueryPax(mongo_util.MongoUtil):
     '''Queries specific to pax collection
     '''
 
@@ -25,17 +24,17 @@ class QueryPax(query_nosql.DataQuery):
             authSource (str, optional): authentication database. Defaults to 'admin'.
             readPreference (str, optional): mongodb readpreference. Defaults to 'primary'.
         """
-        super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
-                                                    replicaSet=replicaSet, db=db,
-                                                    verbose=verbose, max_entries=max_entries, username=username,
-                                                    password=password, authSource=authSource, readPreference=readPreference)
+        super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
+                        replicaSet=replicaSet, db=db,
+                        verbose=verbose, max_entries=max_entries, username=username,
+                        password=password, authSource=authSource, readPreference=readPreference)
         self.collation = Collation(locale='en',
                                    strength=CollationStrength.SECONDARY)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db_obj, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
 
     def get_all_species(self):
         '''
