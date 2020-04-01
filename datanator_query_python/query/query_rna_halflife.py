@@ -28,12 +28,12 @@ class QueryRNA(mongo_util.MongoUtil):
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
 
-    def get_doc_by_protein_name(self, protein_name, projection={'_id': 0},
-                                _from=0, size=0):
+    def get_doc_by_names(self, name, projection={'_id': 0},
+                         _from=0, size=0):
         """Get document by protein name
         
         Args:
-            protein_name (:obj:`str`): name of the protein
+            name (:obj:`str`): name of the protein
             projection (:obj:`dict`, optional): mongodb query result projection. Defaults to {'_id': 0}.
             _from (:obj:`int`): first page (0-indexed).
             size (:obj:`int`): number of items per page.
@@ -42,28 +42,30 @@ class QueryRNA(mongo_util.MongoUtil):
             (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`):
             Pymongo cursor object and number of documents returned.
         """
-        con_1 = {'protein_names': protein_name}
+        con_1 = {'protein_names': name}
         query = con_1
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation,
                                     skip=_from, limit=size)
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
 
-    # def get_doc_by_name(self, name, projection={'_id': 0}, _from=0, size=0):
-    #     """Get document by name (search text index in kegg_orthology collection)
+    def get_doc_by_ko(self, ko_number, projection={'_id': 0},
+                      _from=0, size=0):
+        """Get documents by ko_number
         
-    #     Args:
-    #         name (:obj:`str`): name to be queried
-    #         projection (:obj:`dict`, optional): mongodb query result projection. Defaults to {'_id': 0}.
-    #         _from (:obj:`int`): first page (0-indexed).
-    #         size (:obj:`int`): number of items per page.
+        Args:
+            ko_number (:obj:`str`): Kegg ortholog number.
+            projection (:obj:`dict`, optional): mongodb query result
+            projection. Defaults to {'_id': 0}.
+            _from (:obj:`int`): first page (0-indexed).
+            size (:obj:`int`): number of items per page.
 
-    #     Return:
-    #         (:obj:`Obj`): kegg document.
-    #     """
-    #     expression = "\"" + name + "\""
-    #     query = {'$text': {'$search': expression}}
-    #     count = self.collection.count_documents(query)
-    #     docs, count = self.collection.find(query, {'score': {'$meta': 'textScore'}}, projection=projection,
-    #                                        skip=_from, limit=size).sort([('score', {'$meta': 'textScore'})])
-    #     return docs, count
+        Return:
+            (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`):
+            pymongo interable and number of documents.
+        """
+        query = {'ko_number': ko_number}
+        docs = self.collection.find(filter=query, projection=projection,
+                                    skip=_from, limit=size)
+        count = self.collection.count_documents(query)
+        return docs, count

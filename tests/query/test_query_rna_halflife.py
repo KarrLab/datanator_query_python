@@ -30,12 +30,11 @@ class TestQueryRna(unittest.TestCase):
             self.assertEqual(len(doc['halflives']), 2)
         
     def test_get_doc_by_protein_name(self):
-        protein_name_0 = 'Structural maintenance of chromosomes protein 1'
-        _, count_0 = self.src.get_doc_by_protein_name(protein_name_0)
+        protein_name_0 = 'Cell division control protein 6'
+        _, count_0 = self.src.get_doc_by_names(protein_name_0)
         self.assertEqual(count_0, 1)
 
-    # def test_get_doc_by_name(self):
-    #     name_0 = 'Structural maintenance of chromosomes protein 1'
-    #     docs, count_0 = self.src.get_doc_by_name(name_0)
-    #     for doc in docs:
-    #         print(doc)
+    def test_get_doc_by_ko(self):
+        ko_number = 'K13280'
+        docs, count = self.src.get_doc_by_ko(ko_number)
+        self.assertEqual(docs[0]['uniprot_id'], 'P15367')
