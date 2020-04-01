@@ -153,19 +153,19 @@ class FTX(es_query_builder.QueryBuilder):
                 result[index].append(hit['_source'])
             return result
 
-    def get_protein_ko_count(self, q, num, **kwargs):
+    def get_index_ko_count(self, q, num, index='protein', **kwargs):
         """Get protein index with different ko_number field for up to num hits.
         
         Args:
             q (:obj:`str`): query message.
             num (:obj:`int`): number of hits needed.
+            index (:obj:`str`): name of index.
             **from_ (:obj:`int`): starting offset (default: 0).
 
         Return:
             (:obj:`dict`): obj of index hits {'index': []}
         """
         result = {}
-        index = 'protein'
         must_not = {"bool": {
                         "must_not": {
                             "exists": {
@@ -276,7 +276,7 @@ class FTX(es_query_builder.QueryBuilder):
         body['aggs'] = aggregation
         body['size'] = 0
         r = self.build_es().search(index=index, body=body)
-        r_all = self.get_protein_ko_count(q, num * 2, **kwargs)
+        r_all = self.get_index_ko_count(q, num * 2, **kwargs)
         ko_abundance = set()
         ko_all = set()
         for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
