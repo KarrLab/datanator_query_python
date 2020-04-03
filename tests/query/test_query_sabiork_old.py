@@ -27,7 +27,7 @@ class TestQuerySabioOld(unittest.TestCase):
         shutil.rmtree(cls.cache_dirname)
         cls.src.client.close()
 
-    # @unittest.skip('collection not yet finished building')
+    @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_environment(self):
         taxon = [9606]
         taxon_wildtype = [True, False]
@@ -51,6 +51,7 @@ class TestQuerySabioOld(unittest.TestCase):
             taxon, [True], ph_range, temp_range, {}, param_type)
         self.assertEqual(count, 1305)
 
+    @unittest.skip('collection not yet finished building')
     def test_get_reaction_doc(self):
         _id = [31, 32]
         result, count = self.src.get_reaction_doc(_id)
@@ -58,6 +59,7 @@ class TestQuerySabioOld(unittest.TestCase):
         self.assertTrue('kinlaw_id' in result[0])
 
     def test_get_kinlawid_by_rxn(self):
+        print('start')
         substrate_0 = 'XJLXINKUBYWONI-NNYOXOHSSA-N'
         substrate_1 = 'ODBLHEXUDAPZAU-UHFFFAOYSA-N'
         product_0 = 'GPRLSGONYQIRFK-UHFFFAOYSA-N'
@@ -72,7 +74,9 @@ class TestQuerySabioOld(unittest.TestCase):
                                                 [product_2, product_3],
                                                 dof=1)
         self.assertTrue(15503 in result_1)
+        print('finish')
 
+    @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_rxn(self):
         substrate_0 = 'XJLXINKUBYWONI-NNYOXOHSSA-N'
         substrate_1 = 'ODBLHEXUDAPZAU-UHFFFAOYSA-N'
@@ -93,11 +97,13 @@ class TestQuerySabioOld(unittest.TestCase):
         count_3, _ = self.src.get_kinlaw_by_rxn([substrate_0], [product_0, product_1], bound='tight')
         self.assertEqual(count_3, 0)
 
+    @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_entryid(self):
         entry_id_0 = 6593
         result_0 = self.src.get_kinlaw_by_entryid(entry_id_0)
         self.assertTrue(21 in result_0['kinlaw_id'])
 
+    @unittest.skip('collection not yet finished building')
     def test_get_info_by_entryid(self):
         entry_id_0 = 6690
         result_0 = self.src.get_info_by_entryid(entry_id_0)
@@ -119,10 +125,12 @@ class TestQuerySabioOld(unittest.TestCase):
         self.assertTrue(41 in ids_0)
         self.assertEqual(0, count)
 
+    @unittest.skip('passed')
     def test_get_unique_reactions(self):
         result = self.src.get_unique_entries()
         self.assertEqual(60193, result)
 
+    @unittest.skip('passed')
     def test_get_unique_organisms(self):
         result = self.src.get_unique_organisms()
         self.assertEqual(983, result)

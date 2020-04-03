@@ -116,7 +116,10 @@ class QuerySabioOld(mongo_util.MongoUtil):
         constraint_0 = {substrate: {'$all': substrates}}
         constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
-        docs = self.collection.find(filter=query, projection=projection)
+        hint = [('reaction_participant.substrate_aggregate', ASCENDING),
+                ('reaction_participant.product_aggregate', ASCENDING)]
+        docs = self.collection.find(filter=query, projection=projection,
+                                    hint=hint)
         for doc in docs:
             result.append(doc['kinlaw_id'])
         return result
