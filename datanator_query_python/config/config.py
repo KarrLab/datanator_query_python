@@ -32,6 +32,16 @@ class ProductionConfig(Config):
     PRODUCTION = True
 
 
+class H1hescConfig(Config):
+    """config for h1_hesc package
+    
+    Args:
+        Config (:obj:`Obj`): Config class.
+    """
+    H1_HESC_USERNAME = os.getenv("MONGO_H1_HESC_USER")
+    H1_HESC_PASSWORD = os.getenv("MONGO_H1_HESC_PWD")
+
+
 class TestConfig(Config):
     '''
         test user with read permission to 'datanator' and
