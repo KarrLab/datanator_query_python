@@ -52,4 +52,4 @@ class QuerySabioRxn(mongo_util.MongoUtil):
         if doc is not None:
             return doc['kinlaw_id']
         else:
-            return None
+            return []
