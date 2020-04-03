@@ -1,4 +1,5 @@
 import unittest
+import time
 from datanator_query_python.query import query_sabiork_old
 import tempfile
 import shutil
@@ -59,7 +60,7 @@ class TestQuerySabioOld(unittest.TestCase):
         self.assertTrue('kinlaw_id' in result[0])
 
     def test_get_kinlawid_by_rxn(self):
-        print('start')
+        start = time.time()
         substrate_0 = 'XJLXINKUBYWONI-NNYOXOHSSA-N'
         substrate_1 = 'ODBLHEXUDAPZAU-UHFFFAOYSA-N'
         product_0 = 'GPRLSGONYQIRFK-UHFFFAOYSA-N'
@@ -74,7 +75,8 @@ class TestQuerySabioOld(unittest.TestCase):
                                                 [product_2, product_3],
                                                 dof=1)
         self.assertTrue(15503 in result_1)
-        print('finish')
+        finish = time.time()
+        print('Time elapsed: {}s'.format(finish - start))
 
     @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_rxn(self):
