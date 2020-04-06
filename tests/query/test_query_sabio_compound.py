@@ -53,3 +53,9 @@ class TestSabioCompound(unittest.TestCase):
         names_0 = ['damp', 'beta-D-Fructofuranose 6-phosphate', 'nonsense']
         result_0 = src.get_inchikey_by_name(names_0)
         self.assertTrue('KHWCHTKSEGGWEX-RRKCRQDMSA-N' in result_0)
+        names_1 = ['D-Glucose 1,6-bisphosphate', 'D-Mannose 6-phosphate']
+        result_1 = src.get_inchikey_by_name(names_1)
+        print(result_1)
+        names_2 = ['D-Mannose 1,6-bisphosphate', 'D-Glucose 6-phosphate']
+        result_2 = src.get_inchikey_by_name(names_2)
+        print(result_2)        
