@@ -34,8 +34,9 @@ class QuerySabioRxn(mongo_util.MongoUtil):
                 rxns: list of kinlaw_ids that satisfy the condition
                 [id0, id1, id2,...,  ]
         '''
-        bounded_s = {'substrates': {'$size': len(substrates)}}
-        bounded_p = {'products': {'$size': len(products)}}
+        result = []
+        bounded_s = {'$or': [{'substrates': {'$size': len(substrates)}}, {'substrates': {'$size': len(substrates) + 1}}]}
+        bounded_p = {'$or': [{'products': {'$size': len(products)}}, {'products': {'$size': len(products) + 1}}]}
         projection = {'kinlaw_id': 1, '_id': 0}
         if dof == 0:
             substrates = substrates
@@ -50,8 +51,13 @@ class QuerySabioRxn(mongo_util.MongoUtil):
         constraint_0 = {'substrates': {'$all': substrates}}
         constraint_1 = {'products': {'$all': products}}
         query = {'$and': [constraint_0, constraint_1, bounded_s, bounded_p]}
-        doc = self.collection.find_one(filter=query, projection=projection)
-        if doc is not None:
-            return doc['kinlaw_id']
+        docs = self.collection.find(filter=query, projection=projection)
+        count = self.collection.count_documents(query)
+        if count == 0:
+            return result
+        elif count == 1:
+            return docs[0]['kinlaw_id']
         else:
-            return []
+            for doc in docs:
+                result += doc['kinlaw_id']
+            return result
