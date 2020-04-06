@@ -35,7 +35,7 @@ class TestQuerySabioOld(unittest.TestCase):
         product_0 = 'GPRLSGONYQIRFK-UHFFFAOYSA-N'
         product_1 = 'KPGXRSRHYNQIFN-UHFFFAOYSA-N'
         result = self.src.get_ids_by_participant_inchikey([substrate_0, substrate_1], [product_0, product_1])
-        self.assertTrue(7923 in result)
+        self.assertTrue(7923 not in result)
         substrate_2 = 'PQGCEDQWHSBAJP-TXICZTDVSA-I'
         substrate_3 = 'GFFGJBXGBJISGV-UHFFFAOYSA-N'
         product_2 = 'UDMBCSSLTHHNCD-KQYNXXCUSA-L'
