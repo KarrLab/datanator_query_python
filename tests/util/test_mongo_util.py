@@ -58,4 +58,9 @@ class TestMongoUtil(unittest.TestCase):
 
     def test_get_duplicates(self):
         num, results = self.src_test.get_duplicates(self.duplicate, "name")
-        self.assertEqual(num, 2)
+        self.assertEqual(num, 1)
+
+    @unittest.skip('duplicate removed')
+    def test_get_duplicates_real(self):
+        num, results = self.src.get_duplicates('taxon_tree', 'tax_id', allowDiskUse=True)
+        self.assertEqual(num, 1)

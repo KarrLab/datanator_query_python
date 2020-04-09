@@ -1,7 +1,6 @@
 import pymongo
 from pymongo.read_preferences import Primary, PrimaryPreferred, Secondary, SecondaryPreferred, Nearest
-from bson import decode_all
-import hashlib
+import copy
 from genson import SchemaBuilder
 
 
@@ -57,7 +56,7 @@ class MongoUtil:
         flat_col = collection.aggregate(pipeline)
         return flat_col
 
-    def get_duplicates(self, collection_str, _key):
+    def get_duplicates(self, collection_str, _key, **kwargs):
         """Get duplicate key entries in collection.
         
         Args:
@@ -66,7 +65,7 @@ class MongoUtil:
 
         Return:
             (:obj:`tuple` of :obj:`int` and :obj:`CommandCursor`):
-            number of duplcate documents and documents iterable.
+            length of cursor and documents iterable.
         """
         collection = self.db_obj[collection_str]
         _id = "$"+_key
@@ -74,11 +73,11 @@ class MongoUtil:
                     {"$match": {"count": {"$gt": 1}}},
                     {"$sort": {"count": -1}},
                     {"$project": {"name": "$_id", "_id": 0, "count": 1}}]
-        count_pipeline = pipeline.copy()
-        count_pipeline[-1]['$project'] = {'total_docs': {"$sum": "$count"}}
-        counts = collection.aggregate(count_pipeline)
+        count_pipeline = copy.deepcopy(pipeline)
+        count_pipeline[-1] = {"$count": "total_return"}
+        counts = collection.aggregate(count_pipeline, **kwargs)
         for i, count in enumerate(counts):
             if i == 0:
-                num = count["total_docs"]
-        return num, collection.aggregate(pipeline)
+                num = count["total_return"]                    
+        return num, collection.aggregate(pipeline, **kwargs)
  
