@@ -1,6 +1,7 @@
 import unittest
 from datanator_query_python.util import mongo_util
 from datanator_query_python.config import config
+import time
 import tempfile
 import shutil
 
@@ -11,21 +12,31 @@ class TestMongoUtil(unittest.TestCase):
     def setUpClass(cls):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'datanator'
+        cls.duplicate = 'duplicate_test'
         conf = config.TestConfig()
         username = conf.MONGO_TEST_USERNAME
         password = conf.MONGO_TEST_PASSWORD
         MongoDB = conf.SERVER
         cls.src = mongo_util.MongoUtil(
-            cache_dirname = cls.cache_dirname, MongoDB = MongoDB,
-            db = cls.db, verbose=True, max_entries=20,
-            username = username, password = password)
+            cache_dirname=cls.cache_dirname, MongoDB=MongoDB,
+            db=cls.db, verbose=True, max_entries=20,
+            username=username, password=password)
         cls.collection_str = 'ecmdb'
-
+        cls.src_test = mongo_util.MongoUtil(
+            cache_dirname=cls.cache_dirname, MongoDB=MongoDB,
+            db='test', verbose=True, max_entries=20,
+            username=username, password=password)
+        docs = [{"name": "mike", "num": 0},
+                {"name": "jon", "num": 1},
+                {"name": "john", "num": 2},
+                {"name": "mike", "num": 3}]
+        cls.src_test.db_obj[cls.duplicate].insert_many(docs)
+        time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
+        cls.src_test.db_obj.drop_collection(cls.duplicate)
         shutil.rmtree(cls.cache_dirname)
-
 
     # @unittest.skip('passed')
     def test_list_all_collections(self):
@@ -45,4 +56,6 @@ class TestMongoUtil(unittest.TestCase):
         self.assertEqual(a['properties']['synonyms'],  {'type': 'object', 'properties': {'synonym': {'type': 'array', 
             'items': {'type': 'string'}}}, 'required': ['synonym']})
 
-
+    def test_get_duplicates(self):
+        num, results = self.src_test.get_duplicates(self.duplicate, "name")
+        self.assertEqual(num, 2)

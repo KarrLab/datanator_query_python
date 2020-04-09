@@ -56,3 +56,29 @@ class MongoUtil:
         ]
         flat_col = collection.aggregate(pipeline)
         return flat_col
+
+    def get_duplicates(self, collection_str, _key):
+        """Get duplicate key entries in collection.
+        
+        Args:
+            collection_str (:obj:`str`): Name of collection.
+            _key (:obj:`str`): Name of field in wichi to find duplicate values.
+
+        Return:
+            (:obj:`tuple` of :obj:`int` and :obj:`CommandCursor`):
+            number of duplcate documents and documents iterable.
+        """
+        collection = self.db_obj[collection_str]
+        _id = "$"+_key
+        pipeline = [{"$group": {"_id": _id, "count": {"$sum": 1}}},
+                    {"$match": {"count": {"$gt": 1}}},
+                    {"$sort": {"count": -1}},
+                    {"$project": {"name": "$_id", "_id": 0, "count": 1}}]
+        count_pipeline = pipeline.copy()
+        count_pipeline[-1]['$project'] = {'total_docs': {"$sum": "$count"}}
+        counts = collection.aggregate(count_pipeline)
+        for i, count in enumerate(counts):
+            if i == 0:
+                num = count["total_docs"]
+        return num, collection.aggregate(pipeline)
+ 
