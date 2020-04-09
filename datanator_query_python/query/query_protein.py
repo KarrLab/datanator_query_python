@@ -19,7 +19,7 @@ class QueryProtein(mongo_util.MongoUtil):
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.collection_str = collection_str
 
@@ -791,8 +791,7 @@ class QueryProtein(mongo_util.MongoUtil):
         Return:
             (:obj:`int`): number of unique proteins.
         """
-        # return len(self.collection.distinct('uniprot_id', collation=self.collation))
-        return 847000
+        return len(self.collection.distinct('uniprot_id', collation=self.collation))
     
     def get_unique_organism(self):
         """Get number of unique organisms in collection.
