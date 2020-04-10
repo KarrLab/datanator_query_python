@@ -20,6 +20,7 @@ class QueryProtein(mongo_util.MongoUtil):
         self.max_entries = max_entries
         self.verbose = verbose
         self.collection = self.db_obj[collection_str]
+        self.paxdb_collection = self.db_obj['pax']
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.collection_str = collection_str
 
