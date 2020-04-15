@@ -4,6 +4,7 @@ from . import query_taxon_tree, query_sabio_compound
 import json
 import re
 from pymongo import ASCENDING, DESCENDING
+from collections import deque
 
 
 class QuerySabioOld(mongo_util.MongoUtil):
@@ -99,7 +100,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
                 rxns: list of kinlaw_ids that satisfy the condition
                 [id0, id1, id2,...,  ]
         '''
-        result = []
+        result = deque()
         substrate = 'reaction_participant.substrate_aggregate'
         product = 'reaction_participant.product_aggregate'
         projection = {'kinlaw_id': 1, '_id': 0}
@@ -172,9 +173,9 @@ class QuerySabioOld(mongo_util.MongoUtil):
                 (:obj:`dict`): {'kinlaw_id': [], 'substrates': [], 'products': []}
         """
         result = {}
-        kinlaw_id = []
-        substrates = []
-        products = []
+        kinlaw_id = deque()
+        substrates = deque()
+        products = deque()
         constraint_0 = {'namespace': 'sabiork.reaction', 'id': str(entry_id)}
         query = {'resource': {'$elemMatch': constraint_0}}
         projection = {'_id': 0, 'kinlaw_id': 1, 'reaction_participant.substrate_aggregate': 1,
@@ -209,7 +210,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
         sort = [('kinlaw_id', ASCENDING)]
         taxon_name = None
         distance = -1
-        result = []
+        result = deque()
         docs = self.collection.find(filter=query, projection=projection, sort=sort, limit=size)
         if target_organism is not None:  # need distance information
             for i, doc in enumerate(docs):
@@ -290,8 +291,8 @@ class QuerySabioOld(mongo_util.MongoUtil):
         Return:
             (:obj:`tuple` of :obj:`list` of :obj:`dict` and :obj:`list` of :obj:`int`): list of rxn documents, and ids that have parameter
         """
-        result = []
-        have = []
+        result = deque()
+        have = deque()
         con_0 = {'parameter.observed_name': {'$in': ['Km', 'kcat']}}
         con_1 = {'kinlaw_id': {'$in': kinlaw_ids}}
         query = {'$and': [con_0, con_1]}
@@ -299,7 +300,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
         cursor = self.collection.find(filter=query, projection=projection, collation=self.collation,
                                       skip=_from, limit=size)
         if cursor is None:
-            return result, have
+            return [], []
         for r in cursor:
             result.append(r)
             have.append(r['kinlaw_id'])
@@ -314,7 +315,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
         Return:
             (:obj:`list` of :obj:`str`): List of kinlaw IDs.
         """
-        result = []
+        result = deque()
         entry_ids = set()
         projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1, 
                       'kinlaw_id': 1, 'resource': 1}

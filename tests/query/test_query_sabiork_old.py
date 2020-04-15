@@ -4,6 +4,7 @@ from datanator_query_python.query import query_sabiork_old
 import tempfile
 import shutil
 from datanator_query_python.config import config
+from collections import deque
 
 
 class TestQuerySabioOld(unittest.TestCase):
@@ -99,13 +100,13 @@ class TestQuerySabioOld(unittest.TestCase):
         count_3, _ = self.src.get_kinlaw_by_rxn([substrate_0], [product_0, product_1], bound='tight')
         self.assertEqual(count_3, 0)
 
-    @unittest.skip('collection not yet finished building')
+    # @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_entryid(self):
         entry_id_0 = 6593
         result_0 = self.src.get_kinlaw_by_entryid(entry_id_0)
         self.assertTrue(21 in result_0['kinlaw_id'])
 
-    @unittest.skip('collection not yet finished building')
+    # @unittest.skip('collection not yet finished building')
     def test_get_info_by_entryid(self):
         entry_id_0 = 6690
         result_0 = self.src.get_info_by_entryid(entry_id_0)
@@ -145,7 +146,7 @@ class TestQuerySabioOld(unittest.TestCase):
         kinlaw_ids = [48880, 48882, 48887, 48889, 42]
         result, have = self.src.get_rxn_with_prm(kinlaw_ids)
         self.assertEqual(len(result), 1)
-        self.assertEqual(have, [42])
+        self.assertEqual(have, deque([42]))
 
     def test_get_reaction_by_subunit(self):
         _ids = ['P20932', 'P00803']

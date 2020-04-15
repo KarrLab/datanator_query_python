@@ -1,5 +1,6 @@
 from datanator_query_python.util import mongo_util
 from pymongo.collation import Collation, CollationStrength
+from collections import deque
 
 
 class QueryCorum:
