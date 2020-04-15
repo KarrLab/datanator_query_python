@@ -26,7 +26,7 @@ class QueryCorum:
         Returns:
             (:obj:`list` of :obj:`dict`): list of complexes that meet the requirement
         """
-        result = []
+        result = deque()
         query = {'$and': [{'SWISSPROT_organism_NCBI_ID': ncbi_id},
                           {'subunits_uniprot_id': uniprot_id}]}
         projection = {'_id': 0}
@@ -44,7 +44,7 @@ class QueryCorum:
         Returns:
             (list): list of all objects that meet the constraint
         """
-        result = []
+        result = deque()
         query = {'SWISSPROT_organism_NCBI_ID': ncbi_id}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
