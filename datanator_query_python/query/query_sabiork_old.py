@@ -244,9 +244,9 @@ class QuerySabioOld(mongo_util.MongoUtil):
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
         sub_key_field = 'substrate_names'
-        pro_key_field = 'proudct_names'
-        bounded_s = {'substrate_names': {'$size': len(substrates)}}
-        bounded_p = {'proudct_names': {'$size': len(products)}}
+        pro_key_field = 'product_names'
+        bounded_s = {sub_key_field: {'$size': len(substrates)}}
+        bounded_p = {pro_key_field: {'$size': len(products)}}
 
         s_constraint = {sub_key_field: {'$all': substrates}}
         p_constraint = {pro_key_field: {'$all': products}}

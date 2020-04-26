@@ -22,7 +22,8 @@ class TestQuerySabioOld(unittest.TestCase):
         cls.password = password
         cls.src = query_sabiork_old.QuerySabioOld(
                 cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
-                 verbose=True, max_entries=20, username=cls.username, password=cls.password)
+                 verbose=True, max_entries=20, username=cls.username, password=cls.password,
+                 readPreference='primary')
 
     @classmethod
     def tearDownClass(cls):
@@ -118,15 +119,14 @@ class TestQuerySabioOld(unittest.TestCase):
         self.assertTrue(len(result) == 10)
 
     def test_get_kinlaw_by_rxn_name(self):
-        product_name_0 = ['3-Phospho-D-glyceroyl phosphate', "ADP"]
-        substrate_name_0 = ['3-Phospho-D-glycerate', 'ATP']
+        product_name_0 = ['Phosphate', "[Pyruvate dehydrogenase (lipoamide)]"]
+        substrate_name_0 = ['[Pyruvate dehydrogenase (lipoamide)] phosphate', 'H2O']
         count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0)
-        count, _ = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, bound='tight')
         ids_0 = []
         for doc in docs_0:
+            print(doc['kinlaw_id'])
             ids_0.append(doc['kinlaw_id'])
-        self.assertTrue(32529 in ids_0)
-        self.assertEqual(0, count)
+        self.assertTrue(1102 in ids_0)
 
     @unittest.skip('passed')
     def test_get_unique_reactions(self):
@@ -147,4 +147,4 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_reaction_by_subunit(self):
         _ids = ['P20932', 'P00803']
         result = self.src.get_reaction_by_subunit(_ids)
-        self.assertEqual(31609, result[-1]['kinlaw_id'])
+        self.assertEqual(31611, result[-1]['kinlaw_id'])
