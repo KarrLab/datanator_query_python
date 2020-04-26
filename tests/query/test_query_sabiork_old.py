@@ -118,19 +118,15 @@ class TestQuerySabioOld(unittest.TestCase):
         self.assertTrue(len(result) == 10)
 
     def test_get_kinlaw_by_rxn_name(self):
-        substrate_name_0 = ['Riboflavin-5-phosphate', 'nonsense', '2-Hydroxypentanoate']
-        product_name_0 = ['reduced FMN', 'alpha-Ketovaleric acid']
-        count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, limit=2)
+        product_name_0 = ['3-Phospho-D-glyceroyl phosphate', "ADP"]
+        substrate_name_0 = ['3-Phospho-D-glycerate', 'ATP']
+        count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0)
         count, _ = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0, bound='tight')
         ids_0 = []
         for doc in docs_0:
             ids_0.append(doc['kinlaw_id'])
-        self.assertTrue(41 in ids_0)
+        self.assertTrue(32531 in ids_0)
         self.assertEqual(0, count)
-        substrate_name_1 = ['D-Glucose 1,6-bisphosphate', 'D-Mannose 6-phosphate']
-        product_name_1 = ['D-Mannose 1,6-bisphosphate', 'D-Glucose 6-phosphate']
-        count_1, docs_1 = self.src.get_kinlaw_by_rxn_name(substrate_name_1, product_name_1, bound='tight')
-        self.assertEqual(count_1, 2)
 
     @unittest.skip('passed')
     def test_get_unique_reactions(self):
