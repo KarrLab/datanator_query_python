@@ -125,7 +125,7 @@ class TestQuerySabioOld(unittest.TestCase):
         ids_0 = []
         for doc in docs_0:
             ids_0.append(doc['kinlaw_id'])
-        self.assertTrue(32531 in ids_0)
+        self.assertTrue(32529 in ids_0)
         self.assertEqual(0, count)
 
     @unittest.skip('passed')
