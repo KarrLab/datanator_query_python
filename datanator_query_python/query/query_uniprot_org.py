@@ -29,6 +29,9 @@ class QueryUniprotOrg:
 
     def get_kegg_ortholog(self):
         """Get kegg ortholog information using query message.
+
+        Return:
+            (:obj:`str`): kegg ortholog number
         """
         rx = re.compile(".*dbget-bin.*")
         result = self.soup.find_all(href=rx)
@@ -39,9 +42,31 @@ class QueryUniprotOrg:
 
     def get_uniprot_id(self):
         """Get uniprot id.
+
+        Return:
+            (:obj:`str`): uniprot id
         """
         result = self.soup.find_all(class_='basket-item namespace-uniprot')
         if result != []:
             return result[0]['id'].split('_')[1]
         else:
-            return None        
+            return None
+
+    def get_protein_name(self):
+        """Get protein name.
+
+        Return:
+            (:obj:`list` of :obj:`str`): list of protein names.
+        """
+        result = []
+        tmp = self.soup.find_all(class_='protein_names')
+        if tmp != []:
+            result.append(tmp[0].div['title'])
+            alt_names = tmp[0].div.next_sibling.get_text()
+            atl_name_split = alt_names.strip().split(')  (')
+            for x in atl_name_split:
+                for y in (x.split(',')):
+                    result.append(y.strip())
+            return result
+        else:
+            return None

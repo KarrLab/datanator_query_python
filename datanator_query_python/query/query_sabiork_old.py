@@ -1,12 +1,13 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
 from pymongo.collation import Collation, CollationStrength
-from . import query_nosql, query_taxon_tree, query_sabio_compound
+from . import query_taxon_tree, query_sabio_compound
 import json
 import re
 from pymongo import ASCENDING, DESCENDING
+from collections import deque
 
 
-class QuerySabioOld(query_nosql.DataQuery):
+class QuerySabioOld(mongo_util.MongoUtil):
     '''Queries specific to sabio_rk collection
     '''
 
@@ -20,7 +21,7 @@ class QuerySabioOld(query_nosql.DataQuery):
                         password=password, authSource=authSource, readPreference=readPreference)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
-        self.client, self.db_obj, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
         self.collection_str = collection_str
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(username=username, password=password,
         authSource=authSource, readPreference=readPreference, MongoDB=MongoDB)
@@ -99,7 +100,7 @@ class QuerySabioOld(query_nosql.DataQuery):
                 rxns: list of kinlaw_ids that satisfy the condition
                 [id0, id1, id2,...,  ]
         '''
-        result = []
+        result = deque()
         substrate = 'reaction_participant.substrate_aggregate'
         product = 'reaction_participant.product_aggregate'
         projection = {'kinlaw_id': 1, '_id': 0}
@@ -117,8 +118,9 @@ class QuerySabioOld(query_nosql.DataQuery):
         constraint_1 = {product: {'$all': products}}
         query = {'$and': [constraint_0, constraint_1]}
         docs = self.collection.find(filter=query, projection=projection)
-        for doc in docs:
-            result.append(doc['kinlaw_id'])
+        if docs is not None:
+            for doc in docs:
+                result.append(doc['kinlaw_id'])
         return result
 
     def get_kinlaw_by_rxn(self, substrates, products, dof=0,
@@ -171,9 +173,9 @@ class QuerySabioOld(query_nosql.DataQuery):
                 (:obj:`dict`): {'kinlaw_id': [], 'substrates': [], 'products': []}
         """
         result = {}
-        kinlaw_id = []
-        substrates = []
-        products = []
+        kinlaw_id = deque()
+        substrates = deque()
+        products = deque()
         constraint_0 = {'namespace': 'sabiork.reaction', 'id': str(entry_id)}
         query = {'resource': {'$elemMatch': constraint_0}}
         projection = {'_id': 0, 'kinlaw_id': 1, 'reaction_participant.substrate_aggregate': 1,
@@ -208,7 +210,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         sort = [('kinlaw_id', ASCENDING)]
         taxon_name = None
         distance = -1
-        result = []
+        result = deque()
         docs = self.collection.find(filter=query, projection=projection, sort=sort, limit=size)
         if target_organism is not None:  # need distance information
             for i, doc in enumerate(docs):
@@ -241,22 +243,20 @@ class QuerySabioOld(query_nosql.DataQuery):
             Return:
                 (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
         '''
-        sub_id_field = 'reaction_participant.substrate.sabio_compound_id'
-        pro_id_field = 'reaction_participant.product.sabio_compound_id'
-        bounded_s = {'reaction_participant.substrate': {'$size': len(substrates)}}
-        bounded_p = {'reaction_participant.product': {'$size': len(products)}}
+        sub_key_field = 'substrate_names'
+        pro_key_field = 'product_names'
+        bounded_s = {sub_key_field: {'$size': len(substrates)}}
+        bounded_p = {pro_key_field: {'$size': len(products)}}
 
-        substrate_ids = self.compound_manager.get_id_by_name(substrates)
-        product_ids = self.compound_manager.get_id_by_name(products)
-
-        s_constraint = {sub_id_field: {'$all': substrate_ids}}
-        p_constraint = {pro_id_field: {'$all': product_ids}}
+        s_constraint = {sub_key_field: {'$all': substrates}}
+        p_constraint = {pro_key_field: {'$all': products}}
 
         if bound == 'loose':
             query = {'$and': [s_constraint, p_constraint]}
         else:
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
-        docs = self.collection.find(filter=query, projection=projection, skip=skip, limit=limit)
+        docs = self.collection.find(filter=query, projection=projection,
+                                    skip=skip, limit=limit)
         count = self.collection.count_documents(query)
         return count, docs
 
@@ -288,8 +288,8 @@ class QuerySabioOld(query_nosql.DataQuery):
         Return:
             (:obj:`tuple` of :obj:`list` of :obj:`dict` and :obj:`list` of :obj:`int`): list of rxn documents, and ids that have parameter
         """
-        result = []
-        have = []
+        result = deque()
+        have = deque()
         con_0 = {'parameter.observed_name': {'$in': ['Km', 'kcat']}}
         con_1 = {'kinlaw_id': {'$in': kinlaw_ids}}
         query = {'$and': [con_0, con_1]}
@@ -297,7 +297,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         cursor = self.collection.find(filter=query, projection=projection, collation=self.collation,
                                       skip=_from, limit=size)
         if cursor is None:
-            return result, have
+            return [], []
         for r in cursor:
             result.append(r)
             have.append(r['kinlaw_id'])
@@ -312,7 +312,7 @@ class QuerySabioOld(query_nosql.DataQuery):
         Return:
             (:obj:`list` of :obj:`str`): List of kinlaw IDs.
         """
-        result = []
+        result = deque()
         entry_ids = set()
         projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1, 
                       'kinlaw_id': 1, 'resource': 1}

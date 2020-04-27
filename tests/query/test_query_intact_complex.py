@@ -1,6 +1,7 @@
 import unittest
 from datanator_query_python.config import config as query_config
 from datanator_query_python.query import query_intact_complex
+import time
 
 
 class TestQueryCorum(unittest.TestCase):
@@ -23,13 +24,14 @@ class TestQueryCorum(unittest.TestCase):
         doc_2 = {'name': 'name_2', 'ncbi_id': 9606}
         doc_3 = {'name': 'name_3', 'ncbi_id': 9607}
         cls.src.collection.insert_many([doc_0,doc_1,doc_2,doc_3])
+        time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
         cls.src.db.drop_collection('test_query_intact_complex')
         cls.src.client.close()
 
-    @unittest.skip('needed write op to db')
+    # @unittest.skip('needed write op to db')
     def test_get_complex_with_ncbi(self):
         result_0 = self.src.get_complex_with_ncbi(9606)
         result_1 = self.src.get_complex_with_ncbi(9607)

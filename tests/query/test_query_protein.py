@@ -23,7 +23,7 @@ class TestQueryProtein(unittest.TestCase):
         cls.src_1 = query_protein.QueryProtein(server=cls.MongoDB, database='datanator',
                  verbose=True, username = cls.username,
                  password = cls.password, readPreference='nearest')
-        cls.src.db.drop_collection('test_query_protein')
+        cls.src.db_obj.drop_collection('test_query_protein')
 
         mock_doc_0 = {'uniprot_id': 'MOCK_0', 'ancestor_taxon_id': [105,104,103,102,101],
                     'ancestor_name': ['name_5', 'name_4','name_3','name_2','name_1'],
@@ -93,7 +93,7 @@ class TestQueryProtein(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.src.db.drop_collection('test_query_protein')
+        cls.src.db_obj.drop_collection('test_query_protein')
         cls.src_1.client.close()
         cls.src.client.close()
 

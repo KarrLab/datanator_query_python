@@ -1,10 +1,9 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
-from . import query_nosql
 import numpy as np
 from pymongo.collation import Collation, CollationStrength
 
 
-class QueryMetabolitesMeta(query_nosql.DataQuery):
+class QueryMetabolitesMeta(mongo_util.MongoUtil):
     '''Queries specific to metabolites_meta collection
     '''
 
@@ -13,13 +12,14 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
                  password=None, authSource='admin', readPreference='nearest'):
         self.collection_str = collection_str
         self.verbose = verbose
-        super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
-                                        replicaSet=replicaSet, db=db,
-                                        verbose=verbose, max_entries=max_entries, username=username,
-                                        password=password, authSource=authSource,
-                                        readPreference=readPreference)
-        self.client, self.db_obj, self.collection = self.con_db(
-            self.collection_str)
+        super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
+                        replicaSet=replicaSet, db=db,
+                        verbose=verbose, max_entries=max_entries, username=username,
+                        password=password, authSource=authSource,
+                        readPreference=readPreference)
+        self.collection = self.db_obj[self.collection_str]
+        self.e_client, self.e_db_obj, self.e_collection = self.con_db('ecmdb')
+        self.y_client, self.y_db_obj, self.y_collection = self.con_db('ymdb')        
         self.file_manager = file_util.FileUtil()
         self.chem_manager = chem_util.ChemUtil()
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
@@ -265,4 +265,25 @@ class QueryMetabolitesMeta(query_nosql.DataQuery):
         if doc is None:
             return {}
         else:
+            return doc
+
+    def get_eymeta(self, inchi_key):
+        """Get meta info from ECMDB or YMDB
+        
+        Args:
+            inchi_key (:obj:`str`): inchikey / name of metabolite molecule.
+
+        Return:
+            (:obj:`Obj`): meta information.
+        """
+        projection = {'_id': 0, 'concentrations': 0}
+        con_0 = {'name': inchi_key}
+        con_1 = {'synonyms.synonym': inchi_key}
+        con_2 = {'inchikey': inchi_key}
+        query = {'$or': [con_0, con_1, con_2]}
+        doc = self.e_collection.find_one(filter=query, projection=projection, collation=self.collation)
+        if doc is not None:
+            return doc
+        else:
+            doc = self.y_collection.find_one(filter=query, projection=projection, collation=self.collation)
             return doc

@@ -1,15 +1,14 @@
 import pymongo
 from pymongo.read_preferences import Primary, PrimaryPreferred, Secondary, SecondaryPreferred, Nearest
-from bson import decode_all
-import hashlib
+import copy
 from genson import SchemaBuilder
 
 
 class MongoUtil:
 
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='test',
-                 verbose=False, max_entries=float('inf'), username = None, 
-                 password = None, authSource = 'admin', readPreference='nearest'):
+                 verbose=False, max_entries=float('inf'), username=None, 
+                 password=None, authSource='admin', readPreference='nearest'):
         self.client = pymongo.MongoClient(
             host=MongoDB, replicaSet=replicaSet, 
             username=username, password=password,
@@ -56,3 +55,29 @@ class MongoUtil:
         ]
         flat_col = collection.aggregate(pipeline)
         return flat_col
+
+    def get_duplicates(self, collection_str, _key, **kwargs):
+        """Get duplicate key entries in collection.
+        
+        Args:
+            collection_str (:obj:`str`): Name of collection.
+            _key (:obj:`str`): Name of field in wichi to find duplicate values.
+
+        Return:
+            (:obj:`tuple` of :obj:`int` and :obj:`CommandCursor`):
+            length of cursor and documents iterable.
+        """
+        collection = self.db_obj[collection_str]
+        _id = "$"+_key
+        pipeline = [{"$group": {"_id": _id, "count": {"$sum": 1}}},
+                    {"$match": {"count": {"$gt": 1}}},
+                    {"$sort": {"count": -1}},
+                    {"$project": {"name": "$_id", "_id": 0, "count": 1}}]
+        count_pipeline = copy.deepcopy(pipeline)
+        count_pipeline[-1] = {"$count": "total_return"}
+        counts = collection.aggregate(count_pipeline, **kwargs)
+        for i, count in enumerate(counts):
+            if i == 0:
+                num = count["total_return"]                    
+        return num, collection.aggregate(pipeline, **kwargs)
+ 

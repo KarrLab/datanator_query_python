@@ -75,7 +75,7 @@ class QueryKO(mongo_util.MongoUtil):
             obj = doc['gene_ortholog'][0]['genetic_info']
             return next((item['locus_id'] for item in obj if item["gene_id"] == gene_id), None)
 
-    def get_meta_by_kegg_id(self, kegg_ids, projection={'_id': 0, 'gene_ortholog': 0}):
+    def get_meta_by_kegg_ids(self, kegg_ids, projection={'_id': 0, 'gene_ortholog': 0}):
         """Get meta given kegg ids
         
         Args:
@@ -96,3 +96,17 @@ class QueryKO(mongo_util.MongoUtil):
         docs = self.collection.aggregate(pipeline, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
+
+    def get_meta_by_kegg_id(self, kegg_id):
+        """Get meta information by kegg_id
+        
+        Args:
+            kegg_id (:obj:`str`): Kegg ID.
+
+        Return:
+            (:obj:`Obj`): Kegg meta object.
+        """
+        projection = {'_id': 0}
+        query = {'kegg_orthology_id': kegg_id}
+        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        return doc

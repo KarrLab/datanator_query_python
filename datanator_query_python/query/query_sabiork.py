@@ -1,8 +1,7 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
-from . import query_nosql
 import json
 
-class QuerySabio(query_nosql.DataQuery):
+class QuerySabio(mongo_util.MongoUtil):
     '''Queries specific to sabio_rk collection
     '''
 
@@ -10,13 +9,13 @@ class QuerySabio(query_nosql.DataQuery):
                  collection_str='sabio_rk', verbose=False, max_entries=float('inf'), username=None,
                  password=None, authSource='admin'):
         self.max_entries = max_entries
-        super(query_nosql.DataQuery, self).__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
-                                        replicaSet=replicaSet, db=db,
-                                        verbose=verbose, max_entries=max_entries, username=username,
-                                        password=password, authSource=authSource)
+        super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
+                        replicaSet=replicaSet, db=db,
+                        verbose=verbose, max_entries=max_entries, username=username,
+                        password=password, authSource=authSource)
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
-        self.client, self.db_obj, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
 
     def get_reaction_doc(self, kinlaw_id):
         '''

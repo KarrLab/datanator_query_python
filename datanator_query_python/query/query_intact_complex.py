@@ -1,5 +1,6 @@
 from datanator_query_python.util import mongo_util
 from pymongo.collation import Collation, CollationStrength
+from collections import deque
 
 
 class QueryIntactComplex:
@@ -24,7 +25,7 @@ class QueryIntactComplex:
         Returns:
             (:obj:`list` of :obj:`dict`): list of complexes
         """
-        result = []
+        result = deque()
         query = {'ncbi_id': ncbi}
         projection = {'_id': 0}
         docs = self.collection.find(filter=query, projection=projection)

@@ -108,3 +108,9 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
     def test_get_metabolites_meta(self):
         self.assertEqual(self.src.get_metabolites_meta('lafj;aj'), {})
         self.assertEqual(self.src.get_metabolites_meta('QHKABHOOEWYVLI-UHFFFAOYSA-N')['chebi_id'], '16530')
+
+    def test_get_eymdb(self):
+        inchi_key = 'XCCTYIAWTASOJW-XVFCMESISA-N'
+        self.assertEqual(self.src.get_eymeta(inchi_key)['m2m_id'], 'M2MDB000123')
+        self.assertIsNone(self.src.get_eymeta('asdlfjalf'))
+        

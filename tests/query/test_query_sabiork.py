@@ -20,7 +20,7 @@ class TestQuerySabio(unittest.TestCase):
         cls.password = password
         cls.src = query_sabiork.QuerySabio(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
-                 verbose=True, max_entries=20, username = cls.username, password = cls.password)
+                 verbose=True, max_entries=20, username=cls.username, password=cls.password)
 
     @classmethod
     def tearDownClass(cls):

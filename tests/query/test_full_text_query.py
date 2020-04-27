@@ -156,7 +156,7 @@ class TestFTX(unittest.TestCase):
 
     def test_get_protein_ko_count(self):
         query_message = 'alcohol dehydrogenase'
-        result = self.src.get_protein_ko_count(query_message, 15)
+        result = self.src.get_index_ko_count(query_message, 15)
         self.assertEqual(len(result['top_kos']['buckets']), 15)
 
     def test_get_rxn_oi(self):

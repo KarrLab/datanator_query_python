@@ -19,7 +19,8 @@ class QueryProtein(mongo_util.MongoUtil):
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose
-        self.client, self.db, self.collection = self.con_db(collection_str)
+        self.collection = self.db_obj[collection_str]
+        self.paxdb_collection = self.db_obj['pax']
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.collection_str = collection_str
 
@@ -55,7 +56,7 @@ class QueryProtein(mongo_util.MongoUtil):
         for doc in docs:
             ko_number = doc.get('ko_number')
             if ko_number is not None:
-                D, c = self.kegg_manager.get_meta_by_kegg_id([ko_number])
+                D, c = self.kegg_manager.get_meta_by_kegg_ids([ko_number])
                 if c != 0:
                     doc['kegg_meta'] = [d for d in D]    
             result.append(doc)
@@ -791,8 +792,7 @@ class QueryProtein(mongo_util.MongoUtil):
         Return:
             (:obj:`int`): number of unique proteins.
         """
-        # return len(self.collection.distinct('uniprot_id', collation=self.collation))
-        return 847000
+        return len(self.collection.distinct('uniprot_id', collation=self.collation))
     
     def get_unique_organism(self):
         """Get number of unique organisms in collection.
