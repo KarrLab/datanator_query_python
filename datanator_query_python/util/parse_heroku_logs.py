@@ -43,9 +43,9 @@ class ParseLogs:
                     break
                 if line.endswith('\n'):
                     line = line[0:-1]
-                end_point_match = re.search(r'(\/.*\w+\/)', line)
+                end_point_match = re.search(r'path="(\/.*\w+\/)', line)
                 performance_match = re.search(r'service=(\d*)ms', line)
-                if end_point_match and performance_match:
+                if end_point_match is not None and performance_match is not None:
                     end_point = end_point_match.group(1)
                     performance = int(performance_match.group(1))
                     if result.get(end_point) is None:
@@ -61,6 +61,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def main():
+    
     file_location = "./docs/20200430-logs-1500.txt"
     manager = ParseLogs(file_location=file_location)
     result = manager.parse_router()
@@ -68,11 +69,15 @@ def main():
     std = []
     mean = []
     for _key, val in result.items():
-        x_label.append(_key)
-        array = (np.array(val))
-        std.append(np.std(array))
-        mean.append(np.mean(array))
+        if _key == '/reactions/kinlaw_by_name/' or _key == '/rna/halflife/get_info_by_ko/':
+            x_label.append(_key)
+            array = (np.array(val))
+            std.append(np.std(array))
+            mean.append(np.mean(array))
+        else:
+            continue
     x_pos = np.arange(len(x_label))
+    plt.rcParams.update({'figure.autolayout': True})
     fig, ax = plt.subplots()
     ax.barh(x_pos, mean, xerr=std, align='center', ecolor='black', capsize=5)
     ax.set_xlabel('Speed (ms)')
@@ -81,8 +86,7 @@ def main():
     ax.invert_yaxis()
     ax.set_title('Performance snapshot of REST API endpoints')
     ax.xaxis.grid(True)
-    # plt.tight_layout()
-    plt.savefig('api_performance.png')
+    plt.tight_layout()
     plt.show()    
 
 if __name__ == '__main__':

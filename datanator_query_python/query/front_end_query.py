@@ -68,7 +68,8 @@ class QueryFrontEnd(mongo_util.MongoUtil):
 
     def get_generic_concs(self, molecule_name):
         raw, result = self.metab_db.get_metabolite_similar_compounds([molecule_name], num = 30, threshold = 0.6)
-        
+        if len(result) == 0:
+            return ([], [])
         list_names = []
         list_scores = []
         for key in result[0]:
