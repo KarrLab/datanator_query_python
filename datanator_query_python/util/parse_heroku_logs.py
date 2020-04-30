@@ -56,4 +56,34 @@ class ParseLogs:
                     continue
         return result
 
-                
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def main():
+    file_location = "./docs/20200429-logs-1500.txt"
+    manager = ParseLogs(file_location=file_location)
+    result = manager.parse_router()
+    x_label = []
+    std = []
+    mean = []
+    for _key, val in result.items():
+        x_label.append(_key)
+        array = (np.array(val))
+        std.append(np.std(array))
+        mean.append(np.mean(array))
+    x_pos = np.arange(len(x_label))
+    fig, ax = plt.subplots()
+    ax.barh(x_pos, mean, xerr=std, align='center', ecolor='black', capsize=5)
+    ax.set_xlabel('Speed (ms)')
+    ax.set_yticks(x_pos)
+    ax.set_yticklabels(x_label)
+    ax.invert_yaxis()
+    ax.set_title('Performance snapshot of REST API endpoints')
+    ax.xaxis.grid(True)
+    plt.tight_layout()
+    plt.savefig('api_performance.png')
+    plt.show()    
+
+if __name__ == '__main__':
+    main()

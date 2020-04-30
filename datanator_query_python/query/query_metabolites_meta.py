@@ -216,6 +216,8 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         for item in hashed_inchi:
             cursor = self.collection.find_one(filter={'InChI_Key': item},
                                               projection=projection)
+            if cursor is None:
+                continue
             compounds = cursor['similar_compounds']
             scores = [list(dic.values()) for dic in compounds]
             scores = self.file_manager.unpack_list(scores)
