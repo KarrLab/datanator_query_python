@@ -61,7 +61,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def main():
-    file_location = "./docs/20200429-logs-1500.txt"
+    file_location = "./docs/20200430-logs-1500.txt"
     manager = ParseLogs(file_location=file_location)
     result = manager.parse_router()
     x_label = []
@@ -81,7 +81,7 @@ def main():
     ax.invert_yaxis()
     ax.set_title('Performance snapshot of REST API endpoints')
     ax.xaxis.grid(True)
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.savefig('api_performance.png')
     plt.show()    
 
