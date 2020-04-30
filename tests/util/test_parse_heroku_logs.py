@@ -59,3 +59,5 @@ class TestParseLogs(unittest.TestCase):
     def test_parse_router(self):
         result = self.src.parse_router()
         self.assertEqual(result, {'/ftx/text_search/num_of_index/': [123], '/something/': [200, 202]})
+        result = self.src.parse_router(lines=1)
+        self.assertEqual(result, {'/ftx/text_search/num_of_index/': [123]})
