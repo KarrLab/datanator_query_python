@@ -31,9 +31,10 @@ class TestParseLogs(unittest.TestCase):
         "gene_name&fields=name&fields=enzyme_name&fields=product_names&fields=substrate_names&fields="
         "enzymes.subunit.canonical_sequence&fields=species' host=api.datanator.info request_id="
         "9444dc4d-648b-427b-9cf1-1a5f235caacb fwd='23.20.143.235' dyno=web.1 connect=0ms service="
-        "202ms status=200 bytes=418988 protocol=https")
+        "202ms status=200 bytes=418988 protocol=https\n")
+        s_3 = ("what")
         with open(cls.file_location, 'w+') as f:
-            f.writelines([s_0, s_1, s_2])    
+            f.writelines([s_0, s_1, s_2, s_3])    
         cls.src = parse_heroku_logs.ParseLogs(file_location=cls.file_location)
 
     @classmethod

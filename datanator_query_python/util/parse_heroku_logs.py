@@ -43,12 +43,17 @@ class ParseLogs:
                     break
                 if line.endswith('\n'):
                     line = line[0:-1]
-                end_point = re.search(r'(\/.*\w+\/)', line).group(1)
-                performance = int(re.search(r'service=(\d*)ms', line).group(1))
-                if result.get(end_point) is None:
-                    result[end_point] = [performance]
+                end_point_match = re.search(r'(\/.*\w+\/)', line)
+                performance_match = re.search(r'service=(\d*)ms', line)
+                if end_point_match and performance_match:
+                    end_point = end_point_match.group(1)
+                    performance = int(performance_match.group(1))
+                    if result.get(end_point) is None:
+                        result[end_point] = [performance]
+                    else:
+                        result[end_point] += [performance]
                 else:
-                    result[end_point] += [performance]
+                    continue
         return result
 
                 
