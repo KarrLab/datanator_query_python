@@ -5,7 +5,7 @@ import re
 
 class ParseLogs:
 
-    def __init__(self, file_location=None, verbose=True):
+    def __init__(self, file_location=None, verbose=False):
         """Init
 
         Args:
@@ -43,8 +43,12 @@ class ParseLogs:
                     break
                 if line.endswith('\n'):
                     line = line[0:-1]
+                if self.verbose:
+                    print(line)
                 end_point_match = re.search(r'path="(\/.*\w+\/)', line)
                 performance_match = re.search(r'service=(\d*)ms', line)
+                if self.verbose:
+                    print(end_point_match, performance_match)
                 if end_point_match is not None and performance_match is not None:
                     end_point = end_point_match.group(1)
                     performance = int(performance_match.group(1))
@@ -57,37 +61,37 @@ class ParseLogs:
         return result
 
 
-import numpy as np
-import matplotlib.pyplot as plt
+# import numpy as np
+# import matplotlib.pyplot as plt
 
-def main():
+# def main():
     
-    file_location = "./docs/20200430-logs-1500.txt"
-    manager = ParseLogs(file_location=file_location)
-    result = manager.parse_router()
-    x_label = []
-    std = []
-    mean = []
-    for _key, val in result.items():
-        if _key == '/reactions/kinlaw_by_name/' or _key == '/rna/halflife/get_info_by_ko/':
-            x_label.append(_key)
-            array = (np.array(val))
-            std.append(np.std(array))
-            mean.append(np.mean(array))
-        else:
-            continue
-    x_pos = np.arange(len(x_label))
-    plt.rcParams.update({'figure.autolayout': True})
-    fig, ax = plt.subplots()
-    ax.barh(x_pos, mean, xerr=std, align='center', ecolor='black', capsize=5)
-    ax.set_xlabel('Speed (ms)')
-    ax.set_yticks(x_pos)
-    ax.set_yticklabels(x_label)
-    ax.invert_yaxis()
-    ax.set_title('Performance snapshot of REST API endpoints')
-    ax.xaxis.grid(True)
-    plt.tight_layout()
-    plt.show()    
+#     file_location = "./docs/20200430-logs-1500.txt"
+#     manager = ParseLogs(file_location=file_location)
+#     result = manager.parse_router()
+#     x_label = []
+#     std = []
+#     mean = []
+#     for _key, val in result.items():
+#         if _key == '/reactions/kinlaw_by_name/' or _key == '/rna/halflife/get_info_by_ko/':
+#             x_label.append(_key)
+#             array = (np.array(val))
+#             std.append(np.std(array))
+#             mean.append(np.mean(array))
+#         else:
+#             continue
+#     x_pos = np.arange(len(x_label))
+#     plt.rcParams.update({'figure.autolayout': True})
+#     fig, ax = plt.subplots()
+#     ax.barh(x_pos, mean, xerr=std, align='center', ecolor='black', capsize=5)
+#     ax.set_xlabel('Speed (ms)')
+#     ax.set_yticks(x_pos)
+#     ax.set_yticklabels(x_label)
+#     ax.invert_yaxis()
+#     ax.set_title('Performance snapshot of REST API endpoints')
+#     ax.xaxis.grid(True)
+#     plt.tight_layout()
+#     plt.show()    
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
