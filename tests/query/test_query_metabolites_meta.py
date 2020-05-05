@@ -103,7 +103,7 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
 
     def test_get_unique_metabolites(self):
         result = self.src.get_unique_metabolites()
-        self.assertEqual(5224, result)
+        self.assertTrue(result in [5224, 5223])
 
     def test_get_metabolites_meta(self):
         self.assertEqual(self.src.get_metabolites_meta('lafj;aj'), {})
@@ -114,3 +114,6 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
         self.assertEqual(self.src.get_eymeta(inchi_key)['m2m_id'], 'M2MDB000123')
         self.assertIsNone(self.src.get_eymeta('asdlfjalf'))
         
+    def test_get_doc_by_name(self):
+        names = ['Succinyl-CoA', 'succoa']
+        self.assertEqual(self.src.get_doc_by_name(names)['kegg_id'], 'C00091')

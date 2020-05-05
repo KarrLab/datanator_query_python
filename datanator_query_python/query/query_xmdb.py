@@ -65,8 +65,8 @@ class QueryXmdb:
         else:
             db_id = 'ymdb_id'
         query = {db_id: _id}
-        projection = {'hmdb_id': 1, 'chebi_id': 1, 'kegg_id': 1, '_id': 0}
-        doc = self.collection.find_one(filter=query, projection=projection)
+        # projection = {'hmdb_id': 1, 'chebi_id': 1, 'kegg_id': 1, '_id': 0}
+        doc = self.collection.find_one(filter=query)
         if doc is None:
             return {}
         else:

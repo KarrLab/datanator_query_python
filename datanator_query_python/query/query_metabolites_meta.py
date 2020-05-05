@@ -10,14 +10,14 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db=None,
                  collection_str='metabolites_meta', verbose=False, max_entries=float('inf'), username=None,
                  password=None, authSource='admin', readPreference='nearest'):
-        self.collection_str = collection_str
+        self._collection_str = collection_str
         self.verbose = verbose
         super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                         replicaSet=replicaSet, db=db,
                         verbose=verbose, max_entries=max_entries, username=username,
                         password=password, authSource=authSource,
                         readPreference=readPreference)
-        self.collection = self.db_obj[self.collection_str]
+        self._collection = self.db_obj[collection_str]
         self.e_client, self.e_db_obj, self.e_collection = self.con_db('ecmdb')
         self.y_client, self.y_db_obj, self.y_collection = self.con_db('ymdb')        
         self.file_manager = file_util.FileUtil()
@@ -44,7 +44,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
                 query = {'synonyms': c}
                 projection = {'synonyms': 1, '_id': -1, 'kinlaw_id': 1}
                 collation = {'locale': 'en', 'strength': 2}
-                doc = self.collection.find_one(
+                doc = self._collection.find_one(
                     filter=query, projection=projection, collation=collation)
                 synonym = {}
                 rxn = {}
@@ -53,8 +53,8 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
                     rxn[c] = doc['kinlaw_id']
                 except TypeError as e:
                     synonym[c] = (c + ' does not exist in ' +
-                                  self.collection_str)
-                    rxn[c] = (c + ' does not exist in ' + self.collection_str)
+                                  self._collection_str)
+                    rxn[c] = (c + ' does not exist in ' + self._collection_str)
                 return rxn, synonym
             else:
                 return ({'reactions': None}, {'synonyms': None})
@@ -86,7 +86,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         projection = {'_id': 0, 'inchi': 1, 'm2m_id': 1, 'ymdb_id': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'$or': [{'synonyms': compound},
+            cursor = self._collection.find_one({'$or': [{'synonyms': compound},
                                                        {'name': compound}]},
                                               projection=projection, collation=collation)
             if cursor is None:
@@ -110,7 +110,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         '''
         query = {'InChI_Key': hashed_inchi}
         projection = {'_id': 0}
-        doc = self.collection.find_one(filter=query, projection=projection)
+        doc = self._collection.find_one(filter=query, projection=projection)
         result = {}
         result['m2m_id'] = doc.get('m2m_id', None)
         result['ymdb_id'] = doc.get('ymdb_id', None)
@@ -128,7 +128,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         '''
         query = {'InChI_Key': {'$in': hashed_inchi}}
         projection = {'m2m_id': 1, 'ymdb_id': 1, 'InChI_Key': 1}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self._collection.find(filter=query, projection=projection)
         result = []
         if docs is None: 
             return result
@@ -153,7 +153,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         projection = {'_id': 0, 'InChI_Key': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'$or': [{'synonyms': compound},
+            cursor = self._collection.find_one({'$or': [{'synonyms': compound},
                                                         {'name': compound}]},
                                               projection=projection, collation=collation)
             if cursor is None:
@@ -176,7 +176,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         projection = {'_id': 0, 'synonyms': 1}
         collation = {'locale': 'en', 'strength': 2}
         for compound in compounds:
-            cursor = self.collection.find_one({'InChI_Key': compound},
+            cursor = self._collection.find_one({'InChI_Key': compound},
                                               projection=projection)
             if cursor is None:
                 result.append(['None'])
@@ -214,7 +214,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         projection = {'_id': 0, 'similar_compounds': 1}
 
         for item in hashed_inchi:
-            cursor = self.collection.find_one(filter={'InChI_Key': item},
+            cursor = self._collection.find_one(filter={'InChI_Key': item},
                                               projection=projection)
             if cursor is None:
                 continue
@@ -250,7 +250,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         Return:
             (:obj:`int`): number of unique metabolites.
         """
-        return len(self.collection.distinct('InChI_Key', collation=self.collation))
+        return len(self._collection.distinct('InChI_Key', collation=self.collation))
 
     def get_metabolites_meta(self, inchi_key):
         """Get metabolite's meta information given inchi_key.
@@ -263,7 +263,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         """
         projection = {'_id': 0, 'reaction_participants': 0, 'similar_compounds': 0}
         query = {'InChI_Key': inchi_key}
-        doc = self.collection.find_one(filter=query, projection=projection, collation=self.collation)
+        doc = self._collection.find_one(filter=query, projection=projection, collation=self.collation)
         if doc is None:
             return {}
         else:
@@ -289,3 +289,17 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
         else:
             doc = self.y_collection.find_one(filter=query, projection=projection, collation=self.collation)
             return doc
+
+    def get_doc_by_name(self, names):
+        """Get document by metabolite's list of possible names.
+
+        Args:
+            names(:obj:`list` of :obj:`str`): Name of possible names.
+
+        Return:
+            (:obj:`Obj`)
+        """
+        con_0 = {'name': {'$in': names}}
+        con_1 = {'synonyms': {'$in': names}}
+        query = {'$or': [con_0, con_1]}
+        return self._collection.find_one(filter=query, collation=self.collation)
