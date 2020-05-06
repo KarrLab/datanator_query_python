@@ -117,3 +117,5 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
     def test_get_doc_by_name(self):
         names = ['Succinyl-CoA', 'succoa']
         self.assertEqual(self.src.get_doc_by_name(names)['kegg_id'], 'C00091')
+        names = ['alpha-D-Ribose-5-phosphate']
+        print(self.src.get_doc_by_name(names))
