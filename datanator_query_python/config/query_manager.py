@@ -2,7 +2,7 @@ from datanator_query_python.config import config
 from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
                                          query_sabiork_old, query_taxon_tree, full_text_search,
                                          query_uniprot, query_rna_halflife, query_kegg_orthology,
-                                         query_metabolites_meta)
+                                         query_metabolites_meta, query_metabolite_concentrations)
 
 class Manager:
 
@@ -20,6 +20,11 @@ class Manager:
     def metabolite_manager(self):
         return front_end_query.QueryFrontEnd(username=self.username, password=self.password, MongoDB=self.server,
         authDB=self.authDB, readPreference=self.read_preference)
+
+    def metabolite_concentration_manager(self):
+        return query_metabolite_concentrations.QueryMetaboliteConcentrations(MongoDB=self.server, db='datanator',
+        collection_str='metabolite_concentrations', username=self.username, password=self.password, authSource=self.authDB,
+        readPreference=self.read_preference)
 
     def eymdb_manager(self):
         return query_metabolites.QueryMetabolites(
