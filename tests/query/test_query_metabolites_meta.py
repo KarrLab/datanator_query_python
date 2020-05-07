@@ -103,7 +103,7 @@ class TestQueryMetabolitesMeta(unittest.TestCase):
 
     def test_get_unique_metabolites(self):
         result = self.src.get_unique_metabolites()
-        self.assertTrue(result in [5224, 5223])
+        self.assertTrue(result in list(range(5222, 5226)))
 
     def test_get_metabolites_meta(self):
         self.assertEqual(self.src.get_metabolites_meta('lafj;aj'), {})
