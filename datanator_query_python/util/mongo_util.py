@@ -69,10 +69,9 @@ class MongoUtil:
         """
         collection = self.db_obj[collection_str]
         _id = "$"+_key
-        pipeline = [{"$group": {"_id": _id, "count": {"$sum": 1}}},
+        pipeline = [{"$group": {"_id": {_key: _id}, "count": {"$sum": 1}, "uniqueIds": {"$addToSet": "$_id"}}},
                     {"$match": {"count": {"$gt": 1}}},
-                    {"$sort": {"count": -1}},
-                    {"$project": {"name": "$_id", "_id": 0, "count": 1}}]
+                    {"$sort": {"count": -1}}]
         count_pipeline = copy.deepcopy(pipeline)
         count_pipeline[-1] = {"$count": "total_return"}
         counts = collection.aggregate(count_pipeline, **kwargs)
