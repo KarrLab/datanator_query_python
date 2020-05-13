@@ -47,7 +47,7 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
         docs = self._collection.aggregate(pipeline)
         for doc in docs:
             inchikey = doc['inchikey']
-            name = doc['name']
+            name = doc['metabolite']
             result.append({'inchikey': inchikey,
                            'similarity_score': obj[inchikey],
                            'metabolite': name,
