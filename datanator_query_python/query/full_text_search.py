@@ -271,7 +271,7 @@ class FTX(es_query_builder.QueryBuilder):
         sqs_body = self.build_simple_query_string_body(q, **kwargs)
         must = sqs_body['query']
         must = [must]
-        must.append({"exists": {"field": "abundances"}})
+        # must.append({"exists": {"field": "abundances"}})
         body = self.build_bool_query_body(must=must, must_not=must_not)
         body['aggs'] = aggregation
         body['size'] = 0
