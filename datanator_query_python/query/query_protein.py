@@ -837,7 +837,8 @@ class QueryProtein(mongo_util.MongoUtil):
             '_id': 0,
             'ancestor_taxon_id': 1,
             'protein_name': 1,
-            'gene_name': 1
+            'gene_name': 1,
+            'modifications': 1
         }
         con_0 = {'ko_number': ko}
         con_1 = {'abundances': {'$exists': True}}
