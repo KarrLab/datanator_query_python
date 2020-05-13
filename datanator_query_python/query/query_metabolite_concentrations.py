@@ -28,12 +28,10 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
         result = []
         meta_collection = self.db_obj['metabolites_meta']
         doc = meta_collection.find_one(filter={'InChI_Key': metabolite},
-                                        projection={'similar_compounds': 1,
-                                        'name': 1},
+                                        projection={'similar_compounds': 1},
                                         collation=self.collation)
         if not doc:
             return result
-        name = doc['name']
         obj = self.file_manager.merge_dict(doc.get('similar_compounds'))
         inchikeys = list(obj.keys())
         inchikeys.reverse()
@@ -49,6 +47,7 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
         docs = self._collection.aggregate(pipeline)
         for doc in docs:
             inchikey = doc['inchikey']
+            name = doc['name']
             result.append({'inchikey': inchikey,
                            'similarity_score': obj[inchikey],
                            'metabolite': name,
