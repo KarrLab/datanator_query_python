@@ -1,7 +1,7 @@
 from datanator_query_python.util import mongo_util, file_util
 from datanator_query_python.query import query_taxon_tree, query_kegg_orthology
 from pymongo.collation import Collation, CollationStrength
-import json
+from simplejson import json
 
 
 class QueryProtein(mongo_util.MongoUtil):
@@ -845,6 +845,7 @@ class QueryProtein(mongo_util.MongoUtil):
         query = {'$and': [con_0, con_1]}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             species = doc['species_name']
             obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
             distance = obj[anchor]            
