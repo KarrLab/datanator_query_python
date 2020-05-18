@@ -133,6 +133,11 @@ class TestQueryTaxonTree(unittest.TestCase):
         # result_0 = self.src.get_canon_common_ancestor(org_5, org_6)
         # print(result_0)
 
+    def test_get_canon_common_ancestor_fast(self):
+        org_0 = 2160
+        org_1 = 2161
+        for doc in self.src.get_canon_common_ancestor_fast(org_0, org_1):
+            print(doc)
 
 class TestQueryTaxonTreeMock(unittest.TestCase):
 

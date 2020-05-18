@@ -395,3 +395,28 @@ class QueryTaxonTree(mongo_util.MongoUtil):
 
         return {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
         str(org2)+'_canon_ancestors':canon_anc_2}
+
+    def get_canon_common_ancestor_fast(self, org1, org2, org_format='tax_id'):
+        ''' Get the closest common ancestor between
+            two organisms and their distances to the 
+            said ancestor
+            Args:
+                org1: organism 1
+                org2: organism 2
+                org_format: the format of organism eg tax_id or tax_name
+
+            Return:
+                (:obj:`Obj`)
+        '''
+        anchor_org = self.collection.find_one({org_format: org1}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
+        return self.collection.aggregate([
+        { "$match": {org_format: org2}},
+        { "$project": {
+            "ancMatch": {
+                "$setIntersection": [
+                    "$canon_anc_ids",
+                    anchor_org['canon_anc_ids']
+                ]
+            }
+        }}
+        ])
