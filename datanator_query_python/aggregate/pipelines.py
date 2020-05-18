@@ -8,12 +8,13 @@ class Pipeline:
 
     def aggregate_kegg_orthology(self):
         """Aggregate kegg orthology information
+        
+        Args:
 
         Return:
             (:obj:`list`)
         """
-        return 
-        [{"$match":
+        return [{"$match":
             {"$expr":
                 {"$and":
                     [
