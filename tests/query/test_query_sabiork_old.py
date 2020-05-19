@@ -124,7 +124,7 @@ class TestQuerySabioOld(unittest.TestCase):
         count_0, docs_0 = self.src.get_kinlaw_by_rxn_name(substrate_name_0, product_name_0)
         ids_0 = []
         for doc in docs_0:
-            print(doc['kinlaw_id'])
+            print(doc)
             ids_0.append(doc['kinlaw_id'])
         self.assertTrue(1102 in ids_0)
 

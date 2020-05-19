@@ -1,4 +1,5 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
+from datanator_query_python.aggregate import lookups
 from pymongo.collation import Collation, CollationStrength
 from . import query_taxon_tree, query_sabio_compound
 import json
@@ -255,8 +256,10 @@ class QuerySabioOld(mongo_util.MongoUtil):
             query = {'$and': [s_constraint, p_constraint]}
         else:
             query = {'$and': [s_constraint, p_constraint, bounded_s, bounded_p]}
-        docs = self.collection.find(filter=query, projection=projection,
-                                    skip=skip, limit=limit)
+        # docs = self.collection.find(filter=query, projection=projection,
+        #                             skip=skip, limit=limit)
+        lookup = lookups.Lookups().simple_lookup("kegg_orthology", "resource.id", "definition.ec_code", "kegg_meta")
+        docs = self.collection.aggregate([{"$match": query}, lookup, {"$project": {"kegg_meta.gene_ortholog": 0, 'kegg_meta._id': 0}}])
         count = self.collection.count_documents(query)
         return count, docs
 
