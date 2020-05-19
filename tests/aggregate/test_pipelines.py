@@ -12,6 +12,10 @@ class TestPipelines(unittest.TestCase):
     def tearDownClass(cls):
         pass
 
+    def test_aggregate_common_canon_ancestors(self):
+        result = self.src.aggregate_common_canon_ancestors(0, 1, org_format='tax_id')
+        self.assertEqual(result[0], {"$match": {'tax_id': 1}})
+
     def test_aggregate_kegg_orthology(self):
         expr = {"$and":
                     [
