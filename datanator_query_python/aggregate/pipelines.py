@@ -22,18 +22,31 @@ class Pipeline:
                 },
                 {"$project": projection}]
 
-    def aggregate_common_canon_ancestors(self, org0, org1, org_format='tax_id'):
+    def aggregate_common_canon_ancestors(self, anchor, target, org_format='tax_id'):
         """Get common canonical ancestors between two organisms.
 
         Args:
-            org0(:obj:`str` or :obj:`int`): organism 0.
-            org1(:obj:`str` or :obj:`int`): organism 1.
+            anchor(:obj:`Obj`): document of anchor organism.
+            target(:obj:`str` or :obj:`int`): target organism.
             org_format(:obj:`str`, optional): field used to identify organism (tax_id or tax_name).
 
         Return:
             (:obj:`list`)
         """
-        return
+        suffix = org_format.split('_')[1]
+        return [{"$match": 
+                    {org_format: target}
+                },
+                {"$project": 
+                    {"anc_match": 
+                        {
+                            "$setIntersection": [
+                                "$canon_anc_{}s".format(suffix),
+                                anchor['canon_anc_{}s'.format(suffix)]
+                            ]
+                        }
+                    }
+                }]
 
     def aggregate_taxon_distance(self, match, local_field, _as):
         """Aggrate canonical taxon distance information for frontend

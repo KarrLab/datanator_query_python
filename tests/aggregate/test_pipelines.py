@@ -13,8 +13,9 @@ class TestPipelines(unittest.TestCase):
         pass
 
     def test_aggregate_common_canon_ancestors(self):
-        result = self.src.aggregate_common_canon_ancestors(0, 1, org_format='tax_id')
+        result = self.src.aggregate_common_canon_ancestors({'canon_anc_ids': [0,1,2,3]}, 1, org_format='tax_id')
         self.assertEqual(result[0], {"$match": {'tax_id': 1}})
+        self.assertEqual(result[1]["$project"]["anc_match"]["$setIntersection"][0], "$canon_anc_ids")
 
     def test_aggregate_kegg_orthology(self):
         expr = {"$and":
