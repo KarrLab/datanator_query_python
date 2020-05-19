@@ -22,23 +22,25 @@ class Pipeline:
                 },
                 {"$project": projection}]
 
-    def aggregate_common_canon_ancestors(self, anchor, target, org_format='tax_id'):
+    def aggregate_common_canon_ancestors(self, anchor, target, org_format='tax_id',
+                                         intersect_name='anc_match'):
         """Get common canonical ancestors between two organisms.
 
         Args:
             anchor(:obj:`Obj`): document of anchor organism.
             target(:obj:`str` or :obj:`int`): target organism.
             org_format(:obj:`str`, optional): field used to identify organism (tax_id or tax_name).
+            intersect_name(:obj:`str`): name for intersection array.
 
         Return:
             (:obj:`list`)
         """
         suffix = org_format.split('_')[1]
-        return [{"$match": 
+        return  [{"$match": 
                     {org_format: target}
                 },
                 {"$project": 
-                    {"anc_match": 
+                    {intersect_name: 
                         {
                             "$setIntersection": [
                                 "$canon_anc_{}s".format(suffix),

@@ -1,4 +1,5 @@
 from datanator_query_python.util import mongo_util, chem_util, file_util
+from datanator_query_python.aggregate import pipelines
 import os
 import json
 from pymongo.collation import Collation, CollationStrength
@@ -16,6 +17,7 @@ class QueryTaxonTree(mongo_util.MongoUtil):
         super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                         db=db, verbose=verbose, max_entries=max_entries, username=username,
                         password=password, authSource=authSource, readPreference=readPreference)
+        self.pipeline_manager = pipelines.Pipeline()
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.collection = self.db_obj[self.collection_str]
@@ -409,14 +411,5 @@ class QueryTaxonTree(mongo_util.MongoUtil):
                 (:obj:`Obj`)
         '''
         anchor_org = self.collection.find_one({org_format: org1}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
-        return self.collection.aggregate([
-        { "$match": {org_format: org2}},
-        { "$project": {
-            "ancMatch": {
-                "$setIntersection": [
-                    "$canon_anc_ids",
-                    anchor_org['canon_anc_ids']
-                ]
-            }
-        }}
-        ])
+        pipeline = self.pipeline_manager.aggregate_common_canon_ancestors(anchor_org, org1, intersect_name="ancMatch")
+        return self.collection.aggregate(pipeline)
