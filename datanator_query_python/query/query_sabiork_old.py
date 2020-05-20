@@ -230,7 +230,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
         return result
 
     def get_kinlaw_by_rxn_name(self, substrates, products,
-                                projection={'kinlaw_id': 1},
+                                projection={"kegg_meta.gene_ortholog": 0, 'kegg_meta._id': 0, '_id': 0},
                                 bound='loose', skip=0, limit=0):
         ''' Find the kinlaw_id defined in sabio_rk using 
             rxn participants' names
@@ -259,7 +259,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
         # docs = self.collection.find(filter=query, projection=projection,
         #                             skip=skip, limit=limit)
         lookup = lookups.Lookups().simple_lookup("kegg_orthology", "resource.id", "definition.ec_code", "kegg_meta")
-        docs = self.collection.aggregate([{"$match": query}, lookup, {"$project": {"kegg_meta.gene_ortholog": 0, 'kegg_meta._id': 0}}])
+        docs = self.collection.aggregate([{"$match": query}, lookup, {"$project": projection}])
         count = self.collection.count_documents(query)
         return count, docs
 

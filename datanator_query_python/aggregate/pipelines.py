@@ -50,17 +50,24 @@ class Pipeline:
                     }
                 }]
 
-    def aggregate_taxon_distance(self, match, local_field, _as):
+    def aggregate_taxon_distance(self, match, local_field, _as, 
+                                anchor, target, org_format='tax_id',
+                                intersect_name='anc_match'):
         """Aggrate canonical taxon distance information for frontend
         (avoiding iteration)
 
         Args:
             match(:obj:`Obj`): match object in pipeline.
             local_field(:obj:`str`): field from input documents.
-            _as(:obj:`str`): output array
+            _as(:obj:`str`): output array.
+            anchor(:obj:`Obj`): document of anchor organism.
+            target(:obj:`str` or :obj:`int`): target organism.
+            org_format(:obj:`str`, optional): field used to identify organism (tax_id or tax_name).
+            intersect_name(:obj:`str`): name for intersection array.
 
         Return:
             (:obj:`list`)
         """
-        lookup_obj = self.lookup_manager.simple_lookup("taxon_tree", local_field, "tax_id", _as)
+        inner_pipeline = self.aggregate_common_canon_ancestors(anchor, target, org_format=org_format,
+                                                               intersect_name=intersect_name)
         return
