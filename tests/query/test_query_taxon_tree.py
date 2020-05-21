@@ -54,9 +54,10 @@ class TestQueryTaxonTree(unittest.TestCase):
 
     # @unittest.skip('passed')
     def test_get_anc_by_name(self):
-        names = ['Candidatus Diapherotrites', 'Candidatus Forterrea multitransposorum CG_2015-17_Forterrea_25_41']
+        names = ['Candidatus Diapherotrites', 'Candidatus Forterrea multitransposorum CG_2015-17_Forterrea_25_41', 'nonsense']
         result_ids, result_names = self.src.get_anc_by_name(names)
         self.assertEqual(result_ids[0], [131567, 2157, 1783276])
+        self.assertEqual(result_ids[2], [])
 
     # @unittest.skip('passed')
     def test_get_anc_by_id(self):
