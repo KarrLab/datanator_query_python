@@ -91,7 +91,8 @@ class QueryTaxonTree(mongo_util.MongoUtil):
                 result_id.append(doc['anc_id'])
                 result_name.append(doc['anc_name'])
             else:
-                continue
+                result_id.append([])
+                result_name.append([])
         return result_id, result_name
 
     def get_anc_by_id(self, ids):
