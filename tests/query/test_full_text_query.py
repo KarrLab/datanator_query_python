@@ -158,6 +158,9 @@ class TestFTX(unittest.TestCase):
         query_message = 'alcohol dehydrogenase'
         result = self.src.get_index_ko_count(query_message, 15)
         self.assertEqual(len(result['top_kos']['buckets']), 15)
+        query_message = 'K14236'
+        result = self.src.get_index_ko_count(query_message, 15, index='rna_modification_new')
+        self.assertEqual(result['top_kos']['buckets'][0]['key'], 'k14236')
 
     def test_get_rxn_oi(self):
         query_message = 'atp'
