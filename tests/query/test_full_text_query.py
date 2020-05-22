@@ -171,5 +171,5 @@ class TestFTX(unittest.TestCase):
 
     def test_get_genes_ko_count(self):
         query_message = 'K14236'
-        result_0 = self.src.get_genes_ko_count(query_message, 15)
+        result_0 = self.src.get_genes_ko_count(query_message, 15, size=10, fields=['*'])
         print(result_0)
