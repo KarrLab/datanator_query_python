@@ -260,7 +260,11 @@ class QuerySabioOld(mongo_util.MongoUtil):
         # docs = self.collection.find(filter=query, projection=projection,
         #                             skip=skip, limit=limit)
         lookup = lookups.Lookups().simple_lookup("kegg_orthology", "resource.id", "definition.ec_code", "kegg_meta")
-        docs = self.collection.aggregate([{"$match": query}, lookup, {"$project": projection}])
+        if limit > 0:
+            pipeline = [{"$match": query}, {"$limit": limit}, {"$skip": skip}, lookup, {"$project": projection}]
+        else:
+            pipeline = [{"$match": query}, {"$skip": skip}, lookup, {"$project": projection}]
+        docs = self.collection.aggregate(pipeline)
         count = self.collection.count_documents(query)
         return count, docs
 
