@@ -247,7 +247,7 @@ class FTX(es_query_builder.QueryBuilder):
                             },
                             "aggs": {
                                 "top_ko": {
-                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, "size": 1}
+                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name']}, "size": 1}
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -289,7 +289,7 @@ class FTX(es_query_builder.QueryBuilder):
         intersects = ko_abundance.intersection(ko_all)
         for s in r['aggregations']['top_kos']['buckets']:
             ko_str = s['top_ko']['hits']['hits'][0]['_source']['ko_number']
-            if ko_str in intersects:
+            if ko_str in intersects and ko_str != 'nan':
                 s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
                 s['top_ko']['hits']['hits'][0]['_source']['ko_number'] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
             else:
