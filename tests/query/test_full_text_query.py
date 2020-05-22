@@ -154,15 +154,22 @@ class TestFTX(unittest.TestCase):
         result = self.src.bool_query(query_message, index, must_not=must_not)
         self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K13954')
 
-    def test_get_protein_ko_count(self):
+    def test_get_index_ko_count(self):
         query_message = 'alcohol dehydrogenase'
         result = self.src.get_index_ko_count(query_message, 15)
         self.assertEqual(len(result['top_kos']['buckets']), 15)
         query_message = 'K14236'
-        result = self.src.get_index_ko_count(query_message, 15, index='rna_modification_new')
-        self.assertEqual(result['top_kos']['buckets'][0]['key'], 'k14236')
+        result_0 = self.src.get_index_ko_count(query_message, 15, index='rna_modification_new')
+        self.assertEqual(result_0['top_kos']['buckets'][0]['key'], 'k14236')
+        # result_1 = self.src.get_index_ko_count('dehydrogenase', 15, index='genes')
+        # print(result_1)
 
     def test_get_rxn_oi(self):
         query_message = 'atp'
         result = self.src.get_rxn_oi(query_message)
         self.assertEqual(result['sabio_rk_total'], {'value': 10000, 'relation': 'gte'})
+
+    def test_get_genes_ko_count(self):
+        query_message = 'K14236'
+        result_0 = self.src.get_genes_ko_count(query_message, 15)
+        print(result_0)

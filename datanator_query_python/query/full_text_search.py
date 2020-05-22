@@ -215,7 +215,7 @@ class FTX(es_query_builder.QueryBuilder):
         #         result[index].append(hit['_source'])
         #     return result
 
-    def get_protein_ko_count_abundance(self, q, num, **kwargs):
+    def get_genes_ko_count(self, q, num, **kwargs):
         """Get protein index with different ko_number field for up to num hits,
         provided at least one of the proteins under ko_number has abundance info.
         
@@ -288,7 +288,7 @@ class FTX(es_query_builder.QueryBuilder):
             ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source']['ko_number'])
         intersects = ko_abundance.intersection(ko_all)
         for s in r['aggregations']['top_kos']['buckets']:
-            ko_str = s['top_ko']['hits']['hits'][0]['_source']['ko_number']
+            ko_str = s['top_ko']['hits']['hits'][0]['_source']['ko_number']   # ko_str can be "K01234,K12345"
             if ko_str in intersects and ko_str != 'nan':
                 s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
                 s['top_ko']['hits']['hits'][0]['_source']['ko_number'] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
