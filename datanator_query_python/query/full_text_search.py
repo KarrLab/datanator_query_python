@@ -228,7 +228,7 @@ class FTX(es_query_builder.QueryBuilder):
             (:obj:`dict`): obj of index hits {'index': []}
         """
         result = {}
-        index = 'protein'
+        index = 'genes'
         must_not = {"bool": {
                         "must_not": {
                             "exists": {
