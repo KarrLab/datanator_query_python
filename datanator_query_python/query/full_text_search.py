@@ -265,7 +265,7 @@ class FTX(es_query_builder.QueryBuilder):
                                 }
                             }
                         },
-                        "total_buckets": {'cardinality': {'field': 'ko_number'}}
+                        "total_buckets": {'cardinality': {'field': 'ko_number', "missing": "N/A"}}
                     }
         result[index] = []
         sqs_body = self.build_simple_query_string_body(q, **kwargs)
