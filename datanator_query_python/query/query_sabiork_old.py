@@ -160,7 +160,8 @@ class QuerySabioOld(mongo_util.MongoUtil):
             constraint_0 = {substrate: substrates}
             constraint_1 = {product: products}            
         query = {'$and': [constraint_0, constraint_1]}
-        docs = self.collection.find(filter=query, projection=projection)
+        lookup = lookups.Lookups().simple_lookup("kegg_orthology", "resource.id", "definition.ec_code", "kegg_meta")
+        docs = self.collection.aggregate([{"$match": query}, lookup, {"$project": projection}])
         count = self.collection.count_documents(query)
         return count, docs
 
