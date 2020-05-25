@@ -180,7 +180,8 @@ class FTX(es_query_builder.QueryBuilder):
                                 "order": {
                                     "top_hit": "desc"
                                 },
-                                "size": num
+                                "size": num,
+                                "missing": "N/A"
                             },
                         "aggs": {
                             "top_ko": {
@@ -243,7 +244,8 @@ class FTX(es_query_builder.QueryBuilder):
                                 "order": {
                                     "top_hit": "desc"
                                 },
-                                "size": kwargs.get('from_', 0) + num
+                                "size": kwargs.get('from_', 0) + num,
+                                "missing": "N/A"
                             },
                             "aggs": {
                                 "top_ko": {
