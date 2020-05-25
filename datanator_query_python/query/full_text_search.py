@@ -183,19 +183,19 @@ class FTX(es_query_builder.QueryBuilder):
                                 "size": num,
                                 
                             },
-                        "missing": "N/A",
-                        "aggs": {
-                            "top_ko": {
-                                "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
-                            },
-                            "top_hit" : {
-                                "max": {
-                                    "script": {
-                                        "source": "_score"
+                            "missing": "N/A",
+                            "aggs": {
+                                "top_ko": {
+                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name']}, 'size': 1}
+                                },
+                                "top_hit" : {
+                                    "max": {
+                                        "script": {
+                                            "source": "_score"
+                                        }
                                     }
                                 }
                             }
-                        }
                         }
                     }
         result[index] = []
@@ -247,7 +247,7 @@ class FTX(es_query_builder.QueryBuilder):
                                 },
                                 "size": kwargs.get('from_', 0) + num                                
                             },
-                            "missing": "N/A"
+                            "missing": "N/A",
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition']}, "size": 1}
