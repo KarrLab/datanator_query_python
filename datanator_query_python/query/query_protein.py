@@ -357,7 +357,8 @@ class QueryProtein(mongo_util.MongoUtil):
         result = []
         query = {'$and': [{'uniprot_id': {'$in': _id}}, {'abundances': {'$exists': True}}]}
 
-        projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0}
+        projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0,
+                      'protein_name': 1, 'gene_name': 1, 'species_name': 1}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
         if count == 0:
