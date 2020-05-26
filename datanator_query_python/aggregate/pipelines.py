@@ -81,7 +81,7 @@ class Pipeline:
         Return:
             (:obj:`list`)
         """
-        project = {"$project": {"_len": {"$size": "${}".format(field)}}}
+        project = {"$project": {"_len": {"$size": {"$ifNull": ["${}".format(field), []]}}}}
         group = {"$group": {"_id": "$forSum",
                             "total": {"$sum": "$_len"},
                             "count": {"$sum": 1}}}
