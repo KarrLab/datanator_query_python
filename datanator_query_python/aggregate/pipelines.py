@@ -71,3 +71,18 @@ class Pipeline:
         inner_pipeline = self.aggregate_common_canon_ancestors(anchor, target, org_format=org_format,
                                                                intersect_name=intersect_name)
         return
+
+    def aggregate_total_array_length(self, field):
+        """Aggregate the total length of an array field in collection.
+
+        Args:
+            field(:obj:`str`): Name of the field.
+
+        Return:
+            (:obj:`list`)
+        """
+        project = {"$project": {"_len": {"$size": "${}".format(field)}}}
+        group = {"$group": {"_id": "$forSum",
+                            "total": {"$sum": "$_len"},
+                            "count": {"$sum": 1}}}
+        return [project, group]

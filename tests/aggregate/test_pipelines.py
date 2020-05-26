@@ -26,3 +26,7 @@ class TestPipelines(unittest.TestCase):
                }
         result = self.src.aggregate_kegg_orthology(expr)
         self.assertEqual(result[1], {"$project": {'_id': 0, 'gene_ortholog': 0}})
+
+    def test_aggregate_total_array_length(self):
+        field = 'test'
+        self.assertEqual(self.src.aggregate_total_array_length(field)[0]["$project"]["_len"]["$size"], "$test")

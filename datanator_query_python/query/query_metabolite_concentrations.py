@@ -57,10 +57,10 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
     def get_conc_count(self):
         """Get total number of concentration data points.
         """
-        project = {"$project": {"conc_len": {"$size": "$concentrations"},
-                                 "forSum": "identical"}}
-        group = {"$group": {"_id": "$forSum",
-                            "total": {"$sum": "$conc_len"}}}
+        project = {"$project": {"conc_len": {"$size": "$concentrations"}}}
+        group = {"$group": {"_id": None,
+                            "total": {"$sum": "$conc_len"},
+                            "count": {"$sum": 1}}}
         pipeline = [project, group]
         docs = self._collection.aggregate(pipeline)
         for doc in docs:
