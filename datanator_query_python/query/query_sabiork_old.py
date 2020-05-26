@@ -327,7 +327,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
         result = deque()
         entry_ids = set()
         projection = {'_id': 0, 'ec_meta': 1, 'substrates': 1, 'products': 1, 
-                      'kinlaw_id': 1, 'resource': 1}
+                      'kinlaw_id': 1, 'resource': 1, 'reaction_participant': 1}
         pipeline = [
              {'$match': {'enzymes.subunit.uniprot_id': {'$in': _ids}}},
              {'$addFields': {"__order": {'$indexOfArray': [_ids, "$enzymes.subunit.uniprot_id"]},
