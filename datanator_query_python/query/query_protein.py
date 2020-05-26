@@ -1,6 +1,7 @@
 from datanator_query_python.util import mongo_util, file_util
 from datanator_query_python.query import query_taxon_tree, query_kegg_orthology
 from pymongo.collation import Collation, CollationStrength
+from collections import deque
 import simplejson as json
 
 
@@ -845,10 +846,18 @@ class QueryProtein(mongo_util.MongoUtil):
         con_1 = {'abundances': {'$exists': True}}
         query = {'$and': [con_0, con_1]}
         docs = self.collection.find(filter=query, projection=projection)
+        queried = deque()
+        names = {}
         for doc in docs:
             doc = json.loads(json.dumps(doc, ignore_nan=True))
-            taxon_id = doc['ncbi_taxonomy_id']
-            species = self.db_obj['taxon_tree'].find_one({"tax_id": taxon_id})['tax_name']
+            species = doc.get('species_name')
+            if species is None and species not in queried:
+                taxon_id = doc['ncbi_taxonomy_id']
+                species = self.db_obj['taxon_tree'].find_one({"tax_id": taxon_id})['tax_name']
+                queried.append(taxon_id)
+                names[taxon_id] = species
+            elif species is None and species in queried:
+                species = names[doc['ncbi_taxonomy_id']]
             obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
             distance = obj[anchor]            
             if distance != -1 and distance <= max_distance:
