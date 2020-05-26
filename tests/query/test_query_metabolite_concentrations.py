@@ -22,3 +22,6 @@ class TestQMC(unittest.TestCase):
         self.assertEqual(self.src.get_similar_concentrations('something'), [])
         result = self.src.get_similar_concentrations('GRSZFWQUAKGDAV-KQYNXXCUSA-N')
         self.assertTrue(result[0]['similarity_score'] >= result[1]['similarity_score'])
+
+    def test_get_conc_count(self):
+        self.assertEqual(self.src.get_conc_count(), 3841)
