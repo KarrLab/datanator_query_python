@@ -200,7 +200,8 @@ class FTX(es_query_builder.QueryBuilder):
         result[index] = []
         sqs_body = self.build_simple_query_string_body(q, **kwargs)
         must = sqs_body['query']
-        body = self.build_bool_query_body(must=must, must_not=must_not)
+        # body = self.build_bool_query_body(must=must, must_not=must_not)
+        body = self.build_bool_query_body(must=must)
         body['aggs'] = aggregation
         body['size'] = 0
         from_ = kwargs.get('from_', 0)
@@ -274,7 +275,8 @@ class FTX(es_query_builder.QueryBuilder):
         must = sqs_body['query']
         must = [must]
         # must.append({"exists": {"field": "abundances"}})
-        body = self.build_bool_query_body(must=must, must_not=must_not)
+        # body = self.build_bool_query_body(must=must, must_not=must_not)
+        body = self.build_bool_query_body(must=must)
         body['aggs'] = aggregation
         body['size'] = 0
         r = self.build_es().search(index=index, body=body)

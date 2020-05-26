@@ -847,7 +847,8 @@ class QueryProtein(mongo_util.MongoUtil):
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
             doc = json.loads(json.dumps(doc, ignore_nan=True))
-            species = doc['species_name']
+            taxon_id = doc['ncbi_taxonomy_id']
+            species = self.db_obj['taxon_tree'].find_one({"tax_id": taxon_id})['tax_name']
             obj = self.taxon_manager.get_canon_common_ancestor(anchor, species, org_format='tax_name')
             distance = obj[anchor]            
             if distance != -1 and distance <= max_distance:
