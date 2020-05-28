@@ -155,11 +155,12 @@ class TestFTX(unittest.TestCase):
         self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K13954')
 
     def test_get_index_ko_count(self):
+        agg_field = "frontend_gene_aggregate"
         query_message = 'alcohol dehydrogenase'
         result = self.src.get_index_ko_count(query_message, 15)
         self.assertEqual(len(result['top_kos']['buckets']), 15)
         query_message = 'K14236'
-        result_0 = self.src.get_index_ko_count(query_message, 15, index='rna_modification_new')
+        result_0 = self.src.get_index_ko_count(query_message, 15, index='rna_modification', agg_field=agg_field)
         self.assertEqual(result_0['top_kos']['buckets'][0]['key'], 'k14236')
         # result_1 = self.src.get_index_ko_count('dehydrogenase', 15, index='genes')
         # print(result_1)
@@ -170,6 +171,7 @@ class TestFTX(unittest.TestCase):
         self.assertEqual(result['sabio_rk_total'], {'value': 10000, 'relation': 'gte'})
 
     def test_get_genes_ko_count(self):
+        agg_field = "frontend_gene_aggregate"
         query_message = 'K14236'
-        result_0 = self.src.get_genes_ko_count(query_message, 15, size=10, fields=['*'])
+        result_0 = self.src.get_genes_ko_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
         print(result_0)
