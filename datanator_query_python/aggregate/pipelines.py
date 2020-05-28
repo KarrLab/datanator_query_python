@@ -113,18 +113,31 @@ class Pipeline:
             result.append(group)
         return result
 
-    def aggregate_all_occurences(self, field):
+    def aggregate_all_occurences(self, field, match=None,
+                                project_post={"count": 1},
+                                group=None, unwind=None):
         """Aggregate all occurences of values in field.
 
         Args:
             field(:obj:`str`): Name of the field.
+            match(:obj:`Obj`): Filtering of unnecessary data.
+            project(:obj:`Obj`): remove fields before matching.
+            group(:obj:`Obj`): additional group parameters.
+            unwind(:obj:`Obj`): Unwind operation if field of interest is in subdocuments.
 
         Return:
             (:obj:`list`)
         """
-        return  [{'$group': { '_id' : '${}'.format(field), 'count' : {'$sum' : 1}}},
-                 {"$project": { 
-                    "count": 1
-                 }},
-                 {"$sort": {"count": 1 }}
-                ]
+        groups = {'$group': {'_id': '${}'.format(field), 'count': {'$sum' : 1}}}
+        if group is not None:
+            for key, val in group.items():
+                groups["$group"][key] = val        
+        tmp = [groups,
+               {"$project": project_post},
+               {"$sort": {"count": -1 }}
+              ]
+        if unwind is not None:
+            tmp.insert(0, unwind)
+        if match is not None:
+            tmp.insert(0, match)
+        return tmp
