@@ -91,18 +91,40 @@ class Pipeline:
     def aggregate_field_count(self, field, projection={"parameter": 1},
                               match={"parameter.observed_name": "Ki"},
                               unwind=None, group={"$group": {"count": {"$sum": 1}}}):
-        """Aggregate number of occurences of values in field.
+        """Aggregate number of occurences of a value in field.
 
         Args:
             field(:obj:`str`): field of interest.
             projection(:obj:`Obj`): Projection (prune unnecessary data in document).
             match(:obj:`Obj`): Further filtering of data that meet certain conditions.
+
+        Return:
+            (:obj:`list`)
         """
         result = []
-        result.append({"$project": projection})
-        result.append({"$match": match})
+        if projection is not None:
+            result.append({"$project": projection})
+        if match is not None:
+            result.append({"$match": match})
         if unwind is not None:
             result.append(unwind)
-        group["$group"]["_id"] = "$.{}".format(field)
-        result.append(group)
+        if group is not None:
+            group["$group"]["_id"] = "$.{}".format(field)
+            result.append(group)
         return result
+
+    def aggregate_all_occurences(self, field):
+        """Aggregate all occurences of values in field.
+
+        Args:
+            field(:obj:`str`): Name of the field.
+
+        Return:
+            (:obj:`list`)
+        """
+        return  [{'$group': { '_id' : '${}'.format(field), 'count' : {'$sum' : 1}}},
+                 {"$project": { 
+                    "count": 1
+                 }},
+                 {"$sort": {"count": 1 }}
+                ]

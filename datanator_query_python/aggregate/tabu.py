@@ -2,6 +2,7 @@
 https://github.com/KarrLab/datanator_rest_api/issues/97
 """
 from datanator_query_python.util import mongo_util
+from datanator_query_python.aggregate import pipelines
 
 
 class Tabu(mongo_util.MongoUtil):
@@ -18,6 +19,7 @@ class Tabu(mongo_util.MongoUtil):
         self.rna_half_col = self.db_obj['rna_halflife_new']
         self.rna_mod_col = self.db_obj['rna_modification']
         self.meta_con_col = self.db_obj['metabolite_concentrations']
+        self.pipeline_manager = pipelines.Pipeline()
 
     def uniprot_taxon_dist(self, field):
         """Tabulate uniprot collections taxonomic distribution
