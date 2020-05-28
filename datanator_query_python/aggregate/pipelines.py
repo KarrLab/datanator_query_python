@@ -74,6 +74,7 @@ class Pipeline:
 
     def aggregate_total_array_length(self, field):
         """Aggregate the total length of an array field in collection.
+        e.g. [{"field": [0, 1]}, {"field": [2]}]
 
         Args:
             field(:obj:`str`): Name of the field.
@@ -86,3 +87,22 @@ class Pipeline:
                             "total": {"$sum": "$_len"},
                             "count": {"$sum": 1}}}
         return [project, group]
+
+    def aggregate_field_count(self, field, projection={"parameter": 1},
+                              match={"parameter.observed_name": "Ki"},
+                              unwind=None, group={"$group": {"count": {"$sum": 1}}}):
+        """Aggregate number of occurences of values in field.
+
+        Args:
+            field(:obj:`str`): field of interest.
+            projection(:obj:`Obj`): Projection (prune unnecessary data in document).
+            match(:obj:`Obj`): Further filtering of data that meet certain conditions.
+        """
+        result = []
+        result.append({"$project": projection})
+        result.append({"$match": match})
+        if unwind is not None:
+            result.append(unwind)
+        group["$group"]["_id"] = "$.{}".format(field)
+        result.append(group)
+        return result

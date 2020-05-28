@@ -30,3 +30,8 @@ class TestPipelines(unittest.TestCase):
     def test_aggregate_total_array_length(self):
         field = 'test'
         self.assertEqual(self.src.aggregate_total_array_length(field)[0]["$project"]["_len"]["$size"], {"$ifNull": ["$test", []]})
+
+    def test_aggregate_field_count(self):
+        unwind_0 = {"$unwind": "$parameter"}
+        self.assertEqual(self.src.aggregate_field_count(field="filler", unwind=unwind_0)[2], unwind_0)
+        self.assertEqual(len(self.src.aggregate_field_count(field="filler")), 3)
