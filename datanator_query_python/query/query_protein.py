@@ -55,6 +55,7 @@ class QueryProtein(mongo_util.MongoUtil):
             'species_name': '99999999'}
 
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             ko_number = doc.get('ko_number')
             if ko_number is not None:
                 D, c = self.kegg_manager.get_meta_by_kegg_ids([ko_number])
