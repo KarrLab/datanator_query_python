@@ -84,6 +84,7 @@ class QueryProtein(mongo_util.MongoUtil):
         projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0, 'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             result.append(doc)
         return result
 
@@ -108,6 +109,7 @@ class QueryProtein(mongo_util.MongoUtil):
         projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0, 'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             result.append(doc)
         return result
 
