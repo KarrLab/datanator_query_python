@@ -147,4 +147,4 @@ class TestQuerySabioOld(unittest.TestCase):
     def test_get_reaction_by_subunit(self):
         _ids = ['P20932', 'P00803']
         result = self.src.get_reaction_by_subunit(_ids)
-        self.assertEqual(31611, result[-1]['kinlaw_id'])
+        self.assertTrue(result[-1]['kinlaw_id'] in [31611, 31609])
