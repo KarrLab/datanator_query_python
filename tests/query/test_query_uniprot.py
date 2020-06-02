@@ -57,6 +57,7 @@ class TestUniprot(unittest.TestCase):
         _id = '158506'
         self.assertEqual('Q8N7E2', self.src.get_info_by_entrez_id(_id))
 
+    @unittest.skip("function commented out")
     def test_get_similar_proteins_from_uniprot(self):
         uniprot_id_0 = 'Q9VB24'
         identity_0 = 90
@@ -67,6 +68,7 @@ class TestUniprot(unittest.TestCase):
         self.assertEqual(self.src.get_similar_proteins_from_uniprot(uniprot_id_0, identity=identity_0), [])
         self.assertEqual(self.src.get_similar_proteins_from_uniprot('cannot find it', identity=90), [])
 
+    @unittest.skip("function commented out")
     def test_get_similar_proteins(self):
         uniprot_id_0 = 'Q9VB24'
         identity_0 = 90

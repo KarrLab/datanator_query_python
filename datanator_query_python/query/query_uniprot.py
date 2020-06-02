@@ -167,46 +167,46 @@ class QueryUniprot:
         else:
             return doc['uniprot_id']
         
-    def get_similar_proteins(self, uniprot_id, identity=90):
-        """This section provides links to proteins that are similar to the protein sequence(s) 
-        described in this entry at different levels of sequence identity thresholds (100%, 90% and 50%)
-        based on their membership in UniProt Reference Clusters (UniRef).
-        (Queries MongoDB first, if not in MongoDB, query uniprot.org, insert results into the 
-        corresponding document).
+    # def get_similar_proteins(self, uniprot_id, identity=90):
+    #     """This section provides links to proteins that are similar to the protein sequence(s) 
+    #     described in this entry at different levels of sequence identity thresholds (100%, 90% and 50%)
+    #     based on their membership in UniProt Reference Clusters (UniRef).
+    #     (Queries MongoDB first, if not in MongoDB, query uniprot.org, insert results into the 
+    #     corresponding document).
 
-        Args:
-            uniprot_id (:obj:`str`): Uniprot ID of the protein
-            identity (:obj:`float`, optional): Identity score. Defaults to 90 (%). Can only be 100, 90, or 50. 
+    #     Args:
+    #         uniprot_id (:obj:`str`): Uniprot ID of the protein
+    #         identity (:obj:`float`, optional): Identity score. Defaults to 90 (%). Can only be 100, 90, or 50. 
 
-        Return:
-            (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
-        """
-        def query_update_return(uniprot_id, identity, key):
-            """search on uniprot.org and insert results into mongo.
-            """
-            _list = self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
-            try:
-                self.collection.update_one({'uniprot_id': uniprot_id},
-                                            {'$set': {'similar_proteins.{}'.format(key): _list}}, collation=self.collation, upsert=False)
-            except OperationFailure:
-                return _list
-            return _list
+    #     Return:
+    #         (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
+    #     """
+    #     def query_update_return(uniprot_id, identity, key):
+    #         """search on uniprot.org and insert results into mongo.
+    #         """
+    #         _list = self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
+    #         try:
+    #             self.collection.update_one({'uniprot_id': uniprot_id},
+    #                                         {'$set': {'similar_proteins.{}'.format(key): _list}}, collation=self.collation, upsert=False)
+    #         except OperationFailure:
+    #             return _list
+    #         return _list
 
-        projection = {'uniprot_id': 1, 'similar_proteins': 1}
-        doc = self.collection.find_one({'uniprot_id': uniprot_id}, projection=projection,
-                                        collation=self.collation)
-        if doc is None:
-            return self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
-        key = 'identity_' + str(identity)
-        similar_proteins = doc.get('similar_proteins')
-        if similar_proteins is not None:            
-            proteins = similar_proteins.get(key)
-            if proteins is not None: # in mongo
-                return proteins
-            else: # search on uniprot.org and insert results into mongo
-                return query_update_return(uniprot_id, identity, key)
-        else:
-            return query_update_return(uniprot_id, identity, key)
+    #     projection = {'uniprot_id': 1, 'similar_proteins': 1}
+    #     doc = self.collection.find_one({'uniprot_id': uniprot_id}, projection=projection,
+    #                                     collation=self.collation)
+    #     if doc is None:
+    #         return self.get_similar_proteins_from_uniprot(uniprot_id, identity=identity)
+    #     key = 'identity_' + str(identity)
+    #     similar_proteins = doc.get('similar_proteins')
+    #     if similar_proteins is not None:            
+    #         proteins = similar_proteins.get(key)
+    #         if proteins is not None: # in mongo
+    #             return proteins
+    #         else: # search on uniprot.org and insert results into mongo
+    #             return query_update_return(uniprot_id, identity, key)
+    #     else:
+    #         return query_update_return(uniprot_id, identity, key)
 
     # def get_similar_proteins_from_uniprot(self, uniprot_id, identity=90, limit=10):
     #     """This section provides links to proteins that are similar to the protein sequence(s) 
