@@ -367,7 +367,8 @@ class QueryProtein(mongo_util.MongoUtil):
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
         if count == 0:
-            return {'abundances': [], 'uniprot_id': 'No proteins that match input'}
+            return [{'abundances': [], 'uniprot_id': 'No proteins that match input',
+                     "species_name": "No proteins that match input"}]
         for doc in docs:
             result.append(doc)
         return result
