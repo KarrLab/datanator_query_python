@@ -1,4 +1,4 @@
-import pandas
+# import pandas
 import requests
 from pymongo.errors import OperationFailure
 import io
@@ -208,40 +208,40 @@ class QueryUniprot:
         else:
             return query_update_return(uniprot_id, identity, key)
 
-    def get_similar_proteins_from_uniprot(self, uniprot_id, identity=90, limit=10):
-        """This section provides links to proteins that are similar to the protein sequence(s) 
-        described in this entry at different levels of sequence identity thresholds (100%, 90% and 50%)
-        based on their membership in UniProt Reference Clusters (UniRef).
+    # def get_similar_proteins_from_uniprot(self, uniprot_id, identity=90, limit=10):
+    #     """This section provides links to proteins that are similar to the protein sequence(s) 
+    #     described in this entry at different levels of sequence identity thresholds (100%, 90% and 50%)
+    #     based on their membership in UniProt Reference Clusters (UniRef).
 
-        Args:
-            uniprot_id (:obj:`str`): Uniprot ID of the protein
-            identity (:obj:`float`, optional): Identity score. Defaults to 90 (%). Can only be 100, 90, or 50.
-            limit (:obj:`int`, optional): Max number of results. Defaults to 10.
+    #     Args:
+    #         uniprot_id (:obj:`str`): Uniprot ID of the protein
+    #         identity (:obj:`float`, optional): Identity score. Defaults to 90 (%). Can only be 100, 90, or 50.
+    #         limit (:obj:`int`, optional): Max number of results. Defaults to 10.
 
-        Return:
-            (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
-        """
-        if identity not in [100, 90, 50]:
-            return []
-        fields = '&columns=id'
-        percent = identity / 100
-        url = 'https://www.uniprot.org/uniprot/?query=cluster:(uniprot:{}*%20identity:{})%20not%20id:{}'.format(uniprot_id, percent, uniprot_id)
-        url += '&sort=score'
-        url += fields
-        url += '&format=tab'
-        url += '&compress=no'
-        url += '&limit={}'.format(limit)
-        try:
-            response = requests.get(url, stream=False)
-            response.raise_for_status()
-        except requests.exceptions.ConnectionError:
-            pass         
+    #     Return:
+    #         (:obj:`list` of :obj:`str`): List of similar proteins' uniprot IDs.
+    #     """
+    #     if identity not in [100, 90, 50]:
+    #         return []
+    #     fields = '&columns=id'
+    #     percent = identity / 100
+    #     url = 'https://www.uniprot.org/uniprot/?query=cluster:(uniprot:{}*%20identity:{})%20not%20id:{}'.format(uniprot_id, percent, uniprot_id)
+    #     url += '&sort=score'
+    #     url += fields
+    #     url += '&format=tab'
+    #     url += '&compress=no'
+    #     url += '&limit={}'.format(limit)
+    #     try:
+    #         response = requests.get(url, stream=False)
+    #         response.raise_for_status()
+    #     except requests.exceptions.ConnectionError:
+    #         pass         
 
-        try:
-            data = pandas.read_csv(io.BytesIO(response.content), delimiter='\t', encoding='utf-8', low_memory=False)
-        except pandas.errors.EmptyDataError:
-            return []
-        except UnboundLocalError:
-            return []
-        data.columns = ['uniprot_id']
-        return data['uniprot_id'].tolist()        
+    #     try:
+    #         data = pandas.read_csv(io.BytesIO(response.content), delimiter='\t', encoding='utf-8', low_memory=False)
+    #     except pandas.errors.EmptyDataError:
+    #         return []
+    #     except UnboundLocalError:
+    #         return []
+    #     data.columns = ['uniprot_id']
+    #     return data['uniprot_id'].tolist()        
