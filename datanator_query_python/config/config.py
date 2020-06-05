@@ -71,28 +71,3 @@ class FtxConfig(Config):
     REST_FTX_AWS_PROFILE = os.getenv("REST_FTX_AWS_PROFILE")
 
 
-class FlaskProfiler(UserAccountConfig):
-    '''
-        API performance tracker with readWrite permission
-        to 'flask_profiler'
-    '''
-    url = ('mongodb://' + os.getenv("MONGO_AP_USER") + ':' + os.getenv("MONGO_AP_PASSWORD")
-           + '@' + os.getenv("MONGO_DATANATOR_SERVER") + '/?readPreference=' + os.getenv('READ_PREFERENCE'))
-    FLASKPROFILER = {
-        "enabled": True,
-        "storage": {
-            "engine": "mongodb",
-            "MONGO_URL": url,
-            "DATABASE": 'flask_profiler',
-            "COLLECTION": 'measurements'
-        },
-        "basicAuth": {
-            "enabled": True,
-            "username": os.getenv("MONGO_AP_USER"),
-            "password": os.getenv("FLASK_PROFILER_PASSWORD")
-        },
-        "ignore": [
-            "^/static/.*"
-        ],
-        "endpointRoot": "performance"
-    }
