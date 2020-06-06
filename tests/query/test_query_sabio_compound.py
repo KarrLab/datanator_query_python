@@ -37,6 +37,7 @@ class TestSabioCompound(unittest.TestCase):
         result_1 = self.src.get_id_by_name(names_1)
         self.assertEqual(result_1, [])
 
+    @unittest.skip('skipped')
     def test_get_inchikey_by_name(self):
         names_0 = ['a', 'c1', 'nonsense','b2']
         result_0 = self.src.get_inchikey_by_name(names_0)

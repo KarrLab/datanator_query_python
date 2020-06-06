@@ -74,6 +74,7 @@ class Pipeline:
 
     def aggregate_total_array_length(self, field):
         """Aggregate the total length of an array field in collection.
+        e.g. [{"field": [0, 1]}, {"field": [2]}]
 
         Args:
             field(:obj:`str`): Name of the field.
@@ -81,8 +82,62 @@ class Pipeline:
         Return:
             (:obj:`list`)
         """
-        project = {"$project": {"_len": {"$size": "${}".format(field)}}}
+        project = {"$project": {"_len": {"$size": {"$ifNull": ["${}".format(field), []]}}}}
         group = {"$group": {"_id": "$forSum",
                             "total": {"$sum": "$_len"},
                             "count": {"$sum": 1}}}
         return [project, group]
+
+    def aggregate_field_count(self, field, projection={"parameter": 1},
+                              match={"parameter.observed_name": "Ki"},
+                              unwind=None, group={"$group": {"count": {"$sum": 1}}}):
+        """Aggregate number of occurences of a value in field.
+
+        Args:
+            field(:obj:`str`): field of interest.
+            projection(:obj:`Obj`): Projection (prune unnecessary data in document).
+            match(:obj:`Obj`): Further filtering of data that meet certain conditions.
+
+        Return:
+            (:obj:`list`)
+        """
+        result = []
+        if projection is not None:
+            result.append({"$project": projection})
+        if match is not None:
+            result.append({"$match": match})
+        if unwind is not None:
+            result.append(unwind)
+        if group is not None:
+            group["$group"]["_id"] = "$.{}".format(field)
+            result.append(group)
+        return result
+
+    def aggregate_all_occurences(self, field, match=None,
+                                project_post={"count": 1},
+                                group=None, unwind=None):
+        """Aggregate all occurences of values in field.
+
+        Args:
+            field(:obj:`str`): Name of the field.
+            match(:obj:`Obj`): Filtering of unnecessary data.
+            project(:obj:`Obj`): remove fields before matching.
+            group(:obj:`Obj`): additional group parameters.
+            unwind(:obj:`Obj`): Unwind operation if field of interest is in subdocuments.
+
+        Return:
+            (:obj:`list`)
+        """
+        groups = {'$group': {'_id': '${}'.format(field), 'count': {'$sum' : 1}}}
+        if group is not None:
+            for key, val in group.items():
+                groups["$group"][key] = val        
+        tmp = [groups,
+               {"$project": project_post},
+               {"$sort": {"count": -1 }}
+              ]
+        if unwind is not None:
+            tmp.insert(0, unwind)
+        if match is not None:
+            tmp.insert(0, match)
+        return tmp

@@ -186,7 +186,8 @@ class FTX(es_query_builder.QueryBuilder):
                             },
                             "aggs": {
                                 "top_ko": {
-                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', agg_field]}, 'size': 1}
+                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field,
+                                                                          'species_name']}, 'size': 1}
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -252,7 +253,8 @@ class FTX(es_query_builder.QueryBuilder):
                             },
                             "aggs": {
                                 "top_ko": {
-                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field]}, "size": 1}
+                                    "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field,
+                                                                          'species_name']}, "size": 1}
                                 },
                                 "top_hit" : {
                                     "max": {

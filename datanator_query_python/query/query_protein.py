@@ -55,6 +55,7 @@ class QueryProtein(mongo_util.MongoUtil):
             'species_name': '99999999'}
 
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             ko_number = doc.get('ko_number')
             if ko_number is not None:
                 D, c = self.kegg_manager.get_meta_by_kegg_ids([ko_number])
@@ -83,6 +84,7 @@ class QueryProtein(mongo_util.MongoUtil):
         projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0, 'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             result.append(doc)
         return result
 
@@ -107,6 +109,7 @@ class QueryProtein(mongo_util.MongoUtil):
         projection = {'_id': 0, 'ancestor_name': 0, 'ancestor_taxon_id': 0, 'kinetics': 0}
         docs = self.collection.find(filter=query, projection=projection)
         for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
             result.append(doc)
         return result
 
@@ -359,11 +362,13 @@ class QueryProtein(mongo_util.MongoUtil):
         query = {'$and': [{'uniprot_id': {'$in': _id}}, {'abundances': {'$exists': True}}]}
 
         projection = {'abundances': 1, 'uniprot_id': 1, '_id': 0,
-                      'protein_name': 1, 'gene_name': 1, 'species_name': 1}
+                      'protein_name': 1, 'gene_name': 1, 'species_name': 1,
+                      "modifications": 1}
         docs = self.collection.find(filter=query, projection=projection, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
         if count == 0:
-            return {'abundances': [], 'uniprot_id': 'No proteins that match input'}
+            return [{'abundances': [], 'uniprot_id': 'No proteins that match input',
+                     "species_name": "No proteins that match input"}]
         for doc in docs:
             result.append(doc)
         return result

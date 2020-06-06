@@ -156,10 +156,12 @@ class QuerySabioOld(mongo_util.MongoUtil):
         if bound == 'loose':
             constraint_0 = {substrate: {'$all': substrates}}
             constraint_1 = {product: {'$all': products}}
+            constraint_2 = {"taxon_id": {"$ne": None}}
         else:
             constraint_0 = {substrate: substrates}
-            constraint_1 = {product: products}            
-        query = {'$and': [constraint_0, constraint_1]}
+            constraint_1 = {product: products}
+            constraint_2 = {"taxon_id": {"$ne": None}}            
+        query = {'$and': [constraint_0, constraint_1, constraint_2]}
         lookup = lookups.Lookups().simple_lookup("kegg_orthology", "resource.id", "definition.ec_code", "kegg_meta")
         if limit > 0:
             pipeline = [{"$match": query}, {"$limit": limit}, {"$skip": skip}, lookup, {"$project": projection}]
