@@ -69,5 +69,3 @@ class FtxConfig(Config):
     FTX_AWS_PROFILE = os.getenv("FTX_AWS_PROFILE")
     TEST_FTX_PROFILE_NAME = os.getenv("TEST_FTX_PROFILE_NAME")
     REST_FTX_AWS_PROFILE = os.getenv("REST_FTX_AWS_PROFILE")
-
-
