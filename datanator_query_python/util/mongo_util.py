@@ -9,7 +9,7 @@ class MongoUtil:
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='test',
                  verbose=False, max_entries=float('inf'), username=None, 
                  password=None, authSource='admin', readPreference='nearest'):
-        string = "mongodb+srv://{}:{}@{}/?authSource={}&retryWrites=true&w=majority&readPreference={}".format(username, password, MongoDB, authSource, readPreference)
+        string = "mongodb+srv://{}:{}@{}/{}?authSource={}&retryWrites=true&w=majority&readPreference={}".format(username, password, MongoDB, db, authSource, readPreference)
         self.client = pymongo.MongoClient(string)
         self.db_obj = self.client.get_database(db)
 
