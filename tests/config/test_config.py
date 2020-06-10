@@ -17,9 +17,10 @@ class TestConfig(unittest.TestCase):
 
 	def test_basic_config(self):
 		result = self.src_basic
+		print(result.PRODUCTION)
 		self.assertEqual(result.PRODUCTION != 'False', True)
 		self.assertNotEqual(result.USERNAME, 'someusername')
-		self.assertTrue(isinstance(self.src_basic.SERVER, list))
+		self.assertFalse(isinstance(self.src_basic.SERVER, list))
 		
 	def test_prod_config(self):
 		result = self.src_prod
