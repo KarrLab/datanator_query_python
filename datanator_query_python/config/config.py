@@ -70,7 +70,7 @@ class AtlasConfig:
     SERVER = os.getenv("MONGO_ATLAS_SERVER")
     PORT = os.getenv("MONGO_ATLAS_PORT")
     REPLSET = os.getenv("MONGO_ATLAS_REPL")
-    AUTHDB = os.getenv("MONGO_AUTHDB")
+    AUTHDB = os.getenv("MONGO_ATLAS_AUTHDB")
     READ_PREFERENCE = os.getenv("MONGO_ATLAS_READPREFERENCE")    
 
 
