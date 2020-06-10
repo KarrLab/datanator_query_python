@@ -7,10 +7,10 @@ class QueryIntactComplex:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='intact_complex',
-                 readPreference='nearest'):
+                 readPreference='nearest', replicaSet=None):
         self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
                                              password=password, authSource=authSource, db=database,
-                                             readPreference=readPreference)
+                                             readPreference=readPreference, replicaSet=replicaSet)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
         self.max_entries = max_entries
         self.verbose = verbose

@@ -15,8 +15,8 @@ class QueryProtein(mongo_util.MongoUtil):
                         password=password, authSource=authSource, db=database,
                         readPreference=readPreference, replicaSet=replicaSet)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
-            authSource=authSource, db=database)
-        self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource)
+            authSource=authSource, db=database, replicaSet=replicaSet)
+        self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource, replicaSet=replicaSet)
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose

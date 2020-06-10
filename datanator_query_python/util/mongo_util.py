@@ -9,10 +9,8 @@ class MongoUtil:
     def __init__(self, cache_dirname=None, MongoDB=None, replicaSet=None, db='test',
                  verbose=False, max_entries=float('inf'), username=None, 
                  password=None, authSource='admin', readPreference='nearest'):
-        self.client = pymongo.MongoClient(
-            host=MongoDB, replicaSet=replicaSet, 
-            username=username, password=password,
-            authSource=authSource, readPreference=readPreference)
+        string = "mongodb+srv://{}:{}@{}/?authSource={}&retryWrites=true&w=majority&readPreference={}".format(username, password, MongoDB, authSource, readPreference)
+        self.client = pymongo.MongoClient(string)
         self.db_obj = self.client.get_database(db)
 
     def list_all_collections(self):

@@ -19,7 +19,7 @@ class Config:
     PRODUCTION = os.getenv("PRODUCTION", False)
     USERNAME = os.getenv("MONGO_USERNAME")
     PASSWORD = os.getenv("MONGO_PASSWORD")
-    SERVER = os.getenv("MONGO_DATANATOR_SERVER").split(',')
+    SERVER = os.getenv("MONGO_ATLAS_SERVER")
     PORT = os.getenv("MONGO_PORT")
     REPLSET = os.getenv("MONGO_REPL")
     AUTHDB = os.getenv("MONGO_AUTHDB")
@@ -49,7 +49,7 @@ class TestConfig(Config):
     '''
     MONGO_TEST_USERNAME = os.getenv("MONGO_TEST_USERNAME")
     MONGO_TEST_PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
-    MONGO_TEST_PASSWORD_READ_PREFERENCE = os.getenv("MONGO_TEST_PASSWORD_READ_PREFERENCE")
+    MONGO_TEST_PASSWORD_READ_PREFERENCE = os.getenv("MONGO_TEST_READ_PREFERENCE")
 
 
 class UserAccountConfig(Config):
