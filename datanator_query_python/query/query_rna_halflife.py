@@ -5,10 +5,11 @@ from pymongo.collation import Collation, CollationStrength
 class QueryRNA(mongo_util.MongoUtil):
 
     def __init__(self, server=None, username=None, password=None, verbose=False,
-                 db=None, collection_str=None, authDB='admin', readPreference='nearest'):
+                 db=None, collection_str=None, authDB='admin', readPreference='nearest',
+                 replicaSet=None):
         super().__init__(MongoDB=server, db=db, username=username,
                         password=password, authSource=authDB, readPreference=readPreference,
-                        verbose=verbose)
+                        verbose=verbose, replicaSet=replicaSet)
         self.collection = self.db_obj[collection_str]
         self.collation = Collation('en', strength=CollationStrength.SECONDARY)
 

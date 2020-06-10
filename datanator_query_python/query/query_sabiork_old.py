@@ -25,10 +25,11 @@ class QuerySabioOld(mongo_util.MongoUtil):
         self.collection = self.db_obj[collection_str]
         self.collection_str = collection_str
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(username=username, password=password,
-        authSource=authSource, readPreference=readPreference, MongoDB=MongoDB)
+        authSource=authSource, readPreference=readPreference, MongoDB=MongoDB, replicaSet=replicaSet)
         self.compound_manager = query_sabio_compound.QuerySabioCompound(server=MongoDB, database=db,
                                                                         username=username, password=password, 
-                                                                        readPreference=readPreference, authSource=authSource)
+                                                                        readPreference=readPreference, authSource=authSource,
+                                                                        replicaSet=replicaSet)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_kinlaw_by_environment(self, taxon=None, taxon_wildtype=None, ph_range=None, temp_range=None,

@@ -5,11 +5,11 @@ from pymongo.collation import Collation, CollationStrength
 class QueryKOC:
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
-                 database='datanator', collection_str=None, readPreference='nearest'):
-
+                 database='datanator', collection_str=None, readPreference='nearest',
+                 replicaSet=None):
         self.mongo_manager = mongo_util.MongoUtil(MongoDB=server, username=username,
                                                   password=password, authSource=authSource, db=database,
-                                                  readPreference=readPreference)
+                                                  readPreference=readPreference, replicaSet=replicaSet)
         self.client, self.db, self.collection = self.mongo_manager.con_db(collection_str)
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 

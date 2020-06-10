@@ -7,9 +7,10 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
 
     def __init__(self, MongoDB=None, db=None, collection_str=None, username=None,
                  password=None, authSource='admin', readPreference='nearest',
-                 verbose=True):
+                 verbose=True, replicaSet=None):
         super().__init__(MongoDB=MongoDB, db=db, verbose=verbose, username=username,
-                         password=password, authSource=authSource, readPreference=readPreference)
+                         password=password, authSource=authSource, readPreference=readPreference,
+                         replicaSet=replicaSet)
         self.file_manager = file_util.FileUtil()
         self._collection = self.db_obj[collection_str]
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)

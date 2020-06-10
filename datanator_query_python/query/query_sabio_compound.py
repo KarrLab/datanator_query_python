@@ -7,12 +7,13 @@ class QuerySabioCompound(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='sabio_compound',
-                 readPreference='nearest'):
+                 readPreference='nearest', replicaSet=replicaSet):
 
         super().__init__(MongoDB=server,
                          db=database,
                          verbose=verbose, max_entries=max_entries, username=username,
-                         password=password, authSource=authSource, readPreference=readPreference)
+                         password=password, authSource=authSource, readPreference=readPreference,
+                         replicaSet=replicaSet)
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
         self.verbose = verbose

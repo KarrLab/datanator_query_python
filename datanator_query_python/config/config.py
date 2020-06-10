@@ -63,6 +63,17 @@ class UserAccountConfig(Config):
     USERDAEMON_AUTHDB = os.getenv("MONGO_USER_AUTHDB")
 
 
+class AtlasConfig:
+    PRODUCTION = os.getenv("PRODUCTION", False)
+    USERNAME = os.getenv("MONGO_USERNAME")
+    PASSWORD = os.getenv("MONGO_PASSWORD")
+    SERVER = os.getenv("MONGO_ATLAS_SERVER")
+    PORT = os.getenv("MONGO_ATLAS_PORT")
+    REPLSET = os.getenv("MONGO_ATLAS_REPL")
+    AUTHDB = os.getenv("MONGO_AUTHDB")
+    READ_PREFERENCE = os.getenv("MONGO_ATLAS_READPREFERENCE")    
+
+
 class FtxConfig(Config):
     """Environment variables for AWS Elasticsearch service
     """

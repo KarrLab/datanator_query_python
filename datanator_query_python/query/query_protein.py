@@ -9,11 +9,11 @@ class QueryProtein(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='uniprot',
-                 readPreference='nearest'):
+                 readPreference='nearest', replicaSet=None):
 
         super().__init__(MongoDB=server, username=username,
                         password=password, authSource=authSource, db=database,
-                        readPreference=readPreference)
+                        readPreference=readPreference, replicaSet=replicaSet)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
             authSource=authSource, db=database)
         self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource)

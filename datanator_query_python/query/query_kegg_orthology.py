@@ -6,11 +6,11 @@ class QueryKO(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True,
-                 readPreference='nearest'):
+                 readPreference='nearest', replicaSet=None):
 
         super().__init__(MongoDB=server, username=username,
                         password=password, authSource=authSource, db=database,
-                        readPreference=readPreference)
+                        readPreference=readPreference, replicaSet=replicaSet)
         self.max_entries = max_entries
         self.verbose = verbose
         self.client, self.db, self.collection = self.con_db('kegg_orthology')

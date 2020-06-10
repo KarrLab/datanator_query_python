@@ -12,11 +12,13 @@ class QueryTaxonTree(mongo_util.MongoUtil):
 
     def __init__(self, cache_dirname=None, collection_str='taxon_tree', 
                 verbose=False, max_entries=float('inf'), username=None, MongoDB=None, 
-                password=None, db='datanator', authSource='admin', readPreference='nearest'):
+                password=None, db='datanator', authSource='admin', readPreference='nearest',
+                replicaSet=None):
         self.collection_str = collection_str
         super().__init__(cache_dirname=cache_dirname, MongoDB=MongoDB,
                         db=db, verbose=verbose, max_entries=max_entries, username=username,
-                        password=password, authSource=authSource, readPreference=readPreference)
+                        password=password, authSource=authSource, readPreference=readPreference,
+                        replicaSet=replicaSet)
         self.pipeline_manager = pipelines.Pipeline()
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
