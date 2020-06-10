@@ -1,5 +1,5 @@
 from datanator_query_python.config import config
-from datanator_query_python.query import (query_protein, front_end_query, query_metabolites,
+from datanator_query_python.query import (query_protein, query_metabolites,
                                          query_sabiork_old, query_taxon_tree, full_text_search,
                                          query_uniprot, query_rna_halflife, query_kegg_orthology,
                                          query_metabolites_meta, query_metabolite_concentrations)
