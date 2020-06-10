@@ -20,10 +20,6 @@ class TestQueryManager(unittest.TestCase):
         obj = self.src.protein_manager()
         self.assertTrue(obj.verbose)
 
-    def test_metabolite_manager(self):
-        obj = self.src.metabolite_manager()
-        self.assertTrue(obj.verbose)
-
     def test_eymdb_manager(self):
         obj = self.src.eymdb_manager()
         self.assertTrue(obj.verbose)

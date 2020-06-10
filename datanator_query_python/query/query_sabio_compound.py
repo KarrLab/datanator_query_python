@@ -7,7 +7,7 @@ class QuerySabioCompound(mongo_util.MongoUtil):
 
     def __init__(self, username=None, password=None, server=None, authSource='admin',
                  database='datanator', max_entries=float('inf'), verbose=True, collection_str='sabio_compound',
-                 readPreference='nearest', replicaSet=replicaSet):
+                 readPreference='nearest', replicaSet=None):
 
         super().__init__(MongoDB=server,
                          db=database,
