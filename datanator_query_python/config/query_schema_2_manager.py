@@ -29,7 +29,7 @@ class QM(mongo_util.MongoUtil):
         """
         if read_preference == 'nearest':
             return ReadPreference.NEAREST
-        elif self.read_preference == 'primary':
+        elif read_preference == 'primary':
             return ReadPreference.PRIMARY
     
     def conn_protein(self, db):
