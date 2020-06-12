@@ -83,5 +83,5 @@ class FtxConfig(Config):
 
 
 class SchemaMigration:
-    USERNAME=os.getenv('schema_migrator')
-    PASSWORD=os.getenv('llqbMYPk2zgU2qQb')
+    USERNAME=os.getenv('MONGO_SCHEMA_MIGRATOR')
+    PASSWORD=os.getenv('MONGO_SCHEMA_MIGRATOR_PASSWORD')
