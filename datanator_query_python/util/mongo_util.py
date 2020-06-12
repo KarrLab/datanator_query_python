@@ -78,3 +78,25 @@ class MongoUtil:
                 num = count["total_return"]                    
         return num, collection.aggregate(pipeline, **kwargs)
  
+    def split_cursors(self, count, db, collection, query={},
+                      projection={'_id': 0}):
+        """Manually return multiple cursors.
+
+        Args:
+            count(:obj:`int`): Number of cursors wanted.
+            db(:obj:`int`): Name of database.
+            collection_str(:obj:`str`): Name of collection.
+            query(:obj:`Obj`, optional): mongodb query to be performed.
+            projection(:obj:`Obj`, optional): mongodb query projection.
+            
+        Return:
+            (:obj:`list` of :obj:`pymongo.Cursor`)
+        """
+        from_collection = self.client.get_database(db)[collection]
+        total_docs = from_collection.count_documents(query)
+        step_size = int((total_docs % count + total_docs) / count)
+        result = []
+        for i in range(0, count):
+            result.append(from_collection.find(filter=query, skip=i * step_size, limit=step_size,
+                                               projection=projection))
+        return result
