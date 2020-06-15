@@ -20,3 +20,4 @@ pytz >= 2019.1
 requests
 requirements_parser
 simplejson
+motor
