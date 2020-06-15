@@ -85,3 +85,8 @@ class FtxConfig(Config):
 class SchemaMigration:
     USERNAME=os.getenv('MONGO_SCHEMA_MIGRATOR')
     PASSWORD=os.getenv('MONGO_SCHEMA_MIGRATOR_PASSWORD')
+
+
+class DatanatorTest:
+    USERNAME=os.getenv('MONGO_DATANATOR_TEST')
+    PASSWORD=os.getenv('MONGO_DATANATOR_TEST_PASSWORD')
