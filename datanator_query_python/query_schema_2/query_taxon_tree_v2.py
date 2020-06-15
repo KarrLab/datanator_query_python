@@ -1,21 +1,16 @@
-from datanator_query_python.config import query_schema_2_manager, config
+from datanator_query_python.config import motor_client_manager
 from collections import deque 
 
 
-class QTaxon(query_schema_2_manager.QM):
+class QTaxon:
 
     def __init__(self,
-                username=config.Config.USERNAME,
-                password=config.Config.PASSWORD,
-                readPreference=config.Config.READ_PREFERENCE,
                 collection='taxon_tree',
                 db='datanator-test',
                 max_entries=float('inf')):
-        super().__init__(username=username, password=password)
-        self.collection = self.client.get_database(db,
-                                                   read_preference=self.read_preference)[collection]
+        self.collection = motor_client_manager.client.get_database(db)[collection]
 
-    def get_canon_ancestor(self, _id, _format='tax_id'):
+    async def get_canon_ancestor(self, _id, _format='tax_id'):
         """Get organism's canon ancestor information.
         
         Args:
@@ -26,15 +21,15 @@ class QTaxon(query_schema_2_manager.QM):
             (:obj:`tuple` of :obj:`list` of :obj:`int` and :obj:`list` of :obj:`str`): canon_anc_id, canon_anc_name
         """
         query = {_format: _id}
-        doc = self.collection.find_one(filter=query, 
-                                 projection={"canon_anc_names": 1,
-                                             "canon_anc_ids": 1})
+        doc = await self.collection.find_one(filter=query, 
+                                            projection={"canon_anc_names": 1,
+                                                        "canon_anc_ids": 1})
         if doc is None:
             return [], []
         else:
             return doc.get("canon_anc_ids", []), doc.get("canon_anc_names", [])
 
-    def aggregate_distance(self, docs, target_org, _format='tax_id',
+    async def aggregate_distance(self, docs, target_org, _format='tax_id',
                           name_field='species_name'):
         """Aggregate distance information between organisms in documents and target
         organism. 
@@ -52,7 +47,7 @@ class QTaxon(query_schema_2_manager.QM):
             (:obj:`list` of :obj:`Obj`): Objects containing information on distance to target_org.
         """
         # find target organism document
-        target_org_doc = self.collection.find_one(filter={_format: target_org},
+        target_org_doc = await self.collection.find_one(filter={_format: target_org},
                                                   projection={"canon_anc_ids": 1, "canon_anc_names": 1,
                                                               "tax_name": 1})
         if target_org_doc is None:
