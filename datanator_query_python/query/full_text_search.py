@@ -126,20 +126,27 @@ class FTX(es_query_builder.QueryBuilder):
             iteration += 1
         return result
 
-    def get_single_index_count(self, q, index, num, **kwargs):
+    def get_single_index_count(self, q, index, num, 
+                               excludes=[], includes=[],
+                               **kwargs):
         """Get single index up to num hits
         
         Args:
             q (:obj:`str`): query message
             index (:obj:`str`): index in which query will be performed
             num (:obj:`int`): number of hits needed
+            includes(:obj:`list` of :obj:`str`): list of fields to be included in the data returned.
+            excludes(:obj:`list` of :obj:`str`): list of fields to be excluded from the data returned.
 
         Return:
             (:obj:`dict`): obj of index hits {'index': []}
         """
         result = {}
         result[index] = []
-        body = self.build_simple_query_string_body(q, **kwargs)
+        _source = {}
+        if excludes != [] or includes != []:
+            _source = {"includes": includes, "excludes": excludes} 
+        body = self.build_simple_query_string_body(q, _source=_source, **kwargs)
         from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body, size=num, from_=from_)
         hits = r['hits']['hits']

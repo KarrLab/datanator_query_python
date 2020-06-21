@@ -17,7 +17,7 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
                         verbose=verbose, max_entries=max_entries, username=username,
                         password=password, authSource=authSource,
                         readPreference=readPreference)
-        self._collection = self.db_obj[collection_str]
+        self._collection = self.client.get_database("datanator-test")[collection_str]
         self.e_client, self.e_db_obj, self.e_collection = self.con_db('ecmdb')
         self.y_client, self.y_db_obj, self.y_collection = self.con_db('ymdb')        
         self.file_manager = file_util.FileUtil()
@@ -187,62 +187,6 @@ class QueryMetabolitesMeta(mongo_util.MongoUtil):
             # except TypeError:
             #     result.append(['None'])
         return [x[-1] for x in result]
-
-    def get_metabolite_similar_compounds(self, compounds, num=0, threshold=0):
-        ''' Given a list of compound names
-            Return the top num number of similar compounds
-            with tanimoto score above threshold values
-            Args:
-                compounds: list of compound names
-                num: number of similar compounds to return
-                threshold: threshold tanimoto coefficient value
-                return_format: return dictionary key format, either
-                                hashed inchi or name
-            Return:
-                result: list of similar compounds and their tanimoto score
-                [ {'compound1': score, 'compound2': score, ... 'compound_num': score},
-                  {'compound1': score, 'compound2': score, ... 'compound_num': score}, ...]
-                    compound(1 - n) will be in name format
-                raw: list of similar compounds and their tanimoto score
-                [ {'compound1': score, 'compound2': score, ... 'compound_num': score},
-                  {'compound1': score, 'compound2': score, ... 'compound_num': score}, ...]
-                    compound(1 - n) will be in hashed_inchi format
-        '''
-        result = []
-        raw = []
-        hashed_inchi = self.get_metabolite_hashed_inchi(compounds)
-        projection = {'_id': 0, 'similar_compounds': 1}
-
-        for item in hashed_inchi:
-            cursor = self._collection.find_one(filter={'InChI_Key': item},
-                                              projection=projection)
-            if cursor is None:
-                continue
-            compounds = cursor['similar_compounds']
-            scores = [list(dic.values()) for dic in compounds]
-            scores = self.file_manager.unpack_list(scores)
-            hashes = [list(dic.keys()) for dic in compounds]
-            hashes = self.file_manager.unpack_list(hashes)
-            names = self.get_metabolite_name_by_hash(hashes)
-            # convert to numpy object for faster calculations
-            scores_np = np.asarray(scores)
-            indices = np.nonzero(scores_np >= threshold)
-            size = indices[0].size
-            if size == 0:
-                raw.append({'raw': -1})
-                result.append({'result': -1})
-            elif 0 < size < num:
-                first_size = compounds[:size]
-                raw = first_size
-                replaced = self.file_manager.make_dict(names[:size], scores[:size])
-                result.append(replaced)
-            else:
-                first_num = compounds[:num]
-                raw = first_num
-                replaced = self.file_manager.make_dict(names[:num], scores[:num])
-                result.append(replaced)
-
-        return raw, result
 
     def get_unique_metabolites(self):
         """Get number of unique metabolites.

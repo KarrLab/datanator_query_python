@@ -27,32 +27,36 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
             (:obj:`list` of :obj:`Obj`): [{'inchikey': xxxx, 'similarity_score': ..., 'concentrations': []}]
         """
         result = []
-        meta_collection = self.db_obj['metabolites_meta']
+        meta_collection = self.client.get_database("datanator-test")['metabolites_meta']
         doc = meta_collection.find_one(filter={'InChI_Key': metabolite},
                                         projection={'similar_compounds': 1},
                                         collation=self.collation)
         if not doc:
             return result
-        obj = self.file_manager.merge_dict(doc.get('similar_compounds'))
-        inchikeys = list(obj.keys())
-        inchikeys.reverse()
-        values = list(obj.values())
-        values.reverse()
-        threshold_index = np.searchsorted(np.asarray(values), threshold, side='left')
-        r_inchikeys = inchikeys[threshold_index:] # relevant inchikeys
+        r_inchikeys = []
+        scores = []
+        for obj in doc["similar_compounds"]:
+            if obj["similarity_score"] >= threshold:
+                r_inchikeys.append(obj["inchikey"])
+                scores.append(obj["similarity_score"])
+            else:
+                break
         pipeline = [
             {"$match": {"inchikey": {"$in": r_inchikeys}}},
             {"$addFields": {"__order": {"$indexOfArray": [r_inchikeys, "$inchikey" ]}}},
             {"$sort": {"__order": -1}}
         ]
         docs = self._collection.aggregate(pipeline)
-        for doc in docs:
+        if not docs:
+            return result
+        for i, doc in enumerate(docs):
             inchikey = doc['inchikey']
             name = doc['metabolite']
             result.append({'inchikey': inchikey,
-                           'similarity_score': obj[inchikey],
+                           'similarity_score': scores[i],
                            'metabolite': name,
                            'concentrations': doc['concentrations']})
+            print(inchikey)
         return result
 
     def get_conc_count(self):
