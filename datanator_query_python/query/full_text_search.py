@@ -144,8 +144,10 @@ class FTX(es_query_builder.QueryBuilder):
         result = {}
         result[index] = []
         _source = {}
-        if excludes != [] or includes != []:
-            _source = {"includes": includes, "excludes": excludes} 
+        if excludes != []:
+            _source["includes"] = includes
+        if includes != []:
+            _source["excludes"] = excludes
         body = self.build_simple_query_string_body(q, _source=_source, **kwargs)
         from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body, size=num, from_=from_)
