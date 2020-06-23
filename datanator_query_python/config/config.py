@@ -90,3 +90,8 @@ class SchemaMigration:
 class DatanatorTest:
     USERNAME=os.getenv('MONGO_DATANATOR_TEST')
     PASSWORD=os.getenv('MONGO_DATANATOR_TEST_PASSWORD')
+
+
+class Justin:
+    USERNAME=os.getenv("MONGO_DATANATOR_JUSTIN")
+    PASSWORD=os.getenv("MONGO_DATANATOR_JUSTIN_PASSWORD")

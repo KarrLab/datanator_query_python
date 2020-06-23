@@ -10,6 +10,7 @@ class TestConfig(unittest.TestCase):
 		cls.src_prod = config.ProductionConfig()
 		cls.src_test = config.TestConfig()
 		cls.src_ftx = config.FtxConfig()
+		cls.src_justin = config.Justin()
 
 	@classmethod
 	def tearDownClass(cls):
@@ -34,4 +35,7 @@ class TestConfig(unittest.TestCase):
 	def test_ftx_config(self):
 		result = self.src_ftx
 		self.assertEqual(result.TEST_FTX_PROFILE_NAME, 'mock')
+
+	def test_read_justin(self):
+		self.assertEqual(self.src_justin.USERNAME, "justin")
 		
