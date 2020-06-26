@@ -1,22 +1,9 @@
-aniso8601
-attrs
 beautifulsoup4
 cement
-click
-configparser
 genson
-glob2
-itsdangerous
-Jinja2
 karr_lab_aws_manager 
-MarkupSafe
 numpy
-pkg_utils
 pymongo
-pyrsistent
-pytest
 python_dotenv
-pytz >= 2019.1
 requests
-requirements_parser
 simplejson
