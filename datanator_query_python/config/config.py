@@ -82,7 +82,7 @@ class FtxConfig(Config):
     REST_FTX_AWS_PROFILE = os.getenv("REST_FTX_AWS_PROFILE")
 
 
-class SchemaMigration:
+class SchemaMigration(Config):
     USERNAME=os.getenv('MONGO_DATANATOR_PROD')
     PASSWORD=os.getenv('MONGO_DATANATOR_PROD_PASSWORD')
 
@@ -92,6 +92,6 @@ class DatanatorTest:
     PASSWORD=os.getenv('MONGO_DATANATOR_TEST_PASSWORD')
 
 
-class Justin:
+class Justin(Config):
     USERNAME=os.getenv("MONGO_DATANATOR_JUSTIN")
     PASSWORD=os.getenv("MONGO_DATANATOR_JUSTIN_PASSWORD")
