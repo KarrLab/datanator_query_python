@@ -97,6 +97,9 @@ class TestQueryTaxonTree(unittest.TestCase):
         result_0 = self.src.get_canon_rank_distance_by_name(name, front_end=True)
         self.assertEqual(result_0[0], {'Homo sapiens': 0})     
         self.assertEqual(result_0[-1], {'cellular organisms': 30})
+        name = 'about'
+        result = self.src.get_canon_rank_distance_by_name(name)
+        self.assertEqual(result, [{name: 0}])
 
     def test_under_category(self):
         src_tax_id = 550690
