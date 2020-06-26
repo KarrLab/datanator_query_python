@@ -280,6 +280,8 @@ class QueryTaxonTree(mongo_util.MongoUtil):
         anc = self.collection.find_one(filter=query, projection={'anc_id':1, 'tax_name': 1, 'anc_name': 1},
                                         collation=self.collation)
         result = []
+        if anc is None:
+            return [{name: 0}]
         if front_end:
             result.append({anc['tax_name']: 0})
         for i, tax_id in enumerate(reversed(anc['anc_id'])):
