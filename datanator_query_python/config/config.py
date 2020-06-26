@@ -92,6 +92,6 @@ class DatanatorTest:
     PASSWORD=os.getenv('MONGO_DATANATOR_TEST_PASSWORD')
 
 
-class Justin:
+class Justin(Config):
     USERNAME=os.getenv("MONGO_DATANATOR_JUSTIN")
     PASSWORD=os.getenv("MONGO_DATANATOR_JUSTIN_PASSWORD")
