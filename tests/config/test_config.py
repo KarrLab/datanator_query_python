@@ -28,8 +28,8 @@ class TestConfig(unittest.TestCase):
 
 	def test_test_config(self):
 		result = self.src_test
-		self.assertTrue(result.MONGO_TEST_USERNAME is not None)
-		self.assertTrue(result.MONGO_TEST_PASSWORD is not None)
+		self.assertTrue(result.USERNAME is not None)
+		self.assertTrue(result.PASSWORD is not None)
 
 	def test_ftx_config(self):
 		result = self.src_ftx
