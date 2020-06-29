@@ -1,6 +1,7 @@
 import pymongo
 from pymongo.read_preferences import Primary, PrimaryPreferred, Secondary, SecondaryPreferred, Nearest
 import copy
+import json
 from genson import SchemaBuilder
 
 
@@ -100,3 +101,17 @@ class MongoUtil:
             result.append(from_collection.find(filter=query, skip=i * step_size, limit=step_size,
                                                projection=projection))
         return result
+
+    def define_schema(self, collection_str, json_schema):
+        """Define collection's $jsonSchema
+        (https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/)
+
+        Args:
+            collection_str (:obj:`str`): Name of the collection to be defined.
+            json_schema (:obj:`str`): location of the jsonSchema definition.
+        """
+        with open(json_schema) as j:
+            schema = json.load(j)
+        self.db_obj.create_collection(collection_str,
+                                      validator={"$jsonSchema": schema},
+                                      validationLevel="moderate")
