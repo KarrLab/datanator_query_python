@@ -27,6 +27,7 @@ class TestSabioCompound(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.src.db.drop_collection('test_query_sabio_compound')
+        cls.src.db.drop_collection('sabio_compound')
         cls.src.client.close()
 
     def test_query_sabio_compound(self):
