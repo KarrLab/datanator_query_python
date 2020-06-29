@@ -8,8 +8,8 @@ class TestQMC(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.src = query_metabolite_concentrations.QueryMetaboliteConcentrations(MongoDB=MongoDB,
         password=password, username=username, db='datanator', collection_str='metabolite_concentrations')

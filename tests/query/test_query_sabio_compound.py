@@ -9,8 +9,8 @@ class TestSabioCompound(unittest.TestCase):
     def setUpClass(cls):
         cls.db = 'test'
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.MongoDB = MongoDB
         cls.username = username
@@ -27,6 +27,7 @@ class TestSabioCompound(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.src.db.drop_collection('test_query_sabio_compound')
+        cls.src.db.drop_collection('sabio_compound')
         cls.src.client.close()
 
     def test_query_sabio_compound(self):

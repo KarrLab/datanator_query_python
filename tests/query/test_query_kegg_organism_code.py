@@ -9,8 +9,8 @@ class TestKOC(unittest.TestCase):
     def setUpClass(cls):
         db = 'datanator'
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.src = query_kegg_organism_code.QueryKOC(username=username, password=password,
                                             server=MongoDB, database=db, collection_str='kegg_organism_code')

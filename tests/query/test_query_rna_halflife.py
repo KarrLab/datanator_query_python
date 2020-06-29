@@ -9,8 +9,8 @@ class TestQueryRna(unittest.TestCase):
     def setUpClass(cls):
         db = 'datanator'
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.col_str = 'rna_halflife_new'
         cls.src = query_rna_halflife.QueryRNA(server=MongoDB, username=username, password=password,
