@@ -46,7 +46,7 @@ jobs:
       - run:
           name: Setup Python environment
           command: |
-            ls -la
+            cd ..
             git clone git@github.com:KarrLab/datanator_pattern_design.git
             export WHERE=API_TEST
             if [[ -f .circleci/requirements.txt ]]; then
