@@ -15,8 +15,8 @@ class TestMongoUtil(unittest.TestCase):
         cls.db = 'datanator'
         cls.duplicate = 'duplicate_test'
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.src = mongo_util.MongoUtil(
             cache_dirname=cls.cache_dirname, MongoDB=MongoDB,

@@ -54,8 +54,8 @@ import json
 def main():
     db = 'datanator'
     conf = config.TestConfig()
-    username = conf.MONGO_TEST_USERNAME
-    password = conf.MONGO_TEST_PASSWORD
+    username = conf.USERNAME
+    password = conf.PASSWORD
     MongoDB = conf.SERVER
     src = Tabu(MongoDB=MongoDB, username=username, password=password,
                db=db, verbose=True, authSource='admin',

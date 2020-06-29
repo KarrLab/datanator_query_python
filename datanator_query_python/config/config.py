@@ -47,9 +47,9 @@ class TestConfig(Config):
         test user with read permission to 'datanator' and
         readWrite permission to 'test'
     '''
-    MONGO_TEST_USERNAME = os.getenv("MONGO_TEST_USERNAME")
-    MONGO_TEST_PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
-    MONGO_TEST_PASSWORD_READ_PREFERENCE = os.getenv("MONGO_TEST_READ_PREFERENCE")
+    USERNAME = os.getenv("MONGO_TEST_USERNAME")
+    PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
+    READ_PREFERENCE = os.getenv("MONGO_TEST_READ_PREFERENCE")
 
 
 class UserAccountConfig(Config):

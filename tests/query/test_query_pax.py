@@ -13,8 +13,8 @@ class TestQueryPax(unittest.TestCase):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'datanator'
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.MongoDB = MongoDB
         cls.username = username

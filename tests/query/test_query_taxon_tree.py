@@ -13,8 +13,8 @@ class TestQueryTaxonTree(unittest.TestCase):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'datanator'
         conf = config.TestConfig()
-        cls.username = conf.MONGO_TEST_USERNAME
-        cls.password = conf.MONGO_TEST_PASSWORD
+        cls.username = conf.USERNAME
+        cls.password = conf.PASSWORD
         cls.MongoDB = conf.SERVER
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db,
@@ -150,8 +150,8 @@ class TestQueryTaxonTreeMock(unittest.TestCase):
         cls.cache_dirname = tempfile.mkdtemp()
         cls.db = 'test'
         conf = config.TestConfig()
-        cls.username = conf.MONGO_TEST_USERNAME
-        cls.password = conf.MONGO_TEST_PASSWORD
+        cls.username = conf.USERNAME
+        cls.password = conf.PASSWORD
         cls.MongoDB = conf.SERVER
         cls.src = query_taxon_tree.QueryTaxonTree(
             cache_dirname=cls.cache_dirname, MongoDB=cls.MongoDB, db=cls.db, collection_str='test_taxon_tree',
