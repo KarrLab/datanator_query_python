@@ -7,7 +7,8 @@
 """
 
 import cement
-import datanator_query_python
+from datanator_query_python.util import mongo_util
+from datanator_query_python.config import config
 import datanator_query_python.core
 
 
@@ -65,6 +66,43 @@ class Command3WithArgumentsController(cement.Controller):
         args.opt_arg_4
 
 
+class DefineSchema(cement.Controller):
+    """Karrlab elasticsearch delete index. """
+
+    class Meta:
+        label = 'mongo-def-schema'
+        description = 'Define jsonschema of a collection'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        arguments = [
+            (['db'], dict(
+                type=str, help='Name of the database in which the collection resides.')),
+            (['collection'], dict(
+                type=str, help='Name of the collection to be defined.')),
+            (['jsonschema'], dict(
+                type=str, help='Location of jsonschema')),
+            (['--config_name', '-cn'], dict(
+                type=str, default='TestConfig',
+                help='Config class to be used.'))
+        ]
+
+    @cement.ex(hide=True)
+    def _default(self):
+        ''' Delete elasticsearch index
+
+            Args:
+                index (:obj:`str`): name of index in es
+                _id (:obj:`int`): id of the doc in index (optional)
+        '''
+        args = self.app.pargs
+        conf = getattr(config, args.config_name)
+        mongo_util.MongoUtil(MongoDB=conf.SERVER,
+                             db=args.db,
+                             username=conf.USERNAME,
+                             password=conf.PASSWORD).define_schema(args.collection, args.jsonschema)
+        print("done")
+
+
 class App(cement.App):
     """ Command line application """
     class Meta:
@@ -73,6 +111,7 @@ class App(cement.App):
         handlers = [
             BaseController,
             Command3WithArgumentsController,
+            DefineSchema
         ]
 
 
