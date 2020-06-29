@@ -47,9 +47,9 @@ class TestConfig(Config):
         test user with read permission to 'datanator' and
         readWrite permission to 'test'
     '''
-    MONGO_TEST_USERNAME = os.getenv("MONGO_TEST_USERNAME")
-    MONGO_TEST_PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
-    MONGO_TEST_PASSWORD_READ_PREFERENCE = os.getenv("MONGO_TEST_READ_PREFERENCE")
+    USERNAME = os.getenv("MONGO_TEST_USERNAME")
+    PASSWORD = os.getenv("MONGO_TEST_PASSWORD")
+    READ_PREFERENCE = os.getenv("MONGO_TEST_READ_PREFERENCE")
 
 
 class UserAccountConfig(Config):
@@ -80,3 +80,13 @@ class FtxConfig(Config):
     FTX_AWS_PROFILE = os.getenv("FTX_AWS_PROFILE")
     TEST_FTX_PROFILE_NAME = os.getenv("TEST_FTX_PROFILE_NAME")
     REST_FTX_AWS_PROFILE = os.getenv("REST_FTX_AWS_PROFILE")
+
+
+class SchemaMigration:
+    USERNAME=os.getenv('MONGO_DATANATOR_PROD')
+    PASSWORD=os.getenv('MONGO_DATANATOR_PROD_PASSWORD')
+
+
+class DatanatorTest:
+    USERNAME=os.getenv('MONGO_DATANATOR_TEST')
+    PASSWORD=os.getenv('MONGO_DATANATOR_TEST_PASSWORD')

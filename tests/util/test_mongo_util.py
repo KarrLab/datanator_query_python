@@ -1,4 +1,5 @@
 import unittest
+import pymongo
 from datanator_query_python.util import mongo_util
 from datanator_query_python.config import config
 import time
@@ -14,8 +15,8 @@ class TestMongoUtil(unittest.TestCase):
         cls.db = 'datanator'
         cls.duplicate = 'duplicate_test'
         conf = config.TestConfig()
-        username = conf.MONGO_TEST_USERNAME
-        password = conf.MONGO_TEST_PASSWORD
+        username = conf.USERNAME
+        password = conf.PASSWORD
         MongoDB = conf.SERVER
         cls.src = mongo_util.MongoUtil(
             cache_dirname=cls.cache_dirname, MongoDB=MongoDB,
@@ -31,11 +32,13 @@ class TestMongoUtil(unittest.TestCase):
                 {"name": "john", "num": 2},
                 {"name": "mike", "num": 3}]
         cls.src_test.db_obj[cls.duplicate].insert_many(docs)
+        cls.schema_test = "schema_test"
         time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
         cls.src_test.db_obj.drop_collection(cls.duplicate)
+        cls.src_test.db_obj.drop_collection(cls.schema_test)
         shutil.rmtree(cls.cache_dirname)
 
     # @unittest.skip('passed')
@@ -64,3 +67,14 @@ class TestMongoUtil(unittest.TestCase):
     def test_get_duplicates_real(self):
         num, results = self.src.get_duplicates('taxon_tree', 'tax_id', allowDiskUse=True)
         self.assertEqual(num, 1)
+
+    def test_define_schema(self):
+        json_schema = "../datanator_pattern_design/compiled/taxon_compiled.json"
+        self.src_test.define_schema(self.schema_test, json_schema)
+        self.src_test.db_obj[self.schema_test].insert_one({"ncbi_taxonomy_id": 123, "name": "something",
+                                                           "canon_ancestors": []})
+        try:
+            self.src_test.db_obj[self.schema_test].insert_one({"ncbi_taxonomy_id": "123", "name": "something",
+                                                            "canon_ancestors": []})
+        except pymongo.errors.WriteError as e:
+            self.assertEqual(str(e), "Document failed validation")

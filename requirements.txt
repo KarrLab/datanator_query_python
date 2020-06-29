@@ -7,3 +7,4 @@ pymongo
 python_dotenv
 requests
 simplejson
+motor
