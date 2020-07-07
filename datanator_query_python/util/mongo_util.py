@@ -109,7 +109,8 @@ class MongoUtil:
                            entity_related=[],
                            entity_description="",
                            schema_version="2.0",
-                           col="observation"):
+                           col="observation",
+                           op="update"):
         """Update observation collection
 
         Args:
@@ -126,6 +127,7 @@ class MongoUtil:
             entity_description(:obj:`str`): description of entity.
             schema_version(:obj:`str`): version of observation schema.
             col(:obj:`str`): name of the observation collection.
+            op(:obj:`str`): operation to be done, e.g. update or bulk
         """
         query = {"$and": [obs_identifier,
                           {"source": {"$elemMatch": obs_source}}]}
@@ -140,6 +142,9 @@ class MongoUtil:
                                  "entity.synonyms": {"$each": entity_synonyms},
                                  "entity.identifiers": {"$each": entity_identifiers},
                                  "entity.related": {"$each": entity_related}}}
-        self.db_obj[col].update_one(query,
-                                    _update,
-                                    upsert=True)        
+        if op == "update":
+            self.db_obj[col].update_one(query,
+                                        _update,
+                                        upsert=True)
+        else:
+            return query, _update        
