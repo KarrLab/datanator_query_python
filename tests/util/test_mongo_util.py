@@ -78,3 +78,14 @@ class TestMongoUtil(unittest.TestCase):
                                                             "canon_ancestors": []})
         except pymongo.errors.WriteError as e:
             self.assertEqual(str(e), "Document failed validation")
+
+    def test_update_observation(self):
+        entity_name = "test"
+        entity_type = "test_type"
+        entity_identifiers = [{"namespace": "test", "value": "test value"}]
+        obs_identifier = {"namespace": "test", "value": "test value"}
+        self.src_test.update_observation(entity_name,
+                                         entity_type,
+                                         entity_identifiers,
+                                         obs_identifier,
+                                         obs_source={"namespace": "something", "value": "12356"})

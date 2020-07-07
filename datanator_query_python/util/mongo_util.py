@@ -78,29 +78,6 @@ class MongoUtil:
             if i == 0:
                 num = count["total_return"]                    
         return num, collection.aggregate(pipeline, **kwargs)
- 
-    def split_cursors(self, count, db, collection, query={},
-                      projection={'_id': 0}):
-        """Manually return multiple cursors.
-
-        Args:
-            count(:obj:`int`): Number of cursors wanted.
-            db(:obj:`int`): Name of database.
-            collection_str(:obj:`str`): Name of collection.
-            query(:obj:`Obj`, optional): mongodb query to be performed.
-            projection(:obj:`Obj`, optional): mongodb query projection.
-            
-        Return:
-            (:obj:`list` of :obj:`pymongo.Cursor`)
-        """
-        from_collection = self.client.get_database(db)[collection]
-        total_docs = from_collection.count_documents(query)
-        step_size = int((total_docs % count + total_docs) / count)
-        result = []
-        for i in range(0, count):
-            result.append(from_collection.find(filter=query, skip=i * step_size, limit=step_size,
-                                               projection=projection))
-        return result
 
     def define_schema(self, collection_str, json_schema):
         """Define collection's $jsonSchema
@@ -108,10 +85,61 @@ class MongoUtil:
 
         Args:
             collection_str (:obj:`str`): Name of the collection to be defined.
-            json_schema (:obj:`str`): location of the jsonSchema definition.
+            json_schema (:obj:`str` or :obj:`dict`): location of the jsonSchema definition.
         """
-        with open(json_schema) as j:
-            schema = json.load(j)
+        if isinstance(json_schema, str):
+            with open(json_schema) as j:
+                schema = json.load(j)
+        else:
+            schema = json_schema
         self.db_obj.create_collection(collection_str,
                                       validator={"$jsonSchema": schema},
                                       validationLevel="moderate")
+
+    def update_observation(self, 
+                           entity_name: str,
+                           entity_type: str,
+                           entity_identifiers: list,
+                           obs_identifier: dict,
+                           obs_source: dict,
+                           obs_values=[],
+                           _source=[],
+                           genotype={},
+                           entity_synonyms=[],
+                           entity_related=[],
+                           entity_description="",
+                           schema_version="2.0",
+                           col="observation"):
+        """Update observation collection
+
+        Args:
+            entity_name(:obj:`str`): name of entity.
+            entity_type(:obj:`str`): type of entity.
+            entity_identifiers(:obj:`list`): list of entity identifiers.
+            obs_identifier(:obj:`Obj`): identifier object of observation.
+            obs_source(:obj:`Obj`): source object of observation used for querying.
+            obs_values(:obj:`list`): values of observation.  
+            _source(:obj:`list`): source array.
+            genotype(:obj:`Obj`): genotype object of observation.                        
+            entity_synonyms(:obj:`list`): list of entity synonyms.            
+            entity_related(:obj:`list`): list of related items.
+            entity_description(:obj:`str`): description of entity.
+            schema_version(:obj:`str`): version of observation schema.
+            col(:obj:`str`): name of the observation collection.
+        """
+        query = {"$and": [obs_identifier,
+                          {"source": {"$elemMatch": obs_source}}]}
+        _update = {"$set": {"genotype": genotype,
+                            "entity.type": entity_type,
+                            "entity.name": entity_name,
+                            "entity.description": entity_description,
+                            "schema_version": schema_version,
+                            "identifier": obs_identifier},
+                   "$addToSet": {"values": {"$each": obs_values},
+                                 "source": {"$each": _source},
+                                 "entity.synonyms": {"$each": entity_synonyms},
+                                 "entity.identifiers": {"$each": entity_identifiers},
+                                 "entity.related": {"$each": entity_related}}}
+        self.db_obj[col].update_one(query,
+                                    _update,
+                                    upsert=True)        
