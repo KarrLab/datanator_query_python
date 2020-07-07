@@ -147,4 +147,42 @@ class MongoUtil:
                                         _update,
                                         upsert=True)
         else:
-            return query, _update        
+            return query, _update
+
+    def update_entity(self,
+                      match,
+                      _type,
+                      name,
+                      identifiers,
+                      synonyms=[],
+                      related=[],
+                      description="",
+                      schema_version="2.0",
+                      col="entity",
+                      op="update"):
+        """Update entity collection.
+
+        Args:
+            match(:obj:`Obj`): identifier object used to find entity document.
+            _type(:obj:`str`): entity type.
+            name(:obj:`str`): entity name.
+            identifiers(:obj:`list` of :obj:`Obj`): list of entity identifiers.
+            synonyms(:obj:`list`): list of entity synonyms.
+            related(:obj:`list`): related entity.
+            description(:obj:`str`): description of entity.
+            op(:obj:`str`): operation to be done, e.g. update or bulk.
+        """
+        query = {"identifiers": {"$elemMatch": match}}
+        _update = {"$set": {"type": _type,
+                            "name": name,
+                            "description": description,
+                            "schema_version": schema_version},
+                   "$addToSet": {"synonyms": {"$each": synonyms},
+                                 "identifiers": {"$each": identifiers},
+                                 "related": {"$each": related}}}        
+        if op == "update":
+            self.db_obj[col].update_one(query,
+                                        _update,
+                                        upsert=True)
+        else:
+            return query, _update
