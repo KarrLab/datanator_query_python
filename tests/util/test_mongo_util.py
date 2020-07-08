@@ -80,12 +80,217 @@ class TestMongoUtil(unittest.TestCase):
             self.assertEqual(str(e), "Document failed validation")
 
     def test_update_observation(self):
-        entity_name = "test"
-        entity_type = "test_type"
-        entity_identifiers = [{"namespace": "test", "value": "test value"}]
-        obs_identifier = {"namespace": "test", "value": "test value"}
-        self.src_test.update_observation(entity_name,
-                                         entity_type,
-                                         entity_identifiers,
-                                         obs_identifier,
-                                         obs_source={"namespace": "something", "value": "12356"})
+        self.src_test.update_observation({"identifier": {"namespace": "something", "value": "a"},
+                                          "something": []},
+                                         {"namespace": "something", "value": "a"})
+
+    def test_update_entity(self):
+        null = None
+        obj = {
+            "type": "protein",
+            "name": "Oryza sativa",
+            "synonyms": [],
+            "identifiers": [
+                {
+                    "namespace": "uniprot",
+                    "value": "Q75IW1"
+                },
+                {
+                    "namespace": "gene_name_alt",
+                    "value": null
+                },
+                {
+                    "namespace": "gene_name_orf",
+                    "value": "OsJ_11271 OSJNBb0059G13.19"
+                },
+                {
+                    "namespace": "gene_name_oln",
+                    "value": "Os03g0416300 LOC_Os03g30260"
+                },
+                {
+                    "namespace": "pro_id",
+                    "value": "PR:000024921"
+                },
+                {
+                    "namespace": "pro_id",
+                    "value": "PR:000036675"
+                },
+                {
+                    "namespace": "entrez_id",
+                    "value": "4333115"
+                },
+                {
+                    "namespace": "entry_name",
+                    "value": "COBL2_ORYSJ"
+                }
+            ],
+            "related": [
+                {
+                    "namespace": "ec",
+                    "value": null
+                },
+                {
+                    "namespace": "gene_name",
+                    "value": "BC1L2"
+                },
+                {
+                    "namespace": "ko_name",
+                    "value": null
+                },
+                {
+                    "namespace": "ko_number",
+                    "value": null
+                }
+            ],
+            "genotype": {
+                "taxon": {
+                    "ncbi_taxonomy_id": 39947,
+                    "obj": "Oryza sativa Japonica Group",
+                    "canon_ancestors": [
+                        {
+                            "ncbi_taxonomy_id": 131567,
+                            "name": "cellular organisms"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 2759,
+                            "name": "Eukaryota"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 33090,
+                            "name": "Viridiplantae"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 35493,
+                            "name": "Streptophyta"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 4447,
+                            "name": "Liliopsida"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 38820,
+                            "name": "Poales"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 4479,
+                            "name": "Poaceae"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 4527,
+                            "name": "Oryza"
+                        },
+                        {
+                            "ncbi_taxonomy_id": 4530,
+                            "name": "Oryza sativa"
+                        }
+                    ]
+                }
+            },
+            "structures": [
+                {
+                    "format": "canonical_sequence",
+                    "value": "MARFLLGAAAIALLAGVSSLLLMVPFAEAYDPLDPNGNITIKWDITQWTPDGYVAVVTIYNFQKYRHIQAPGWSLGWAWAKKEIIWSMAGGQATEQGDCSAFKANIPHCCKRDPRVVDLVPGAPYNMQFGNCCKGGVLTSWVQDPLNAVASFQITVGHSGTSNKTVKAPKNFTLKAPGPGYSCGLAQEVKPPTRFISLDGRRTTQAHVTWNVTCTYSQFVAQRAPTCCVSLSSFYNETIVNCPKCACGCQNKKPGSCVEGNSPYLASVVNGPGKGSLTPLVQCTPHMCPIRVHWHVKLNYRDYWRVKVTITNWNYRMNYSQWNLVVQHPNFENVSTVFSFNYKSLNPYGVINDTAMMWGVKYYNDLLMVAGPDGNVQSELLFRKDRSTFTFDKGWAFPRRIYFNGESCVMPSPDLYPWLPPSSTPRFRTVFLLMSFLVCGTLAFLHNHLVLDKNCGKC"
+                },
+                {
+                    "format": "processed_sequence_iubmb",
+                    "value": null,
+                    "molecular_weight": null,
+                    "charge": null,
+                    "formula": null,
+                    "source": [
+                        {
+                            "namespace": "pro_id",
+                            "value": "PR:000024921",
+                            "level": "secondary"
+                        },
+                        {
+                            "namespace": "doi",
+                            "value": "10.1093/nar/gkw1075",
+                            "level": "primary"
+                        }
+                    ]
+                },
+                {
+                    "format": "modified_sequence_abbreviated_bpforms",
+                    "value": "SERFPNDVDPIETRDWLQAIESVIREEGVERAQYLIDQLLAEARKGGVNVAAGTGISNYINTIPVEEQPEYPGNLELERRIRSAIRWNAIMTVLRASKKDLELGGHMASFQSSATIYDVCFNHFFRARNEQDGGDLVYFQGHISPGVYARAFLEGRLTQEQLDNFRQEVHGNGLSSYPHPKLMPEFWQFPTVSMGLGPIGAIYQAKFLKYLEHRGLKDTSKQTVYAFLGDGEMDEPESKGAITIATREKLDNLVFVINCNLQRLDGPVTGNGKIINELEGIFEGAGWNVIKVMWGSRWDELLRKDTSGKLIQLMNETVDGDYQTFKSKDGAYVREHFFGKYPETAALVADWTDEQIWALNRGGHDPKKIYAAFKKAQETKGKATVILAHTIKGYGMGDAAEGKNIAHQVKKMNMDGVRHIRDRFNVPVSDADIEKLPYITFPEGSEEHTYLHAQRQKLHGYLPSRQPNFTEKLELPSLQDFGALLEEQSKEISTTIAFVRALNVMLKNKSIKDRLVPIIADEARTFGMEGLFRQIGIYSPNGQQYTPQDREQVAYYKEDEKGQILQEGINELGAGCSWLAAATSYSTNNLPMIPFYIYYSMFGFQRIGDLCWAAGDQQARGFLIGGTSGRTTLNGEGLQHEDGHSHIQSLTIPNCISYDPAYAYEVAVIMHDGLERMYGEKQENVYYYITTLNENYHMPAMPEGAEEGIRKGIY{AA0055}LETIEGSKGKVQLLGSGSILRHVREAAEILAKDYGVGSDVYSVTSFTELARDGQDCERWNMLHPLETPRVPYIAQVMNDAPAVASTDYMKLFAEQVRTYVPADDYRVLGTDGFGRSDSRENLRHHFEVDASYVVVAALGELAKRGEIDKKVVADAIAKFNIDADKVNPRLA",
+                    "molecular_weight": 97709.46800000001,
+                    "charge": 97,
+                    "formula": "C4438H6966N1217O1217S27",
+                    "modification": {
+                        "description": "K --> MOD:00064 (716)",
+                        "formula": "C2HO",
+                        "weight": 41.028999999994994,
+                        "charge": -1
+                    },
+                    "source": [
+                        {
+                            "namespace": "pro_id",
+                            "value": "PR:000024921",
+                            "level": "secondary"
+                        },
+                        {
+                            "namespace": "doi",
+                            "value": "10.1093/nar/gkw1075",
+                            "level": "primary"
+                        }
+                    ]
+                },
+                {
+                    "format": "modified_sequence_bpforms",
+                    "value": "SERFPNDVDPIETRDWLQAIESVIREEGVERAQYLIDQLLAEARKGGVNVAAGTGISNYINTIPVEEQPEYPGNLELERRIRSAIRWNAIMTVLRASKKDLELGGHMASFQSSATIYDVCFNHFFRARNEQDGGDLVYFQGHISPGVYARAFLEGRLTQEQLDNFRQEVHGNGLSSYPHPKLMPEFWQFPTVSMGLGPIGAIYQAKFLKYLEHRGLKDTSKQTVYAFLGDGEMDEPESKGAITIATREKLDNLVFVINCNLQRLDGPVTGNGKIINELEGIFEGAGWNVIKVMWGSRWDELLRKDTSGKLIQLMNETVDGDYQTFKSKDGAYVREHFFGKYPETAALVADWTDEQIWALNRGGHDPKKIYAAFKKAQETKGKATVILAHTIKGYGMGDAAEGKNIAHQVKKMNMDGVRHIRDRFNVPVSDADIEKLPYITFPEGSEEHTYLHAQRQKLHGYLPSRQPNFTEKLELPSLQDFGALLEEQSKEISTTIAFVRALNVMLKNKSIKDRLVPIIADEARTFGMEGLFRQIGIYSPNGQQYTPQDREQVAYYKEDEKGQILQEGINELGAGCSWLAAATSYSTNNLPMIPFYIYYSMFGFQRIGDLCWAAGDQQARGFLIGGTSGRTTLNGEGLQHEDGHSHIQSLTIPNCISYDPAYAYEVAVIMHDGLERMYGEKQENVYYYITTLNENYHMPAMPEGAEEGIRKGIY{AA0055}LETIEGSKGKVQLLGSGSILRHVREAAEILAKDYGVGSDVYSVTSFTELARDGQDCERWNMLHPLETPRVPYIAQVMNDAPAVASTDYMKLFAEQVRTYVPADDYRVLGTDGFGRSDSRENLRHHFEVDASYVVVAALGELAKRGEIDKKVVADAIAKFNIDADKVNPRLA"
+                },
+                {
+                    "format": "processed_sequence_iubmb",
+                    "value": null,
+                    "molecular_weight": null,
+                    "charge": null,
+                    "formula": null,
+                    "source": [
+                        {
+                            "namespace": "pro_id",
+                            "value": "PR:000036675",
+                            "level": "secondary"
+                        },
+                        {
+                            "namespace": "doi",
+                            "value": "10.1093/nar/gkw1075",
+                            "level": "primary"
+                        }
+                    ]
+                },
+                {
+                    "format": "modified_sequence_abbreviated_bpforms",
+                    "value": "SERFPNDVDPIETRDWLQAIESVIREEGVERAQYLIDQLLAEARKGGVNVAAGTGISNYINTIPVEEQPEYPGNLELERRIRSAIRWNAIMTVLRASKKDLELGGHMASFQSSATIYDVCFNHFFRARNEQDGGDLVYFQGHISPGVYARAFLEGRLTQEQLDNFRQEVHGNGLSSYPHPKLMPEFWQFPTVSMGLGPIGAIYQAKFLKYLEHRGLKDTSKQTVYAFLGDGEMDEPESKGAITIATREKLDNLVFVINCNLQRLDGPVTGNGKIINELEGIFEGAGWNVIKVMWGSRWDELLRKDTSGKLIQLMNETVDGDYQTFKSKDGAYVREHFFGKYPETAALVADWTDEQIWALNRGGHDPKKIYAAFKKAQETKGKATVILAHTIKGYGMGDAAEGKNIAHQVKKMNMDGVRHIRDRFNVPVSDADIEKLPYITFPEGSEEHTYLHAQRQKLHGYLPSRQPNFTEKLELPSLQDFGALLEEQSKEISTTIAFVRALNVMLKNKSIKDRLVPIIADEARTFGMEGLFRQIGIYSPNGQQYTPQDREQVAYYKEDEKGQILQEGINELGAGCSWLAAATSYSTNNLPMIPFYIYYSMFGFQRIGDLCWAAGDQQARGFLIGGTSGRTTLNGEGLQHEDGHSHIQSLTIPNCISYDPAYAYEVAVIMHDGLERMYGEKQENVYYYITTLNENYHMPAMPEGAEEGIRKGIY{AA0055}LETIEGSKGKVQLLGSGSILRHVREAAEILAKDYGVGSDVYSVTSFTELARDGQDCERWNMLHPLETPRVPYIAQVMNDAPAVASTDYMKLFAEQVRTYVPADDYRVLGTDGFGRSDSRENLRHHFEVDASYVVVAALGELAKRGEIDKKVVADAIAKFNIDADKVNPRLA",
+                    "molecular_weight": 97709.46800000001,
+                    "charge": 97,
+                    "formula": "C4438H6966N1217O1217S27",
+                    "modification": {
+                        "description": "K --> MOD:00064 (716)",
+                        "formula": "C2HO",
+                        "weight": 41.028999999994994,
+                        "charge": -1
+                    },
+                    "source": [
+                        {
+                            "namespace": "pro_id",
+                            "value": "PR:000036675",
+                            "level": "secondary"
+                        },
+                        {
+                            "namespace": "doi",
+                            "value": "10.1093/nar/gkw1075",
+                            "level": "primary"
+                        }
+                    ]
+                },
+                {
+                    "format": "modified_sequence_bpforms",
+                    "value": "SERFPNDVDPIETRDWLQAIESVIREEGVERAQYLIDQLLAEARKGGVNVAAGTGISNYINTIPVEEQPEYPGNLELERRIRSAIRWNAIMTVLRASKKDLELGGHMASFQSSATIYDVCFNHFFRARNEQDGGDLVYFQGHISPGVYARAFLEGRLTQEQLDNFRQEVHGNGLSSYPHPKLMPEFWQFPTVSMGLGPIGAIYQAKFLKYLEHRGLKDTSKQTVYAFLGDGEMDEPESKGAITIATREKLDNLVFVINCNLQRLDGPVTGNGKIINELEGIFEGAGWNVIKVMWGSRWDELLRKDTSGKLIQLMNETVDGDYQTFKSKDGAYVREHFFGKYPETAALVADWTDEQIWALNRGGHDPKKIYAAFKKAQETKGKATVILAHTIKGYGMGDAAEGKNIAHQVKKMNMDGVRHIRDRFNVPVSDADIEKLPYITFPEGSEEHTYLHAQRQKLHGYLPSRQPNFTEKLELPSLQDFGALLEEQSKEISTTIAFVRALNVMLKNKSIKDRLVPIIADEARTFGMEGLFRQIGIYSPNGQQYTPQDREQVAYYKEDEKGQILQEGINELGAGCSWLAAATSYSTNNLPMIPFYIYYSMFGFQRIGDLCWAAGDQQARGFLIGGTSGRTTLNGEGLQHEDGHSHIQSLTIPNCISYDPAYAYEVAVIMHDGLERMYGEKQENVYYYITTLNENYHMPAMPEGAEEGIRKGIY{AA0055}LETIEGSKGKVQLLGSGSILRHVREAAEILAKDYGVGSDVYSVTSFTELARDGQDCERWNMLHPLETPRVPYIAQVMNDAPAVASTDYMKLFAEQVRTYVPADDYRVLGTDGFGRSDSRENLRHHFEVDASYVVVAALGELAKRGEIDKKVVADAIAKFNIDADKVNPRLA"
+                }
+            ],
+            "schema_version": "2.0"
+        }
+        x, y = self.src_test.update_entity(obj,
+                                           {"namespace": "uniprot", "value": "Q75IW1"},
+                                           op="test")
+        print(y)
