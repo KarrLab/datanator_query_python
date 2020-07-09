@@ -82,7 +82,8 @@ class TestMongoUtil(unittest.TestCase):
     def test_update_observation(self):
         self.src_test.update_observation({"identifier": {"namespace": "something", "value": "a"},
                                           "something": []},
-                                         {"namespace": "something", "value": "a"})
+                                         {"namespace": "something", "value": "a"},
+                                         op="test")
 
     def test_update_entity(self):
         null = None
