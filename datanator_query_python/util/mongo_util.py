@@ -99,13 +99,15 @@ class MongoUtil:
     def update_observation(self, 
                            obj,
                            source,
+                           db="test",
                            op="update",
                            col="observation"):
         """Update observation collection
 
         Args:
             obj(:obj:`Obj`): obs object to be updated with.
-            source(:obj:`Obj`): one of the sources used for matching. 
+            source(:obj:`Obj`): one of the sources used for matching.
+            db(:obj:`Obj`): Name of database to be updated. 
             op(:obj:`str`): Operation to be done.
             col(:obj:`str`): Name of collection to be updated.
         """
@@ -121,15 +123,16 @@ class MongoUtil:
         _update = {"$set": _set,
                    "$addToSet": add_to_set}
         if op == "update":
-            self.db_obj[col].update_one(query,
-                                        _update,
-                                        upsert=True)
+            self.client[db][col].update_one(query,
+                                            _update,
+                                            upsert=True)
         else:
             return query, _update
 
     def update_entity(self,
                       obj,
                       match,
+                      db="test",
                       col="entity",
                       op="update"):
         """Update entity collection.
@@ -137,6 +140,7 @@ class MongoUtil:
         Args:
             obj(:obj:`Obj`): object to be updated with.
             match(:obj:`Obj`): Identifier used to match existing document in collection.
+            db(:obj:`str`): Name of database to be updated.
             col(:obj:`str`): Name of collection to be updated.
             op(:obj:`str`): operation to be done, e.g. update or bulk.
         """
@@ -151,8 +155,8 @@ class MongoUtil:
         _update = {"$set": _set,
                    "$addToSet": add_to_set}
         if op == "update":
-            self.db_obj[col].update_one(query,
-                                        _update,
-                                        upsert=True)
+            self.client[db][col].update_one(query,
+                                            _update,
+                                            upsert=True)
         else:
             return query, _update
