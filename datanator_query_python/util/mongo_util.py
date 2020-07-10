@@ -101,7 +101,8 @@ class MongoUtil:
                            source,
                            db="test",
                            op="update",
-                           col="observation"):
+                           col="observation",
+                           query={}):
         """Update observation collection
 
         Args:
@@ -110,6 +111,7 @@ class MongoUtil:
             db(:obj:`Obj`): Name of database to be updated. 
             op(:obj:`str`): Operation to be done.
             col(:obj:`str`): Name of collection to be updated.
+            query(:obj:`Obj`): Filter for updating operation.
         """
         _set = {}
         add_to_set = {}
@@ -118,8 +120,9 @@ class MongoUtil:
                 add_to_set[key] = {"$each": val}
             else:
                 _set[key] = val
-        query = {"$and": [{"identifier": _set["identifier"]},
-                          {"source": {"$elemMatch": source}}]}
+        if query == {}:
+            query = {"$and": [{"identifier": _set["identifier"]},
+                            {"source": {"$elemMatch": source}}]}
         _update = {"$set": _set,
                    "$addToSet": add_to_set}
         if op == "update":
@@ -134,7 +137,8 @@ class MongoUtil:
                       match,
                       db="test",
                       col="entity",
-                      op="update"):
+                      op="update",
+                      query={}):
         """Update entity collection.
 
         Args:
@@ -143,6 +147,7 @@ class MongoUtil:
             db(:obj:`str`): Name of database to be updated.
             col(:obj:`str`): Name of collection to be updated.
             op(:obj:`str`): operation to be done, e.g. update or bulk.
+            query(:obj:`Obj`): Filter for updating operation.
         """
         _set = {}
         add_to_set = {}
@@ -151,7 +156,8 @@ class MongoUtil:
                 add_to_set[key] = {"$each": val}
             else:
                 _set[key] = val
-        query = {"identifiers": {"$elemMatch": match}}
+        if query == {}:
+            query = {"identifiers": {"$elemMatch": match}}
         _update = {"$set": _set,
                    "$addToSet": add_to_set}
         if op == "update":
