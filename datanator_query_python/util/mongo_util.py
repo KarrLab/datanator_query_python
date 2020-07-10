@@ -97,49 +97,72 @@ class MongoUtil:
                                       validationLevel="moderate")
 
     def update_observation(self, 
-                           entity_name: str,
-                           entity_type: str,
-                           entity_identifiers: list,
-                           obs_identifier: dict,
-                           obs_source: dict,
-                           obs_values=[],
-                           _source=[],
-                           genotype={},
-                           entity_synonyms=[],
-                           entity_related=[],
-                           entity_description="",
-                           schema_version="2.0",
-                           col="observation"):
+                           obj,
+                           source,
+                           db="test",
+                           op="update",
+                           col="observation",
+                           query={}):
         """Update observation collection
 
         Args:
-            entity_name(:obj:`str`): name of entity.
-            entity_type(:obj:`str`): type of entity.
-            entity_identifiers(:obj:`list`): list of entity identifiers.
-            obs_identifier(:obj:`Obj`): identifier object of observation.
-            obs_source(:obj:`Obj`): source object of observation used for querying.
-            obs_values(:obj:`list`): values of observation.  
-            _source(:obj:`list`): source array.
-            genotype(:obj:`Obj`): genotype object of observation.                        
-            entity_synonyms(:obj:`list`): list of entity synonyms.            
-            entity_related(:obj:`list`): list of related items.
-            entity_description(:obj:`str`): description of entity.
-            schema_version(:obj:`str`): version of observation schema.
-            col(:obj:`str`): name of the observation collection.
+            obj(:obj:`Obj`): obs object to be updated with.
+            source(:obj:`Obj`): one of the sources used for matching.
+            db(:obj:`Obj`): Name of database to be updated. 
+            op(:obj:`str`): Operation to be done.
+            col(:obj:`str`): Name of collection to be updated.
+            query(:obj:`Obj`): Filter for updating operation.
         """
-        query = {"$and": [obs_identifier,
-                          {"source": {"$elemMatch": obs_source}}]}
-        _update = {"$set": {"genotype": genotype,
-                            "entity.type": entity_type,
-                            "entity.name": entity_name,
-                            "entity.description": entity_description,
-                            "schema_version": schema_version,
-                            "identifier": obs_identifier},
-                   "$addToSet": {"values": {"$each": obs_values},
-                                 "source": {"$each": _source},
-                                 "entity.synonyms": {"$each": entity_synonyms},
-                                 "entity.identifiers": {"$each": entity_identifiers},
-                                 "entity.related": {"$each": entity_related}}}
-        self.db_obj[col].update_one(query,
-                                    _update,
-                                    upsert=True)        
+        _set = {}
+        add_to_set = {}
+        for key, val in obj.items():
+            if isinstance(val, list):
+                add_to_set[key] = {"$each": val}
+            else:
+                _set[key] = val
+        if query == {}:
+            query = {"$and": [{"identifier": _set["identifier"]},
+                            {"source": {"$elemMatch": source}}]}
+        _update = {"$set": _set,
+                   "$addToSet": add_to_set}
+        if op == "update":
+            self.client[db][col].update_one(query,
+                                            _update,
+                                            upsert=True)
+        else:
+            return query, _update
+
+    def update_entity(self,
+                      obj,
+                      match,
+                      db="test",
+                      col="entity",
+                      op="update",
+                      query={}):
+        """Update entity collection.
+
+        Args:
+            obj(:obj:`Obj`): object to be updated with.
+            match(:obj:`Obj`): Identifier used to match existing document in collection.
+            db(:obj:`str`): Name of database to be updated.
+            col(:obj:`str`): Name of collection to be updated.
+            op(:obj:`str`): operation to be done, e.g. update or bulk.
+            query(:obj:`Obj`): Filter for updating operation.
+        """
+        _set = {}
+        add_to_set = {}
+        for key, val in obj.items():
+            if isinstance(val, list):
+                add_to_set[key] = {"$each": val}
+            else:
+                _set[key] = val
+        if query == {}:
+            query = {"identifiers": {"$elemMatch": match}}
+        _update = {"$set": _set,
+                   "$addToSet": add_to_set}
+        if op == "update":
+            self.client[db][col].update_one(query,
+                                            _update,
+                                            upsert=True)
+        else:
+            return query, _update
