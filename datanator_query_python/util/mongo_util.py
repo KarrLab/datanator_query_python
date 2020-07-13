@@ -180,7 +180,8 @@ class MongoUtil:
         obj = self.client["datanator-test"]["taxon_tree"].find_one({_format: _id},
                                                                     projection={"canon_anc_ids": 1,
                                                                                 "canon_anc_names": 1,
-                                                                                "tax_name": 1})
+                                                                                "tax_name": 1,
+                                                                                "tax_id": 1})
         if obj is None:
             return {}
         else:
@@ -190,7 +191,7 @@ class MongoUtil:
             for _id, name in zip(canon_anc_ids, canon_anc_names):
                 canon_ancestors.append({"ncbi_taxonomy_id": _id,
                                         "name": name})
-            return {"ncbi_taxonomy_id": taxon_id,
+            return {"ncbi_taxonomy_id": obj["tax_id"],
                     "name": obj["tax_name"],
                     "canon_ancestors": canon_ancestors}                
     
