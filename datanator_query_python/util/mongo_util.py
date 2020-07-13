@@ -166,3 +166,31 @@ class MongoUtil:
                                             upsert=True)
         else:
             return query, _update
+
+    def build_taxon_object(self, taxon_id):
+        """Build taxon object from taxon_id.
+        (https://github.com/KarrLab/datanator_pattern_design/blob/master/components/taxon.json)
+
+        Args:
+            taxon_id (:obj:`int`): Organism's taxonomy ID.
+
+        Return:
+            (:obj:`Obj`)
+        """
+        obj = self.client["datanator-test"]["taxon_tree"].find_one({"tax_id": taxon_id},
+                                                                    projection={"canon_anc_ids": 1,
+                                                                                "canon_anc_names": 1,
+                                                                                "tax_name": 1})
+        if obj is None:
+            return {}
+        else:
+            canon_ancestors = []
+            canon_anc_ids = obj["canon_anc_ids"]
+            canon_anc_names = obj["canon_anc_names"]
+            for _id, name in zip(canon_anc_ids, canon_anc_names):
+                canon_ancestors.append({"ncbi_taxonomy_id": _id,
+                                        "name": name})
+            return {"ncbi_taxonomy_id": taxon_id,
+                    "name": obj["tax_name"],
+                    "canon_ancestors": canon_ancestors}                
+    
