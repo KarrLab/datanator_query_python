@@ -295,3 +295,8 @@ class TestMongoUtil(unittest.TestCase):
                                            {"namespace": "uniprot", "value": "Q75IW1"},
                                            op="test")
         print(y)
+
+    def test_build_taxon_object(self):
+        self.assertEqual(self.src.build_taxon_object(0), {})
+        _id = 9606
+        self.assertEqual(self.src.build_taxon_object(_id)["canon_ancestors"][0]["name"], "cellular organisms")
