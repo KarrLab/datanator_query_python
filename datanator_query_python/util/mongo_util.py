@@ -122,7 +122,7 @@ class MongoUtil:
                 _set[key] = val
         if query == {}:
             query = {"$and": [{"identifier": _set["identifier"]},
-                            {"source": {"$elemMatch": source}}]}
+                              {"source": {"$elemMatch": source}}]}
         _update = {"$set": _set,
                    "$addToSet": add_to_set}
         if op == "update":
@@ -167,17 +167,17 @@ class MongoUtil:
         else:
             return query, _update
 
-    def build_taxon_object(self, taxon_id):
+    def build_taxon_object(self, _id, _format="tax_id"):
         """Build taxon object from taxon_id.
         (https://github.com/KarrLab/datanator_pattern_design/blob/master/components/taxon.json)
 
         Args:
-            taxon_id (:obj:`int`): Organism's taxonomy ID.
+            _id (:obj:`int`): Organism's taxonomy ID.
 
         Return:
             (:obj:`Obj`)
         """
-        obj = self.client["datanator-test"]["taxon_tree"].find_one({"tax_id": taxon_id},
+        obj = self.client["datanator-test"]["taxon_tree"].find_one({_format: _id},
                                                                     projection={"canon_anc_ids": 1,
                                                                                 "canon_anc_names": 1,
                                                                                 "tax_name": 1})
