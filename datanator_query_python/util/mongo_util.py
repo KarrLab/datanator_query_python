@@ -177,7 +177,11 @@ class MongoUtil:
         Return:
             (:obj:`Obj`)
         """
-        obj = self.client["datanator-test"]["taxon_tree"].find_one({_format: _id},
+        if _format == "tax_name":
+            query = {"$or": [{"tax_name": _id}, {"name_txt": _id}]}
+        else:
+            query = {_format: _id}
+        obj = self.client["datanator-test"]["taxon_tree"].find_one(query,
                                                                     projection={"canon_anc_ids": 1,
                                                                                 "canon_anc_names": 1,
                                                                                 "tax_name": 1,
