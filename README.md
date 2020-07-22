@@ -60,6 +60,15 @@ We presume Python 3.7 has already been installed.
   pip install -e .
   ```
 
+5. Setup environment variables (credentials for accessing databases)
+  ```
+  export USERNAME=XXXXXXX
+  export PASSWORD=XXXXXXX
+  export SERVER=XXXXXXX
+  export AUTHDB=XXXXXXX
+  export READ_PREFERENCE=XXXXXX
+  ```
+
 #### Test *Datanator-query-python*
 1. Run the unit tests
   ```
