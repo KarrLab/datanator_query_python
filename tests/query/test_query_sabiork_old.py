@@ -80,7 +80,7 @@ class TestQuerySabioOld(unittest.TestCase):
         finish = time.time()
         print('Time elapsed: {}s'.format(finish - start))
 
-    @unittest.skip('collection not yet finished building')
+    # @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_rxn(self):
         substrate_0 = 'XJLXINKUBYWONI-NNYOXOHSSA-N'
         substrate_1 = 'ODBLHEXUDAPZAU-UHFFFAOYSA-N'
@@ -100,6 +100,8 @@ class TestQuerySabioOld(unittest.TestCase):
         self.assertTrue(count_2 >= 193)
         count_3, _ = self.src.get_kinlaw_by_rxn([substrate_0], [product_0, product_1], bound='tight')
         self.assertEqual(count_3, 0)
+        count_4, _ = self.src.get_kinlaw_by_rxn(["data"], [], bound='tight')
+        self.assertEqual(count_4, 0)
 
     # @unittest.skip('collection not yet finished building')
     def test_get_kinlaw_by_entryid(self):
