@@ -26,7 +26,7 @@ Datanator_query_python follows standard Python style conventions:
 
 ## Testing
 
-We strive to have complete test coverage of Datanator. As such, all contributions to Datanator should be tested. The tests are located in the `tests` subdirectory. The tests are implemented using the `unittest` module. The tests can be executed by running `pytest tests`.
+We strive to have complete test coverage of Datanator_query_python. As such, all contributions to Datanator should be tested. The tests are located in the `tests` subdirectory. The tests are implemented using the `unittest` module. The tests can be executed by running `pytest tests`.
 
 Upon each push to GitHub, GitHub will trigger CircleCI to execute all of the tests.
 
