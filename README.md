@@ -120,5 +120,3 @@ Please submit an [issue](https://github.com/KarrLab/datanator_query_python/issue
 
 ## Acknowledgements
 Datanator was developed with support from the [Center for Reproducible Biomedical Modeling](https://reproduciblebiomodels.org) from the National Institute of Bioimaging and Bioengineering and the National Institute of General Medical Sciences of the National Institutes of Health and the National Science Foundation (awards P41EB023912 and R35GM119771).
-
-![Image nih](/src/scenes/About/images/nih.svg) ![Image nibib](/src/scenes/About/images/nibib.svg) ![Image nigms](/src/scenes/About/images/nigms.svg) ![Image nsf](/src/scenes/About/images/nsf.svg)
