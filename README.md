@@ -41,14 +41,18 @@ We recommend using the [REST API](https://api.datanator.info) to programmaticall
 ### Developers
 
 #### Install *Datanator-query-python*
-We presume Python 3.7 has already been installed.
 
-1. Install `git`
+1. Install Python >= 3.7
+  ```
+  apt-get install python3
+  ```
+
+2. Install `git`
   ```
   apt-get install git
   ```
 
-2. Clone this repository
+3. Clone this repository
   ```
   git clone https://github.com/karrlab/datanator_query_python
   ```
