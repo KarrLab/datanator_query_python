@@ -109,10 +109,10 @@ This repository is organized as follows:
 11. Once the CircleCI build succeeds, downstream dependencies will automatically be tested and built
 
 ## Contributing to *Datanator*
-We welcome contributions to *Datanator* via Git pull requests. Please contact the developers to coordinate potential contributions, and please see above for information about how to submit pull requests.
+We welcome contributions to *Datanator* via GitHub pull requests. Please contact the developers to coordinate potential contributions, and please see above for information about how to submit pull requests.
 
 ## License
-This package is released under the [MIT license](LICENSE). The licenses of the third party dependencies are summarized in [LICENSE-THIRD-PARTY](LICENSE-THIRD-PARTY).
+This package is released under the [MIT license](LICENSE).
 
 ## Development team
 This package was developed by the [Karr Lab](https://www.karrlab.org) at the Icahn School of Medicine at Mount Sinai in New York by the following individuals:
