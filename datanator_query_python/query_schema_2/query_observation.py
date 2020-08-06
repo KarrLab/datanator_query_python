@@ -11,7 +11,8 @@ class QueryObs(query_schema_2_manager.QM):
                               identifier,
                               collection="observation",
                               limit=10,
-                              skip=0):
+                              skip=0,
+                              projection={"_id": 0}):
         """Get protein halflives.
 
         Args:
@@ -29,7 +30,8 @@ class QueryObs(query_schema_2_manager.QM):
         con_1 = {"values.type": "half-life"}
         query = {"$and": [{"identifier": identifier}, con_0, con_1]}
         docs = col.find(filter=query, limit=limit, skip=skip,
-                        collation=self.collation)
+                        collation=self.collation,
+                        projection=projection)
         for doc in docs:
             results.append(doc)
         return results
