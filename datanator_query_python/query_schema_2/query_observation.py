@@ -21,11 +21,15 @@ class QueryObs(query_schema_2_manager.QM):
             skip(:obj:`int`, optional): number of documents to skip.
 
         Return:
-            (:obj:`Iter`): pymongo iterables.
+            (:obj:`list`): pymongo iterables.
         """
+        results = []
         col = self.client[self.db][collection]
         con_0 = {"entity.type": "protein"}
         con_1 = {"values.type": "half-life"}
         query = {"$and": [{"identifier": identifier}, con_0, con_1]}
-        return col.find(filter=query, limit=limit, skip=skip,
+        docs = col.find(filter=query, limit=limit, skip=skip,
                         collation=self.collation)
+        for doc in docs:
+            results.append(doc)
+        return results
