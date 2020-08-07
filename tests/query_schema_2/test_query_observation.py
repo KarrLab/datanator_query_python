@@ -12,10 +12,10 @@ class TestQOb(unittest.TestCase):
     def tearDownClass(cls):
         cls.src.client.close()
 
-    def test_get_protein_halflives(self):
+    def test_get_protein_datatype(self):
         identfier = {"namespace": "gene_symbol", "value": "BAG1"}
-        results = self.src.get_protein_halflives(identfier)
+        results = self.src.get_protein_datatype(identfier)
         self.assertEqual(results[0]["entity"]["name"], 'BCL2-associated athanogene.')
         identfier = {"namespace": "gene_symbol", "value": "something"}
-        results = self.src.get_protein_halflives(identfier)
+        results = self.src.get_protein_datatype(identfier)
         self.assertEqual(results, [])
