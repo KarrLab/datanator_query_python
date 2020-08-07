@@ -19,3 +19,6 @@ class TestQOb(unittest.TestCase):
         identfier = {"namespace": "gene_symbol", "value": "something"}
         results = self.src.get_protein_datatype(identfier)
         self.assertEqual(results, [])
+        identfier = {"namespace": "gene_name", "value": "EMC3"}
+        results = self.src.get_protein_datatype(identfier, datatype="localization")
+        self.assertEqual(results[0]["entity"]["name"], 'ER membrane protein complex subunit 3')

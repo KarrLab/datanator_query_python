@@ -1,4 +1,5 @@
 from datanator_query_python.config import query_schema_2_manager
+import re
 
 
 class QueryObs(query_schema_2_manager.QM):
@@ -29,7 +30,12 @@ class QueryObs(query_schema_2_manager.QM):
         results = []
         col = self.client[self.db][collection]
         con_0 = {"entity.type": "protein"}
-        con_1 = {"values.type": datatype}
+        con_1 = {}
+        if datatype != "localization":
+            con_1["values.type"] = datatype
+        else:
+            words = ["intramembrane_localization", "secretome location"]
+            con_1["values.type"] = {"$in": words}
         query = {"$and": [{"identifier": identifier}, con_0, con_1]}
         docs = col.find(filter=query, limit=limit, skip=skip,
                         collation=self.collation,
