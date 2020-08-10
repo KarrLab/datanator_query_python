@@ -150,11 +150,11 @@ class TestQueryTaxonTree(unittest.TestCase):
                                 '743725': 1,
                                 '743725_canon_ancestors': ['cellular organisms', 'Archaea']})
         self.assertEqual(self.src.get_canon_common_ancestor_fast("Escherichia coli E1002", "Escherichia coli", org_format="tax_name")["Escherichia coli"], 0)        
-        result = self.src.get_canon_common_ancestor('escherichia coli', 'escherichia coli', org_format='tax_name')
-        self.assertEqual(result['escherichia coli'], 0)
+        result = self.src.get_canon_common_ancestor_fast('Escherichia coli', 'Escherichia coli', org_format='tax_name')
+        self.assertEqual(result['Escherichia coli'], 0)
         org_3 = 9606
         org_4 = 4932
-        result = self.src.get_canon_common_ancestor(org_3, org_4)
+        result = self.src.get_canon_common_ancestor_fast(org_3, org_4)
         self.assertEqual(result, {'9606': 7, '4932': 7, '9606_canon_ancestors': ['cellular organisms', 'Eukaryota', 'Metazoa', 'Chordata', 'Mammalia', 'Primates', 'Hominidae', 'Homo'], '4932_canon_ancestors': ['cellular organisms', 'Eukaryota', 'Fungi', 'Ascomycota', 'Saccharomycetes', 'Saccharomycetales', 'Saccharomycetaceae', 'Saccharomyces']})
    
 

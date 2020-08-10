@@ -415,6 +415,8 @@ class QueryTaxonTree(mongo_util.MongoUtil):
             Return:
                 (:obj:`Obj`)
         '''
+        if org1 is None or org2 is None:
+            return {'reason': 'Needs two organisms.'}
         collection = self.client["datanator-test"]["taxon_tree"]
         doc_1 = collection.find_one({org_format: org1}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
         doc_2 = collection.find_one({org_format: org2}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
@@ -423,6 +425,9 @@ class QueryTaxonTree(mongo_util.MongoUtil):
 
         canon_anc_1 = doc_1["canon_anc_names"]
         canon_anc_2 = doc_2["canon_anc_names"]
+        
+        if canon_anc_1 == canon_anc_2:
+            return {str(org1): 0, str(org1)+'_canon_ancestors':canon_anc_1}
 
         if canon_anc_1[-1] == org2:
             distance1 = 1
