@@ -138,10 +138,18 @@ class TestQueryTaxonTree(unittest.TestCase):
         # print(result_0)
 
     def test_get_canon_common_ancestor_fast(self):
-        org_0 = 2160
-        org_1 = 2161
-        for doc in self.src.get_canon_common_ancestor_fast(org_0, org_1):
-            print(doc)
+        self.assertEqual(self.src.get_canon_common_ancestor_fast("Escherichia coli E1002", "Homo 1002", org_format="tax_name")["reason"], "No organism found.")
+        org_1 = 743725
+        org_2 = 2107591
+        result = self.src.get_canon_common_ancestor_fast(org_1, org_2)
+        self.assertEqual(result, {'2107591': 4,
+                                '2107591_canon_ancestors': ['cellular organisms', 'Archaea',
+                                'Candidatus Diapherotrites',
+                                'Candidatus Forterrea',
+                                'Candidatus Forterrea multitransposorum'],
+                                '743725': 1,
+                                '743725_canon_ancestors': ['cellular organisms', 'Archaea']})
+        self.assertEqual(self.src.get_canon_common_ancestor_fast("Escherichia coli E1002", "Escherichia coli", org_format="tax_name")["Escherichia coli"], 0)        
 
 class TestQueryTaxonTreeMock(unittest.TestCase):
 

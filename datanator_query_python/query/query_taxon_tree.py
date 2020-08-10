@@ -415,6 +415,35 @@ class QueryTaxonTree(mongo_util.MongoUtil):
             Return:
                 (:obj:`Obj`)
         '''
-        anchor_org = self.collection.find_one({org_format: org1}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
-        pipeline = self.pipeline_manager.aggregate_common_canon_ancestors(anchor_org, org1, intersect_name="ancMatch")
-        return self.collection.aggregate(pipeline)
+        collection = self.client["datanator-test"]["taxon_tree"]
+        doc_1 = collection.find_one({org_format: org1}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
+        doc_2 = collection.find_one({org_format: org2}, projection={'canon_anc_ids': 1, 'canon_anc_names': 1})
+        if doc_1 is None or doc_2 is None:
+            return {str(org1): -1, str(org2): -1, 'reason': 'No organism found.'}
+
+        canon_anc_1 = doc_1["canon_anc_names"]
+        canon_anc_2 = doc_2["canon_anc_names"]
+
+        if canon_anc_1[-1] == org2:
+            distance1 = 1
+            distance2 = 0
+        elif canon_anc_2[-1] == org1:
+            distance1 = 0
+            distance2 = 1
+        else:
+            distance1 = -1
+            distance2 = -1            
+        ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
+        if ancestor == '':                
+            return {str(org1): -1, str(org2): -1, 'reason': 'No common ancestor.'}
+
+        idx_org1 = canon_anc_1.index(ancestor)
+        idx_org2 = canon_anc_2.index(ancestor)
+
+        if distance1 == -1:
+            distance1 = len(canon_anc_1) - (idx_org1) 
+        if distance2 == -1:
+            distance2 = len(canon_anc_2) - (idx_org2)
+
+        return {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
+        str(org2)+'_canon_ancestors':canon_anc_2}
