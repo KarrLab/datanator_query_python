@@ -1,5 +1,5 @@
 from datanator_query_python.config import query_schema_2_manager
-import re
+from pymongo import ASCENDING, DESCENDING
 
 
 class QueryObs(query_schema_2_manager.QM):
@@ -35,7 +35,7 @@ class QueryObs(query_schema_2_manager.QM):
         con_1 = {}
         if entity == "protein" and datatype != "localization":
             con_1["values.type"] = datatype
-        elif entity == "protein" and datatype == "half-life":
+        elif entity == "protein" and datatype == "localization":
             words = ["intramembrane_localization", "secretome location"]
             con_1["values.type"] = {"$in": words}
         elif entity == "RNA" and datatype == "localization":
@@ -43,7 +43,10 @@ class QueryObs(query_schema_2_manager.QM):
         query = {"$and": [{"identifier": identifier}, con_0, con_1]}
         docs = col.find(filter=query, limit=limit, skip=skip,
                         collation=self.collation,
-                        projection=projection)
+                        projection=projection,
+                        hint=[("identifier", ASCENDING), 
+                              ("entity.type", ASCENDING),
+                              ("values.type", ASCENDING)])
         for doc in docs:
             results.append(doc)
         return results
