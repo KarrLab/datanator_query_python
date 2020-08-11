@@ -14,4 +14,9 @@ class TestQEn(unittest.TestCase):
 
     def test_query_entity(self):
         _id = {"namespace": "inchikey", "value": "TYEYBOSBBBHJIV-UHFFFAOYSA-N"}
-        print(self.src.query_entity(_id))
+        r = self.src.query_entity(_id)
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["name"], "2-Ketobutyric acid")
+        _id = {"namespace": "inchikey", "value": "234wgadgas"}
+        r = self.src.query_entity(_id)
+        self.assertEqual(r, [])
