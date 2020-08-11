@@ -2,7 +2,7 @@ from datanator_query_python.config import query_schema_2_manager
 from pymongo import ASCENDING
 
 
-class QueryObs(query_schema_2_manager.QM):
+class QueryEn(query_schema_2_manager.QM):
     def __init__(self,
                  db="datanator-demo"):
         super().__init__()
