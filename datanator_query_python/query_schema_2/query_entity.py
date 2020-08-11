@@ -10,6 +10,7 @@ class QueryEn(query_schema_2_manager.QM):
 
     def query_entity(self, 
                     identifier,
+                    datatype="metabolite",
                     collection="entity",
                     limit=10,
                     skip=0,
@@ -18,6 +19,7 @@ class QueryEn(query_schema_2_manager.QM):
 
         Args:
             identifier(:obj:`Obj`): identifier used for the entity.
+            datatype(:obj:`Obj`, optional): Datatype to be retrieved.
             collection(:obj:`str`): name of the collection in which data resides.
             limit(:obj:`int`, optional): number of results to return.
             skip(:obj:`int`, optional): number of documents to skip.
@@ -27,7 +29,9 @@ class QueryEn(query_schema_2_manager.QM):
             (:obj:`list`): pymongo iterables.
         """
         col = self.client[self.db][collection]
-        query = {"identifiers": {"$elemMatch": identifier}}
+        con_0 = {"identifiers": {"$elemMatch": identifier}}
+        con_1 = {"type": datatype}
+        query = {"$and": [con_0, con_1]}
         result = []
         docs = col.find(filter=query,
                         limit=limit,
