@@ -1,5 +1,4 @@
 from datanator_query_python.config import query_schema_2_manager
-from pymongo import ASCENDING
 
 
 class QueryEn(query_schema_2_manager.QM):
