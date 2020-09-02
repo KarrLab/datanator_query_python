@@ -1,4 +1,6 @@
 from datanator_query_python.config import query_schema_2_manager
+from pymongo import MongoClient
+from pymongo import TEXT
 
 
 class FTX(query_schema_2_manager.QM):
@@ -9,7 +11,7 @@ class FTX(query_schema_2_manager.QM):
                      msg,
                      skip=0,
                      limit=10,
-                     token_order="sequential",
+                     token_order="any",
                      db="datanator-test"):
         """Search for taxon names.
         (https://docs.atlas.mongodb.com/reference/atlas-search)
@@ -25,19 +27,26 @@ class FTX(query_schema_2_manager.QM):
             (:obj:`CommandCursor`): MongDB CommandCursor after aggregation.
         """
         collection = self.client[db]["taxon_tree"]
-        path = ["tax_name", "name_txt"]
-        return collection.aggregate([
+        result = []
+        docs = collection.aggregate([
                                         {
                                             "$search": {
                                                 "autocomplete": {
-                                                    "path": path,
+                                                    "path": "tax_name",
                                                     "query": msg,
+                                                    "fuzzy": {
+                                                        "maxEdits": 2,
+                                                        "prefixLength": 1,
+                                                        "maxExpansions": 100
+                                                    },
                                                     "tokenOrder": token_order
                                                 }
                                             }
                                         },
                                         {
-                                            "$limit": limit,
+                                            "$limit": limit
+                                        },
+                                        {
                                             "$skip": skip
                                         },
                                         {
@@ -46,4 +55,8 @@ class FTX(query_schema_2_manager.QM):
                                                 "tax_name": 1
                                             }
                                         }
-                                    ])
+                                    ]
+                                    )
+        for doc in docs:
+            result.append(doc)
+        return result
