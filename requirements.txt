@@ -3,7 +3,7 @@ cement
 genson
 karr_lab_aws_manager 
 numpy
-pymongo
+pymongo == 3.11.0
 python_dotenv
 requests
 simplejson
