@@ -106,6 +106,7 @@ class TestQueryProtein(unittest.TestCase):
         self.assertEqual(result_0[1]['ko_number'], 'MOCK_0')
         self.assertTrue(isinstance(result_1, dict))
 
+    @unittest.skip("takes too long.")
     def test_get_meta_by_name_taxon(self):
         name_0 = 'special name'
         taxon_id_0 = 0
@@ -115,17 +116,20 @@ class TestQueryProtein(unittest.TestCase):
         result_1 = self.src.get_meta_by_name_taxon(name_0, taxon_id_1)
         self.assertEqual(result_1, [])
 
+    @unittest.skip("takes too long.")
     def test_get_meta_by_name_name(self):
         species_name_0 = 'escherichia coli'
         protein_name_0 = 'phosphofructokinase'
         result_0 = self.src_1.get_meta_by_name_name(protein_name_0, species_name_0)
         self.assertEqual(len(result_0), 6)
 
+    @unittest.skip("takes too long.")
     def test_get_info_by_text(self):
         name = 'special name'
         result = self.src.get_info_by_text(name)
         self.assertEqual(result[0]['ko_name'], ['no name'])
 
+    @unittest.skip("takes too long.")
     def test_get_info_by_text_abundances(self):
         name = 'special name'
         result = self.src.get_info_by_text_abundances(name)
