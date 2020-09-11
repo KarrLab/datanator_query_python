@@ -16,7 +16,7 @@ class Manager:
 
     def protein_manager(self):
         return query_protein.QueryProtein(username=self.username, password=self.password, server=self.server,
-        authSource=self.authDB, readPreference=self.read_preference, replicaSet=self.repl)
+        authSource=self.authDB, readPreference=self.read_preference, replicaSet=self.repl, database="datanator")
 
     def metabolite_concentration_manager(self):
         return query_metabolite_concentrations.QueryMetaboliteConcentrations(MongoDB=self.server, db='datanator',
