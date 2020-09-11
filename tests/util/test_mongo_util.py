@@ -50,7 +50,7 @@ class TestMongoUtil(unittest.TestCase):
         client, db, col = self.src.con_db(self.db)
         self.assertNotEqual(self.src.con_db(self.db), 'Server not available')
         self.assertEqual(str(self.src.client.read_preference), 'Nearest(tag_sets=None, max_staleness=-1)')
-        self.assertEqual(str(col.read_preference), 'Nearest(tag_sets=None, max_staleness=-1)')
+        self.assertEqual(str(col.read_preference), 'Nearest(tag_sets=None, max_staleness=-1, hedge=None)')
 
     # @unittest.skip('passed')
     def test_print_schema(self):
@@ -77,7 +77,7 @@ class TestMongoUtil(unittest.TestCase):
             self.src_test.db_obj[self.schema_test].insert_one({"ncbi_taxonomy_id": "123", "name": "something",
                                                             "canon_ancestors": []})
         except pymongo.errors.WriteError as e:
-            self.assertEqual(str(e), "Document failed validation")
+            self.assertEqual(str(e), "Document failed validation, full error: {'index': 0, 'code': 121, 'errmsg': 'Document failed validation'}")
 
     def test_update_observation(self):
         self.src_test.update_observation({"identifier": {"namespace": "something", "value": "a"},
