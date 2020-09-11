@@ -870,3 +870,65 @@ class QueryProtein(mongo_util.MongoUtil):
                 doc['canon_ancestors'] = species_canon_ancestor
                 result[distance-1]['documents'].append(doc)
         return result
+
+    def get_all_ortho(self, ko, anchor, max_distance):
+        '''Get replacement abundance value by taxonomic distance
+            with the same OrthoDB group number.
+
+        Args:
+            ko (:obj:`str`): OrthoDB group id to query for.
+            anchor (:obj:`str`): anchor species' name.
+            max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
+                                        proteins in results.
+            max_depth (:obj:`int`) max depth allowed from the common node.
+
+        Returns:
+            (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+            [
+            {'distance': 1, 'documents': [{}, {}, {} ...]}, 
+            {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
+        '''
+        if max_distance <= 0:
+            return 'Please use get_abundance_by_id to check self abundance values'
+
+        result = []
+        for i in range(max_distance):
+            result.append({'distance': i + 1, 'documents': []})
+
+        projection = {
+            'orthodb_id': 1,
+            'orthodb_name': 1,
+            'ancestor_name': 1,
+            'ncbi_taxonomy_id': 1,
+            'abundances': 1,
+            'species_name': 1,
+            'uniprot_id': 1,
+            '_id': 0,
+            'ancestor_taxon_id': 1,
+            'protein_name': 1,
+            'gene_name': 1,
+            'modifications': 1
+        }
+        con_0 = {'orthodb_id': ko}
+        con_1 = {'abundances': {'$exists': True}}
+        query = {'$and': [con_0, con_1]}
+        docs = self.collection.find(filter=query, projection=projection)
+        queried = deque()
+        names = {}
+        for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
+            species = doc.get('species_name')
+            if species is None and species not in queried:
+                taxon_id = doc['ncbi_taxonomy_id']
+                species = self.db_obj['taxon_tree'].find_one({"tax_id": taxon_id})['tax_name']
+                queried.append(taxon_id)
+                names[taxon_id] = species
+            elif species is None and species in queried:
+                species = names[doc['ncbi_taxonomy_id']]
+            obj = self.taxon_manager.get_canon_common_ancestor_fast(anchor, species, org_format='tax_name')
+            distance = obj[anchor]            
+            if distance != -1 and distance <= max_distance:
+                species_canon_ancestor = obj[species+'_canon_ancestors']
+                doc['canon_ancestors'] = species_canon_ancestor
+                result[distance-1]['documents'].append(doc)
+        return result

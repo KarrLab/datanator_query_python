@@ -88,7 +88,7 @@ class TestQueryProtein(unittest.TestCase):
         cls.src.collection.insert_many([mock_doc_0, mock_doc_1, mock_doc_2, mock_doc_3, mock_doc_4,mock_doc_5,mock_doc_6])
         cls.src.collection.insert_many([dic_0,dic_1,dic_2,dic_3,dic_4,dic_5,dic_6,dic_7,dic_8,dic_9,dic_10,dic_11,dic_12,dic_13,dic_14,dic_15,dic_16])
 
-        cls.src.collection.create_index("uniprot_id", background=False, collation=cls.src.collation)
+        cls.src.collection.create_index("uniprot_id", background=True, collation=cls.src.collation)
         cls.src.collection.create_index([("protein_name", pymongo.TEXT)])
 
     @classmethod
@@ -177,7 +177,7 @@ class TestQueryProtein(unittest.TestCase):
         result_1 = self.src.get_kinlaw_by_name('uniprot12')
         self.assertEqual(result_1, [])
 
-    # @unittest.skip('passed')
+    @unittest.skip('passed')
     def test_get_abundance_by_id(self):
         _id_0 = ['MOCK_0']
         result_0 = self.src.get_abundance_by_id(_id_0)
@@ -273,3 +273,8 @@ class TestQueryProtein(unittest.TestCase):
     def test_get_all_kegg(self):
         result_0 = self.src_1.get_all_kegg('K00850','Escherichia coli', 10)
         print(result_0)        
+
+    @unittest.skip("skipping")
+    def test_get_all_ortho(self):
+        result_0 = self.src_1.get_all_ortho('494933at2759','Escherichia coli', 10)
+        print(result_0)  
