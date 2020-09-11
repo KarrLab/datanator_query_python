@@ -14,9 +14,9 @@ class Manager:
         self.read_preference = config.AtlasConfig.READ_PREFERENCE
         self.repl = config.AtlasConfig.REPLSET
 
-    def protein_manager(self):
+    def protein_manager(self, database="datanator"):
         return query_protein.QueryProtein(username=self.username, password=self.password, server=self.server,
-        authSource=self.authDB, readPreference=self.read_preference, replicaSet=self.repl, database="datanator")
+        authSource=self.authDB, readPreference=self.read_preference, replicaSet=self.repl, database=database)
 
     def metabolite_concentration_manager(self):
         return query_metabolite_concentrations.QueryMetaboliteConcentrations(MongoDB=self.server, db='datanator',
