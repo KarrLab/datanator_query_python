@@ -64,6 +64,35 @@ class QueryProtein(mongo_util.MongoUtil):
             result.append(doc)
         return result
 
+    def get_ortho_by_id(self, _id):
+        '''
+            Get protein's metadata given uniprot id
+
+            Args:
+                _id (:obj:`str`): uniprot id.
+
+            Returns:
+                (:obj:`list` of :obj:`dict`): list of information.
+        '''
+        result = []
+        query = {'uniprot_id': _id}
+        doc = self.collection.find_one(filter=query, projection=projection)
+        if doc is None:
+            return {'uniprot_id': 'None',
+            'entry_name': 'None',
+            'gene_name': 'None',
+            'protein_name': 'None',
+            'canonical_sequence': 'None',
+            'length': 99999999,
+            'mass': '99999999',
+            'abundances': [],
+            'ncbi_taxonomy_id': 99999999,
+            'species_name': '99999999'}
+        else:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
+            result.append(doc)
+            return result            
+
     def get_meta_by_name_taxon(self, name, taxon_id):
         '''
             Get protein's metadata given protein name
