@@ -932,3 +932,27 @@ class QueryProtein(mongo_util.MongoUtil):
                 doc['canon_ancestors'] = species_canon_ancestor
                 result[distance-1]['documents'].append(doc)
         return result
+
+    def get_info_by_orthodb(self, orthodb):
+        '''
+            Find all proteins with the same kegg orthology id.
+
+            Args:
+                orthodb(:obj:`str`): kegg orthology ID.
+
+            Returns:
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'orthodb_id': ... 'orthodb_name': ... 'uniprot_ids': []},
+                 {'orthodb_id': ... 'orthodb_name': ... 'uniprot_ids': []}].
+        '''
+        ko = orthodb.upper()
+        result = [{'orthodb_id': ko, 'uniprot_ids': []}]
+        query = {'orthodb_id': ko}
+        projection = {'uniprot_id': 1, '_id': 0, 'orthodb_name': 1, 'orthodb_id': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+
+        for doc in docs:
+            result[0]['orthodb_name'] = doc.get('orthodb_name', ['no name'])
+            result[0]['uniprot_ids'].append(doc.get('uniprot_id'))
+        return result
