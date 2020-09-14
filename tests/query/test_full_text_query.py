@@ -152,7 +152,7 @@ class TestFTX(unittest.TestCase):
                         }
                     }}
         result = self.src.bool_query(query_message, index, must_not=must_not)
-        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K13954')
+        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K00001')
 
     def test_get_index_ko_count(self):
         agg_field = "frontend_gene_aggregate"
@@ -174,4 +174,10 @@ class TestFTX(unittest.TestCase):
         agg_field = "frontend_gene_aggregate"
         query_message = 'K14236'
         result_0 = self.src.get_genes_ko_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
+        print(result_0)
+
+    def test_get_genes_orthodb_count(self):
+        agg_field = "frontend_gene_aggregate"
+        query_message = '1398761at2759'
+        result_0 = self.src.get_genes_orthodb_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
         print(result_0)
