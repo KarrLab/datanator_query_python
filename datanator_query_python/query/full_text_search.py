@@ -196,7 +196,7 @@ class FTX(es_query_builder.QueryBuilder):
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field,
-                                                                          'species_name']}, 'size': 1}
+                                                                          'species_name', "orthodb_name", "orthodb_id"]}, 'size': 1}
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -217,6 +217,7 @@ class FTX(es_query_builder.QueryBuilder):
         body['size'] = 0
         from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body, size=num, from_=from_)
+        print(r)
         return r['aggregations']
         # hits = r['hits']['hits']
         # if hits == []:
@@ -228,7 +229,7 @@ class FTX(es_query_builder.QueryBuilder):
         #         result[index].append(hit['_source'])
         #     return result
 
-    def get_genes_ko_count(self, q, num, agg_field="frontend_gene_aggregate", **kwargs):
+    def get_genes_ko_count(self, q, num, agg_field="ko_number", **kwargs):
         """Get protein index with different ko_number field for up to num hits,
         provided at least one of the proteins under ko_number has abundance info.
         
@@ -341,7 +342,7 @@ class FTX(es_query_builder.QueryBuilder):
                 result['sabio_rk'].append(hit['_source'])
             return result
 
-    def get_genes_orthodb_count(self, q, num, agg_field="frontend_gene_aggregate", **kwargs):
+    def get_genes_orthodb_count(self, q, num, agg_field="orthodb_id", **kwargs):
         """Get protein index with different ko_number field for up to num hits,
         provided at least one of the proteins under orthodb_id has abundance info.
         
@@ -409,8 +410,8 @@ class FTX(es_query_builder.QueryBuilder):
         r_all = self.get_index_ko_count(q, num * 2, agg_field, index=index, **kwargs)
         ko_abundance = set()
         ko_all = set()
-        for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
-            r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
+        # for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
+        #     r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
         for bucket_abundance in r['aggregations']['top_kos']['buckets']:
             ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source'][agg_field])
             
