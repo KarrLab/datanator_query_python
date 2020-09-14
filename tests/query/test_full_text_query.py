@@ -152,7 +152,7 @@ class TestFTX(unittest.TestCase):
                         }
                     }}
         result = self.src.bool_query(query_message, index, must_not=must_not)
-        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K13954')
+        self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K00001')
 
     def test_get_index_ko_count(self):
         agg_field = "frontend_gene_aggregate"
