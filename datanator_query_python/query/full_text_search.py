@@ -217,7 +217,6 @@ class FTX(es_query_builder.QueryBuilder):
         body['size'] = 0
         from_ = kwargs.get('from_', 0)
         r = self.build_es().search(index=index, body=body, size=num, from_=from_)
-        print(r)
         return r['aggregations']
         # hits = r['hits']['hits']
         # if hits == []:
