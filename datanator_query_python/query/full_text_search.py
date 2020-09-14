@@ -420,10 +420,10 @@ class FTX(es_query_builder.QueryBuilder):
         for s in r['aggregations']['top_kos']['buckets']:
             ko_str = s['top_ko']['hits']['hits'][0]['_source'][agg_field]   # ko_str can be "K01234,K12345"
             # if ko_str in intersects and ko_str != 'nan':
-            if ko_str != None:
-                # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
-                s['top_ko']['hits']['hits'][0]['_source'][agg_field] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
-            else:
+            if ko_str is None:
+            #     # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
+            #     s['top_ko']['hits']['hits'][0]['_source'][agg_field] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
+            # else:
                 # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
                 s['top_ko']['hits']['hits'][0]['_source'][agg_field] = ["N/A"]
         return r['aggregations']
