@@ -196,7 +196,7 @@ class FTX(es_query_builder.QueryBuilder):
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field,
-                                                                          'species_name']}, 'size': 1}
+                                                                          'species_name', "orthodb_name", "orthodb_id"]}, 'size': 1}
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -228,7 +228,7 @@ class FTX(es_query_builder.QueryBuilder):
         #         result[index].append(hit['_source'])
         #     return result
 
-    def get_genes_ko_count(self, q, num, agg_field="frontend_gene_aggregate", **kwargs):
+    def get_genes_ko_count(self, q, num, agg_field="ko_number", **kwargs):
         """Get protein index with different ko_number field for up to num hits,
         provided at least one of the proteins under ko_number has abundance info.
         
@@ -340,3 +340,90 @@ class FTX(es_query_builder.QueryBuilder):
                 hit['_source']['_score'] = hit['_score']
                 result['sabio_rk'].append(hit['_source'])
             return result
+
+    def get_genes_orthodb_count(self, q, num, agg_field="orthodb_id", **kwargs):
+        """Get protein index with different ko_number field for up to num hits,
+        provided at least one of the proteins under orthodb_id has abundance info.
+        
+        Args:
+            q (:obj:`str`): query message.
+            num (:obj:`int`): number of hits needed.
+            agg_field (:obj:`str`): field to be aggregated.
+            **from_ (:obj:`int`): starting offset (default: 0).
+
+        Return:
+            (:obj:`dict`): obj of index hits {'index': []}
+        """
+        result = {}
+        index = 'genes'
+        must_not = {"bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": agg_field
+                            }
+                        }
+                    }}
+        aggregation = {
+                        "top_kos": {
+                            "terms": {
+                                "field": agg_field,
+                                "order": {
+                                    "top_hit": "desc"
+                                },
+                                "missing": "N/A",
+                                "size": kwargs.get('from_', 0) + num                                
+                            },
+                            "aggs": {
+                                "top_ko": {
+                                    "top_hits": {'_source': {'includes': ['orthodb_id', 'orthodb_name', 'protein_name', 'definition', agg_field,
+                                                                          'species_name']}, "size": 1}
+                                },
+                                "top_hit" : {
+                                    "max": {
+                                        "script": {
+                                            "source": "_score"
+                                        }
+                                    }
+                                },
+                                "score_bucket_sort": {
+                                    "bucket_sort":{
+                                        "sort": [{"top_hit.value": {"order": "desc"}}],
+                                        "size": num,
+                                        "from": kwargs.get('from_', 0)
+                                    }
+                                }
+                            }
+                        },
+                        "total_buckets": {'cardinality': {'field': agg_field, "missing": "N/A"}}
+                    }
+        result[index] = []
+        sqs_body = self.build_simple_query_string_body(q, **kwargs)
+        must = sqs_body['query']
+        must = [must]
+        # must.append({"exists": {"field": "abundances"}})
+        # body = self.build_bool_query_body(must=must, must_not=must_not)
+        body = self.build_bool_query_body(must=must)
+        body['aggs'] = aggregation
+        body['size'] = 0
+        r = self.build_es().search(index=index, body=body)
+        r_all = self.get_index_ko_count(q, num * 2, agg_field, index=index, **kwargs)
+        ko_abundance = set()
+        ko_all = set()
+        # for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
+        #     r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
+        for bucket_abundance in r['aggregations']['top_kos']['buckets']:
+            ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source'][agg_field])
+            
+        for bucket_all in r_all['top_kos']['buckets']:
+            ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source'][agg_field])
+        intersects = ko_abundance.intersection(ko_all)
+        for s in r['aggregations']['top_kos']['buckets']:
+            ko_str = s['top_ko']['hits']['hits'][0]['_source'][agg_field]   # ko_str can be "K01234,K12345"
+            # if ko_str in intersects and ko_str != 'nan':
+            if ko_str != None:
+                # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
+                s['top_ko']['hits']['hits'][0]['_source'][agg_field] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
+            else:
+                # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
+                s['top_ko']['hits']['hits'][0]['_source'][agg_field] = ["N/A"]
+        return r['aggregations']
