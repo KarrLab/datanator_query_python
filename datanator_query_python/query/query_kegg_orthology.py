@@ -14,6 +14,7 @@ class QueryKO(mongo_util.MongoUtil):
         self.max_entries = max_entries
         self.verbose = verbose
         self.client, self.db, self.collection = self.con_db('kegg_orthology')
+        self.ortho = self.db_obj["orthodb"]
         self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def get_ko_by_name(self, name):
@@ -95,6 +96,28 @@ class QueryKO(mongo_util.MongoUtil):
             ]
         docs = self.collection.aggregate(pipeline, collation=self.collation)
         count = self.collection.count_documents(query, collation=self.collation)
+        return docs, count
+
+    def get_meta_by_ortho_ids(self, orthodb_ids, projection={'_id': 0, 'gene_ortholog': 0}):
+        """Get meta given kegg ids
+        
+        Args:
+            orthodb_ids (:obj:`list` of :obj:`str`): List of orthodb ids.
+            projection (:obj:`dict`): MongoDB result projection.
+
+        Return:
+            (:obj:`tuple` of :obj:`pymongo.Cursor` and :obj:`int`): pymongo Cursor obj and number of documents found.
+        """
+        projection['__order'] = 0
+        query = {'orthodb_id': {'$in': orthodb_ids}}
+        pipeline = [
+             {'$match': {'orthodb_id': {'$in': orthodb_ids}}},
+             {'$addFields': {"__order": {'$indexOfArray': [orthodb_ids, "$orthodb_id" ]}}},
+             {'$sort': {"__order": 1}},
+             {"$project": projection}
+            ]
+        docs = self.ortho.aggregate(pipeline, collation=self.collation)
+        count = self.ortho.count_documents(query, collation=self.collation)
         return docs, count
 
     def get_meta_by_kegg_id(self, kegg_id):
