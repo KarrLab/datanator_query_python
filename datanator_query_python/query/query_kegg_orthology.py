@@ -118,7 +118,7 @@ class QueryKO(mongo_util.MongoUtil):
              {'$sort': {"__order": 1}},
              {"$project": projection}
             ]
-        docs = self.ortho.aggregate(pipeline, collation=self.collation)
+        docs = self.ortho.aggregate(pipeline)
         count = self.ortho.count_documents(query, collation=self.collation)
         return docs, count
 
