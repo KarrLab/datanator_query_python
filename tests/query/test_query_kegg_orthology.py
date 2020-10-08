@@ -62,3 +62,9 @@ class TestQueryKO(unittest.TestCase):
         kegg_id = 'k00001'
         doc = self.src.get_meta_by_kegg_id(kegg_id)
         self.assertEqual(doc['gene_name'], ['E1.1.1.1', 'adh'])
+
+    def test_get_meta_by_ortho_ids(self):
+        kegg_ids = ['643917at2', '567019at2']
+        docs, count = self.src.get_meta_by_ortho_ids(kegg_ids)
+        for doc in docs:
+            print(doc)

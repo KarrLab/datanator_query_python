@@ -98,7 +98,8 @@ class QueryKO(mongo_util.MongoUtil):
         count = self.collection.count_documents(query, collation=self.collation)
         return docs, count
 
-    def get_meta_by_ortho_ids(self, orthodb_ids, projection={'_id': 0, 'gene_ortholog': 0}):
+    def get_meta_by_ortho_ids(self, orthodb_ids, projection={'_id': 0, 'gene_ortholog': 0},
+                              limit=0):
         """Get meta given kegg ids
         
         Args:
@@ -112,6 +113,7 @@ class QueryKO(mongo_util.MongoUtil):
         query = {'orthodb_id': {'$in': orthodb_ids}}
         pipeline = [
              {'$match': {'orthodb_id': {'$in': orthodb_ids}}},
+             {"$limit": limit},
              {'$addFields': {"__order": {'$indexOfArray': [orthodb_ids, "$orthodb_id" ]}}},
              {'$sort': {"__order": 1}},
              {"$project": projection}
