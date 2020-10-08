@@ -196,7 +196,7 @@ class FTX(es_query_builder.QueryBuilder):
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field,
-                                                                          'species_name', "orthodb_name", "orthodb_id"]}, 'size': 1}
+                                                                          'species_name', "orthodb_name", "orthodb_id", "uniprot_id"]}, 'size': 1}
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -376,7 +376,7 @@ class FTX(es_query_builder.QueryBuilder):
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['orthodb_id', 'orthodb_name', 'protein_name', 'definition', agg_field,
-                                                                          'species_name']}, "size": 1}
+                                                                          'species_name', "uniprot_id"]}, "size": 1}
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -406,19 +406,19 @@ class FTX(es_query_builder.QueryBuilder):
         body['aggs'] = aggregation
         body['size'] = 0
         r = self.build_es().search(index=index, body=body)
-        r_all = self.get_index_ko_count(q, num * 2, agg_field, index=index, **kwargs)
+        r_all = self.get_index_ko_count(q, num * 2, agg_field=agg_field, index=index, **kwargs)
         ko_abundance = set()
         ko_all = set()
         # for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
         #     r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
         for bucket_abundance in r['aggregations']['top_kos']['buckets']:
-            ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source'][agg_field])
+            ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source'].get(agg_field))
             
         for bucket_all in r_all['top_kos']['buckets']:
-            ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source'][agg_field])
+            ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source'].get(agg_field))
         intersects = ko_abundance.intersection(ko_all)
         for s in r['aggregations']['top_kos']['buckets']:
-            ko_str = s['top_ko']['hits']['hits'][0]['_source'][agg_field]   # ko_str can be "K01234,K12345"
+            ko_str = s['top_ko']['hits']['hits'][0]['_source'].get(agg_field)   # ko_str can be "K01234,K12345"
             # if ko_str in intersects and ko_str != 'nan':
             if ko_str is None:
             #     # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
