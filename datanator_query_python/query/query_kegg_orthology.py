@@ -119,7 +119,7 @@ class QueryKO(mongo_util.MongoUtil):
              {"$project": projection}
             ]
         docs = self.ortho.aggregate(pipeline)
-        count = self.ortho.count_documents(query, collation=self.collation)
+        count = self.ortho.count_documents(query)
         return docs, count
 
     def get_meta_by_kegg_id(self, kegg_id):
