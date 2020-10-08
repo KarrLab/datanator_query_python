@@ -283,4 +283,8 @@ class TestQueryProtein(unittest.TestCase):
     # @unittest.skip("skipping")
     def test_get_all_ortho(self):
         result_0 = self.src_2.get_all_ortho('494933at2759','Escherichia coli', 10)
-        print(result_0)  
+        print(result_0)
+
+    def test_get_info_by_orthodb(self):
+        result = self.src_2.get_info_by_orthodb("643917at2")
+        print(result)

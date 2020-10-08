@@ -975,7 +975,7 @@ class QueryProtein(mongo_util.MongoUtil):
                 [{'orthodb_id': ... 'orthodb_name': ... 'uniprot_ids': []},
                  {'orthodb_id': ... 'orthodb_name': ... 'uniprot_ids': []}].
         '''
-        ko = orthodb.upper()
+        ko = orthodb.lower()
         result = [{'orthodb_id': ko, 'uniprot_ids': []}]
         query = {'orthodb_id': ko}
         projection = {'uniprot_id': 1, '_id': 0, 'orthodb_name': 1, 'orthodb_id': 1}
