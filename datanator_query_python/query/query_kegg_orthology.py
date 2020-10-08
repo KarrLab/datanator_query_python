@@ -113,7 +113,6 @@ class QueryKO(mongo_util.MongoUtil):
         query = {'orthodb_id': {'$in': orthodb_ids}}
         pipeline = [
              {'$match': {'orthodb_id': {'$in': orthodb_ids}}},
-             {"$limit": limit},
              {'$addFields': {"__order": {'$indexOfArray': [orthodb_ids, "$orthodb_id" ]}}},
              {'$sort': {"__order": 1}},
              {"$project": projection}
