@@ -18,6 +18,7 @@ class QueryProtein(mongo_util.MongoUtil):
             authSource=authSource, db=database, replicaSet=replicaSet)
         self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource, replicaSet=replicaSet)
         self.file_manager = file_util.FileUtil()
+        self.u_ortho = self.client["datanator-test"][collection_str]
         self.max_entries = max_entries
         self.verbose = verbose
         self.collection = self.db_obj[collection_str]
