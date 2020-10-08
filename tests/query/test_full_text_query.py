@@ -177,7 +177,7 @@ class TestFTX(unittest.TestCase):
         print(result_0)
 
     def test_get_genes_orthodb_count(self):
-        agg_field = "frontend_gene_aggregate"
+        agg_field = "orthodb_id"
         query_message = '1398761at2759'
         result_0 = self.src.get_genes_orthodb_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
         print(result_0)

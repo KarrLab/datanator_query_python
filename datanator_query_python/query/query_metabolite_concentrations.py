@@ -70,3 +70,15 @@ class QueryMetaboliteConcentrations(mongo_util.MongoUtil):
         docs = self._collection.aggregate(pipeline)
         for doc in docs:
             return doc['total']
+
+    def get_conc_by_taxon(self, _id):
+        """Get concentrations by ncbi taxonomy ID.
+
+        Args:
+            _id(:obj:`int`): NCBI Taxonomy ID.
+
+        Return:
+            (:obj:`Pymongo.Cursor`)
+        """
+        query = {"concentrations.ncbi_taxonomy_id": _id}
+        return self._collection.find(filter=query)

@@ -293,7 +293,7 @@ class FTX(es_query_builder.QueryBuilder):
         body['aggs'] = aggregation
         body['size'] = 0
         r = self.build_es().search(index=index, body=body)
-        r_all = self.get_index_ko_count(q, num * 2, agg_field, index=index, **kwargs)
+        r_all = self.get_index_ko_count(q, num * 2, agg_field=agg_field, index=index, **kwargs)
         ko_abundance = set()
         ko_all = set()
         for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
@@ -406,7 +406,7 @@ class FTX(es_query_builder.QueryBuilder):
         body['aggs'] = aggregation
         body['size'] = 0
         r = self.build_es().search(index=index, body=body)
-        r_all = self.get_index_ko_count(q, num * 2, agg_field, index=index, **kwargs)
+        r_all = self.get_index_ko_count(q, num * 2, agg_field=agg_field, index=index, **kwargs)
         ko_abundance = set()
         ko_all = set()
         # for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
