@@ -148,3 +148,11 @@ class TestQuerySabioOld(unittest.TestCase):
         _ids = ['P20932', 'P00803']
         result = self.src.get_reaction_by_subunit(_ids)
         self.assertTrue(result[-1]['kinlaw_id'] in [31611, 31609])
+
+    def test_get_kinlaw_by_rxn_ortho(self):
+        substrate_0 = 'XJLXINKUBYWONI-NNYOXOHSSA-N'
+        substrate_1 = 'ODBLHEXUDAPZAU-UHFFFAOYSA-N'
+        product_0 = 'GPRLSGONYQIRFK-UHFFFAOYSA-N'
+        product_1 = 'KPGXRSRHYNQIFN-UHFFFAOYSA-N'
+        _, result = self.src.get_kinlaw_by_rxn_ortho([substrate_0, substrate_1], [product_0, product_1])
+        print(result)
