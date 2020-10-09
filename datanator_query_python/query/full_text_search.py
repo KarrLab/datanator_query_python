@@ -341,7 +341,7 @@ class FTX(es_query_builder.QueryBuilder):
                 result['sabio_rk'].append(hit['_source'])
             return result
 
-    def get_genes_orthodb_count(self, q, num, agg_field="orthodb_id", **kwargs):
+    def get_genes_orthodb_count(self, q, num, agg_field="orthodb_id.keyword", **kwargs):
         """Get protein index with different ko_number field for up to num hits,
         provided at least one of the proteins under orthodb_id has abundance info.
         
