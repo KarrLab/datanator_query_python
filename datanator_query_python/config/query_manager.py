@@ -71,10 +71,10 @@ def metabolites_meta_manager():
 
 class RnaManager:
 
-    def rna_manager(self):
+    def rna_manager(self, db="datanator"):
         return query_rna_halflife.QueryRNA(username=config.AtlasConfig.USERNAME, password=config.AtlasConfig.PASSWORD,
         server=config.AtlasConfig.SERVER, authDB=config.AtlasConfig.AUTHDB, readPreference=config.AtlasConfig.READ_PREFERENCE,
-        db='datanator', collection_str='rna_halflife_new', replicaSet=config.AtlasConfig.REPLSET)
+        db=db, collection_str='rna_halflife_new', replicaSet=config.AtlasConfig.REPLSET)
 
 
 class KeggManager:
