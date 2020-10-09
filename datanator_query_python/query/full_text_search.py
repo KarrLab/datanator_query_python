@@ -196,7 +196,11 @@ class FTX(es_query_builder.QueryBuilder):
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['ko_number', 'ko_name', 'protein_name', 'definition', agg_field,
+<<<<<<< HEAD
                                                                           'species_name', "orthodb_name", "orthodb_id"]}, 'size': 1}
+=======
+                                                                          'species_name', "orthodb_name", "orthodb_id", "uniprot_id"]}, 'size': 1}
+>>>>>>> testapi
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -341,7 +345,11 @@ class FTX(es_query_builder.QueryBuilder):
                 result['sabio_rk'].append(hit['_source'])
             return result
 
+<<<<<<< HEAD
     def get_genes_orthodb_count(self, q, num, agg_field="orthodb_id", **kwargs):
+=======
+    def get_genes_orthodb_count(self, q, num, agg_field="orthodb_id.keyword", **kwargs):
+>>>>>>> testapi
         """Get protein index with different ko_number field for up to num hits,
         provided at least one of the proteins under orthodb_id has abundance info.
         
@@ -376,7 +384,11 @@ class FTX(es_query_builder.QueryBuilder):
                             "aggs": {
                                 "top_ko": {
                                     "top_hits": {'_source': {'includes': ['orthodb_id', 'orthodb_name', 'protein_name', 'definition', agg_field,
+<<<<<<< HEAD
                                                                           'species_name']}, "size": 1}
+=======
+                                                                          'species_name', "uniprot_id"]}, "size": 1}
+>>>>>>> testapi
                                 },
                                 "top_hit" : {
                                     "max": {
@@ -412,6 +424,7 @@ class FTX(es_query_builder.QueryBuilder):
         # for i, s in enumerate(r['aggregations']['top_kos']['buckets']):
         #     r['aggregations']['top_kos']['buckets'][i]['key'] = [s['key'][i:i+6] for i in range(0, len(s['key']), 6)]    
         for bucket_abundance in r['aggregations']['top_kos']['buckets']:
+<<<<<<< HEAD
             ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source'][agg_field])
             
         for bucket_all in r_all['top_kos']['buckets']:
@@ -424,6 +437,20 @@ class FTX(es_query_builder.QueryBuilder):
                 # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
                 s['top_ko']['hits']['hits'][0]['_source'][agg_field] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
             else:
+=======
+            ko_abundance.add(bucket_abundance['top_ko']['hits']['hits'][0]['_source'].get(agg_field))
+            
+        for bucket_all in r_all['top_kos']['buckets']:
+            ko_all.add(bucket_all['top_ko']['hits']['hits'][0]['_source'].get(agg_field))
+        intersects = ko_abundance.intersection(ko_all)
+        for s in r['aggregations']['top_kos']['buckets']:
+            ko_str = s['top_ko']['hits']['hits'][0]['_source'].get(agg_field)   # ko_str can be "K01234,K12345"
+            # if ko_str in intersects and ko_str != 'nan':
+            if ko_str is None:
+            #     # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = True
+            #     s['top_ko']['hits']['hits'][0]['_source'][agg_field] = [ko_str[i:i+6] for i in range(0, len(ko_str), 6)]
+            # else:
+>>>>>>> testapi
                 # s['top_ko']['hits']['hits'][0]['_source']['abundances'] = False
                 s['top_ko']['hits']['hits'][0]['_source'][agg_field] = ["N/A"]
         return r['aggregations']

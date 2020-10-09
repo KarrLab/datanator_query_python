@@ -70,3 +70,24 @@ class QueryRNA(mongo_util.MongoUtil):
                                     skip=_from, limit=size)
         count = self.collection.count_documents(query)
         return docs, count
+
+    def get_doc_by_orthodb(self, orthodb, projection={'_id': 0},
+                      _from=0, size=0):
+        """Get documents by orthodb group ID.
+        
+        Args:
+            orthodb (:obj:`str`): Orthodb group ID.
+            projection (:obj:`dict`, optional): mongodb query result
+            projection. Defaults to {'_id': 0}.
+            _from (:obj:`int`): first page (0-indexed).
+            size (:obj:`int`): number of items per page.
+
+        Return:
+            (:obj:`tuple` of :obj:`Pymongo.Cursor` and :obj:`int`):
+            pymongo interable and number of documents.
+        """
+        query = {'orthodb_id': orthodb}
+        docs = self.collection.find(filter=query, projection=projection,
+                                    skip=_from, limit=size)
+        count = self.collection.count_documents(query)
+        return docs, count

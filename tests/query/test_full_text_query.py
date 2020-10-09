@@ -154,6 +154,7 @@ class TestFTX(unittest.TestCase):
         result = self.src.bool_query(query_message, index, must_not=must_not)
         self.assertEqual(result['hits']['hits'][0]['_source']['ko_number'], 'K00001')
 
+    @unittest.skip("ko obsolete")
     def test_get_index_ko_count(self):
         agg_field = "frontend_gene_aggregate"
         query_message = 'alcohol dehydrogenase'
@@ -170,11 +171,19 @@ class TestFTX(unittest.TestCase):
         result = self.src.get_rxn_oi(query_message)
         self.assertEqual(result['sabio_rk_total'], {'value': 10000, 'relation': 'gte'})
 
+<<<<<<< HEAD
     def test_get_genes_ko_count(self):
         agg_field = "frontend_gene_aggregate"
         query_message = 'K14236'
         result_0 = self.src.get_genes_ko_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
         print(result_0)
+=======
+    # def test_get_genes_ko_count(self):
+    #     agg_field = "ko_number"
+    #     query_message = 'K14236'
+    #     result_0 = self.src.get_genes_ko_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
+    #     print(result_0)
+>>>>>>> testapi
 
     def test_get_genes_orthodb_count(self):
         agg_field = "orthodb_id"

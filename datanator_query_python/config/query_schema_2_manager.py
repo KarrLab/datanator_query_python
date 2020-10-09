@@ -1,6 +1,7 @@
 from datanator_query_python.config import config
 from datanator_query_python.util import mongo_util
 from pymongo import ReadPreference
+from pymongo.collation import Collation, CollationStrength
 
 
 class QM(mongo_util.MongoUtil):
@@ -17,6 +18,7 @@ class QM(mongo_util.MongoUtil):
                         username=username, password=password,
                         authSource=authSource, readPreference=readPreference)
         self.read_preference = self._convert_read_p(readPreference)
+        self.collation = Collation(locale='en', strength=CollationStrength.SECONDARY)
 
     def _convert_read_p(self, read_preference):
         """Convert string read preference to pymongo

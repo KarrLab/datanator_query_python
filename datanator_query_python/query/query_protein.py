@@ -64,6 +64,35 @@ class QueryProtein(mongo_util.MongoUtil):
             result.append(doc)
         return result
 
+    def get_ortho_by_id(self, _id):
+        '''
+            Get protein's metadata given uniprot id
+
+            Args:
+                _id (:obj:`str`): uniprot id.
+
+            Returns:
+                (:obj:`list` of :obj:`dict`): list of information.
+        '''
+        result = []
+        query = {'uniprot_id': _id}
+        doc = self.collection.find_one(filter=query, projection={"_id": 0})
+        if doc is None:
+            return {'uniprot_id': 'None',
+            'entry_name': 'None',
+            'gene_name': 'None',
+            'protein_name': 'None',
+            'canonical_sequence': 'None',
+            'length': 99999999,
+            'mass': '99999999',
+            'abundances': [],
+            'ncbi_taxonomy_id': 99999999,
+            'species_name': '99999999'}
+        else:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
+            result.append(doc)
+            return result            
+
     def get_meta_by_name_taxon(self, name, taxon_id):
         '''
             Get protein's metadata given protein name
@@ -869,4 +898,90 @@ class QueryProtein(mongo_util.MongoUtil):
                 species_canon_ancestor = obj[species+'_canon_ancestors']
                 doc['canon_ancestors'] = species_canon_ancestor
                 result[distance-1]['documents'].append(doc)
+        return result
+
+    def get_all_ortho(self, ko, anchor, max_distance):
+        '''Get replacement abundance value by taxonomic distance
+            with the same OrthoDB group number.
+
+        Args:
+            ko (:obj:`str`): OrthoDB group id to query for.
+            anchor (:obj:`str`): anchor species' name.
+            max_distance (:obj:`int`): max taxonomic distance from origin protein allowed for
+                                        proteins in results.
+            max_depth (:obj:`int`) max depth allowed from the common node.
+
+        Returns:
+            (:obj:`list` of :obj:`dict`): list of result proteins and their info 
+            [
+            {'distance': 1, 'documents': [{}, {}, {} ...]}, 
+            {'distance': 2, 'documents': [{}, {}, {} ...]}, ...].
+        '''
+        if max_distance <= 0:
+            return 'Please use get_abundance_by_id to check self abundance values'
+
+        result = []
+        for i in range(max_distance):
+            result.append({'distance': i + 1, 'documents': []})
+
+        projection = {
+            'orthodb_id': 1,
+            'orthodb_name': 1,
+            'ancestor_name': 1,
+            'ncbi_taxonomy_id': 1,
+            'abundances': 1,
+            'species_name': 1,
+            'uniprot_id': 1,
+            '_id': 0,
+            'ancestor_taxon_id': 1,
+            'protein_name': 1,
+            'gene_name': 1,
+            'modifications': 1
+        }
+        con_0 = {'orthodb_id': ko}
+        con_1 = {'abundances': {'$exists': True}}
+        query = {'$and': [con_0, con_1]}
+        docs = self.collection.find(filter=query, projection=projection)
+        queried = deque()
+        names = {}
+        for doc in docs:
+            doc = json.loads(json.dumps(doc, ignore_nan=True))
+            species = doc.get('species_name')
+            if species is None and species not in queried:
+                taxon_id = doc['ncbi_taxonomy_id']
+                species = self.db_obj['taxon_tree'].find_one({"tax_id": taxon_id})['tax_name']
+                queried.append(taxon_id)
+                names[taxon_id] = species
+            elif species is None and species in queried:
+                species = names[doc['ncbi_taxonomy_id']]
+            obj = self.taxon_manager.get_canon_common_ancestor_fast(anchor, species, org_format='tax_name')
+            distance = obj[anchor]            
+            if distance != -1 and distance <= max_distance:
+                species_canon_ancestor = obj[species+'_canon_ancestors']
+                doc['canon_ancestors'] = species_canon_ancestor
+                result[distance-1]['documents'].append(doc)
+        return result
+
+    def get_info_by_orthodb(self, orthodb):
+        '''
+            Find all proteins with the same kegg orthology id.
+
+            Args:
+                orthodb(:obj:`str`): kegg orthology ID.
+
+            Returns:
+                (:obj:`list` of :obj:`dict`): list of dictionary containing 
+                protein's uniprot_id and kegg information
+                [{'orthodb_id': ... 'orthodb_name': ... 'uniprot_ids': []},
+                 {'orthodb_id': ... 'orthodb_name': ... 'uniprot_ids': []}].
+        '''
+        ko = orthodb.lower()
+        result = [{'orthodb_id': ko, 'uniprot_ids': []}]
+        query = {'orthodb_id': ko}
+        projection = {'uniprot_id': 1, '_id': 0, 'orthodb_name': 1, 'orthodb_id': 1}
+        docs = self.collection.find(filter=query, projection=projection)
+
+        for doc in docs:
+            result[0]['orthodb_name'] = doc.get('orthodb_name', ['no name'])
+            result[0]['uniprot_ids'].append(doc.get('uniprot_id'))
         return result

@@ -20,6 +20,7 @@ class QuerySabioOld(mongo_util.MongoUtil):
                         replicaSet=replicaSet, db=db,
                         verbose=verbose, max_entries=max_entries, username=username,
                         password=password, authSource=authSource, readPreference=readPreference)
+        self.u = self.client["datanator-test"]["uniprot"]
         self.chem_manager = chem_util.ChemUtil()
         self.file_manager = file_util.FileUtil()
         self.collection = self.db_obj[collection_str]
@@ -171,6 +172,79 @@ class QuerySabioOld(mongo_util.MongoUtil):
         docs = self.collection.aggregate(pipeline)
         count = self.collection.count_documents(query)
         return count, docs
+
+    def get_kinlaw_by_rxn_ortho(self, substrates, products, dof=0,
+                          projection={'kinlaw_id': 1, '_id': 0, "enzymes": 1},
+                          bound='loose', skip=0, limit=0):
+        ''' Find the kinlaw_id defined in sabio_rk using 
+            rxn participants' inchikey
+
+            Args:
+                substrates (:obj:`list`): list of substrates' inchikey
+                products (:obj:`list`): list of products' inchikey
+                dof (:obj:`int`, optional): degree of freedom allowed (number of parts of
+                                  inchikey to truncate); the default is 0
+                projection (:obj:`dict`): pymongo query projection 
+                bound (:obj:`str`): limit substrates/products to include only input values
+
+            Return:
+                (:obj:`list` of :obj:`dict`): list of kinlaws that satisfy the condition
+        '''
+        substrate = 'reaction_participant.substrate_aggregate'
+        product = 'reaction_participant.product_aggregate'
+        if dof == 0:
+            substrates = substrates
+            products = products
+        elif dof == 1:
+            substrates = [re.compile('^' + x[:-2]) for x in substrates]
+            products = [re.compile('^' + x[:-2]) for x in products]
+        else:
+            substrates = [re.compile('^' + x[:14]) for x in substrates]
+            products = [re.compile('^' + x[:14]) for x in products]
+
+        if bound == 'loose':
+            constraint_0 = {substrate: {'$all': substrates}}
+            constraint_1 = {product: {'$all': products}}
+            constraint_2 = {"taxon_id": {"$ne": None}}
+        else:
+            constraint_0 = {substrate: substrates}
+            constraint_1 = {product: products}
+            constraint_2 = {"taxon_id": {"$ne": None}}            
+        query = {'$and': [constraint_0, constraint_1, constraint_2]}
+        # lookup = lookups.Lookups().simple_lookup("kegg_orthology", "resource.id", "definition.ec_code", "kegg_meta")
+        # if limit > 0:
+        #     pipeline = [{"$match": query}, {"$limit": limit}, {"$skip": skip}, lookup, {"$project": projection}]
+        # else:
+        #     pipeline = [{"$match": query}, {"$skip": skip}, lookup, {"$project": projection}]
+        docs = self.collection.find(filter=query,
+                                    limit=limit,
+                                    skip=skip,
+                                    projection=projection)
+        cache = {}
+        result = []
+        for doc in docs:
+            try:
+                u_id = doc["enzymes"][2]["subunit"][0]["uniprot_id"]
+                if u_id is not None:
+                    if cache.get(u_id) is None:
+                        x = self.u.find_one(filter={"uniprot_id": u_id},
+                                        projection={"orthodb_id": 1,
+                                                    "orthodb_name": 1})
+                        cache[u_id] = x
+                    else:
+                        x = cache.get(u_id)
+                    doc["orthodb_id"] = x["orthodb_id"]
+                    doc["orthodb_name"] = x["orthodb_name"]
+                else:
+                    doc["orthodb_id"] = None
+                    doc["orthodb_name"] = None
+            except:
+                doc["orthodb_id"] = None
+                doc["orthodb_name"] = None
+            doc.pop("enzymes", None)
+            result.append(doc)
+        count = self.collection.count_documents(query)
+        return count, result
 
     def get_kinlaw_by_entryid(self, entry_id):
         """Find reactions by sabio entry id

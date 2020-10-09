@@ -62,6 +62,23 @@ class CliTestCase(unittest.TestCase):
                 # test that the CLI produced the correct output
                 self.assertEqual(captured.stdout.get_text(), 'done')
                 self.assertEqual(captured.stderr.get_text(), '')
+
+    def test_define_schema(self):
+        with capturer.CaptureOutput(merged=False, relay=False) as captured:
+            with __main__.App(argv=['mongo-def-schema',
+                                    'test',
+                                    'cli_test',
+                                    '../datanator_pattern_design/compiled/taxon_compiled.json']) as app:
+                # run app
+                app.run()
+
+                # test that the arguments to the CLI were correctly parsed
+                self.assertEqual(app.pargs.db, 'test')
+                self.assertTrue(app.pargs.collection, 'cli_test')
+
+                # test that the CLI produced the correct output
+                self.assertEqual(captured.stdout.get_text(), 'done')
+                self.assertEqual(captured.stderr.get_text(), '')
         conf = getattr(config, app.pargs.config_name)
         mongo_util.MongoUtil(MongoDB=conf.SERVER,
                             db=app.pargs.db,

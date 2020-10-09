@@ -280,7 +280,16 @@ class TestQueryProtein(unittest.TestCase):
         result_0 = self.src_1.get_all_kegg('K00850','Escherichia coli', 10)
         print(result_0)        
 
-    # @unittest.skip("skipping")
-    # def test_get_all_ortho(self):
-    #     result_0 = self.src_2.get_all_ortho('494933at2759','Escherichia coli', 10)
-    #     print(result_0)  
+    @unittest.skip("skipping")
+    def test_get_all_ortho(self):
+        result_0 = self.src_2.get_all_ortho('494933at2759','Escherichia coli', 10)
+        print(result_0)
+
+    @unittest.skip("passed")
+    def test_get_info_by_orthodb(self):
+        result = self.src_2.get_info_by_orthodb("643917at2")
+        print(result)
+
+    def test_get_ortho_by_id(self):
+        result = self.src_2.get_ortho_by_id("P53984")
+        print(result)
