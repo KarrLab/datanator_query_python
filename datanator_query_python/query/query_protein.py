@@ -76,7 +76,7 @@ class QueryProtein(mongo_util.MongoUtil):
         '''
         result = []
         query = {'uniprot_id': _id}
-        doc = self.collection.find_one(filter=query, projection=projection)
+        doc = self.collection.find_one(filter=query)
         if doc is None:
             return {'uniprot_id': 'None',
             'entry_name': 'None',
