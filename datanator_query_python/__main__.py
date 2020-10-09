@@ -9,7 +9,7 @@
 import cement
 from datanator_query_python.util import mongo_util
 from datanator_query_python.config import config
-import datanator_query_python.core
+import datanator_query_python
 
 
 class BaseController(cement.Controller):
@@ -109,7 +109,6 @@ class App(cement.App):
         base_controller = 'base'
         handlers = [
             BaseController,
-            Command3WithArgumentsController,
             DefineSchema
         ]
 
