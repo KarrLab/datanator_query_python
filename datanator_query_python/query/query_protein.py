@@ -16,6 +16,7 @@ class QueryProtein(mongo_util.MongoUtil):
                         readPreference=readPreference, replicaSet=replicaSet)
         self.taxon_manager = query_taxon_tree.QueryTaxonTree(MongoDB=server, username=username, password=password,
             authSource=authSource, db=database, replicaSet=replicaSet)
+        self.taxon_col = self.db_obj['taxon_tree']
         self.kegg_manager = query_kegg_orthology.QueryKO(username=username, password=password, server=server, authSource=authSource, replicaSet=replicaSet)
         self.file_manager = file_util.FileUtil()
         self.max_entries = max_entries
@@ -936,7 +937,9 @@ class QueryProtein(mongo_util.MongoUtil):
             'ancestor_taxon_id': 1,
             'protein_name': 1,
             'gene_name': 1,
-            'modifications': 1
+            'modifications': 1,
+            "canon_anc_ids": 1,
+            "canon_anc_names": 1
         }
         con_0 = {'orthodb_id': ko}
         con_1 = {'abundances': {'$exists': True}}
@@ -944,23 +947,71 @@ class QueryProtein(mongo_util.MongoUtil):
         docs = self.collection.find(filter=query, projection=projection)
         queried = deque()
         names = {}
+        species_anc = {}
+        canon_anc_anchor = self.taxon_col.find_one({"tax_name": anchor})['canon_anc_names']
         for doc in docs:
             doc = json.loads(json.dumps(doc, ignore_nan=True))
             species = doc.get('species_name')
-            if species is None and species not in queried:
+            if species is None and species not in queried: # few documents don't have species_name field
                 taxon_id = doc['ncbi_taxonomy_id']
-                species = self.db_obj['taxon_tree'].find_one({"tax_id": taxon_id})['tax_name']
+                tmp = self.taxon_col.find_one({"tax_id": taxon_id})
+                species = tmp['tax_name']
+                canon_anc_species = tmp["canon_anc_names"]
                 queried.append(taxon_id)
                 names[taxon_id] = species
+                species_anc[taxon_id] = canon_anc_species
             elif species is None and species in queried:
                 species = names[doc['ncbi_taxonomy_id']]
-            obj = self.taxon_manager.get_canon_common_ancestor_fast(anchor, species, org_format='tax_name')
+                canon_anc_species = species_anc[doc['ncbi_taxonomy_id']]
+            obj = self._get_common_canon_anc(anchor, species, canon_anc_anchor, doc["canon_anc_names"])
+            print(obj)
             distance = obj[anchor]            
             if distance != -1 and distance <= max_distance:
                 species_canon_ancestor = obj[species+'_canon_ancestors']
                 doc['canon_ancestors'] = species_canon_ancestor
                 result[distance-1]['documents'].append(doc)
         return result
+
+    def _get_common_canon_anc(self, org1, org2, canon_anc_1, canon_anc_2):
+        """Get canon common ancestors between species.
+
+        Args:
+            org1(:obj:`str`): Name of species 1.
+            org2(:obj:`str`): Name of species 2.
+            canon_anc_1(:obj:`list` of `str`): List of canon ancestor names of species 1.
+            canon_anc_2(:obj:`list` of `str`): List of canon ancestor names of species 2.
+
+        Return:
+            (:obj:`Obj`): {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
+                           str(org2)+'_canon_ancestors':canon_anc_2}
+        """
+        if canon_anc_1 == canon_anc_2:
+            return {str(org1): 0, str(org1)+'_canon_ancestors':canon_anc_1,
+                    str(org2): 0, str(org2)+'_canon_ancestors':canon_anc_1}
+
+        if canon_anc_1[-1] == org2:
+            distance1 = 1
+            distance2 = 0
+        elif canon_anc_2[-1] == org1:
+            distance1 = 0
+            distance2 = 1
+        else:
+            distance1 = -1
+            distance2 = -1            
+        ancestor = self.file_manager.get_common(canon_anc_1, canon_anc_2)
+        if ancestor == '':                
+            return {str(org1): -1, str(org2): -1, 'reason': 'No common ancestor.'}
+
+        idx_org1 = canon_anc_1.index(ancestor)
+        idx_org2 = canon_anc_2.index(ancestor)
+
+        if distance1 == -1:
+            distance1 = len(canon_anc_1) - (idx_org1) 
+        if distance2 == -1:
+            distance2 = len(canon_anc_2) - (idx_org2)
+
+        return {str(org1): distance1, str(org2): distance2, str(org1)+'_canon_ancestors':canon_anc_1,
+        str(org2)+'_canon_ancestors':canon_anc_2}
 
     def get_info_by_orthodb(self, orthodb):
         '''
