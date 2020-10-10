@@ -1,6 +1,7 @@
 from datanator_query_python.util import mongo_util, file_util
 from datanator_query_python.query import query_taxon_tree, query_kegg_orthology
 from pymongo.collation import Collation, CollationStrength
+from pymongo import ASCENDING
 from collections import deque
 import simplejson as json
 
@@ -942,7 +943,9 @@ class QueryProtein(mongo_util.MongoUtil):
         con_0 = {'orthodb_id': ko}
         con_1 = {'abundances': {'$exists': True}}
         query = {'$and': [con_0, con_1]}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection,
+                                    hint=[("orthodb_id", ASCENDING), ("abundances", ASCENDING)],
+                                    batch_size=500)
         queried = deque()
         distances = {}
         names = {}
