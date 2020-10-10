@@ -964,7 +964,6 @@ class QueryProtein(mongo_util.MongoUtil):
                 species = names[doc['ncbi_taxonomy_id']]
                 canon_anc_species = species_anc[doc['ncbi_taxonomy_id']]
             obj = self._get_common_canon_anc(anchor, species, canon_anc_anchor, doc["canon_anc_names"])
-            print(obj)
             distance = obj[anchor]            
             if distance != -1 and distance <= max_distance:
                 species_canon_ancestor = obj[species+'_canon_ancestors']
