@@ -942,13 +942,14 @@ class QueryProtein(mongo_util.MongoUtil):
         con_0 = {'orthodb_id': ko}
         con_1 = {'abundances': {'$exists': True}}
         query = {'$and': [con_0, con_1]}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection, batch_size=500)
         queried = deque()
         distances = {}
         names = {}
         species_anc = {}
         canon_anc_anchor = self.taxon_col.find_one({"tax_name": anchor})['canon_anc_names']
-        for doc in docs:
+        for i, doc in enumerate(docs):
+            print(i)
             doc = json.loads(json.dumps(doc, ignore_nan=True))
             species = doc.get('species_name')
             taxon_id = doc['ncbi_taxonomy_id']
