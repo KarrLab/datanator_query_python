@@ -944,7 +944,7 @@ class QueryProtein(mongo_util.MongoUtil):
         con_1 = {'abundances': {'$exists': True}}
         query = {'$and': [con_0, con_1]}
         docs = self.collection.find(filter=query, projection=projection,
-                                    hint=[("orthodb_id", ASCENDING), ("abundances", ASCENDING)],
+                                    hint=[("abundances", ASCENDING), ("orthodb_id", ASCENDING)],
                                     batch_size=500)
         queried = deque()
         distances = {}
