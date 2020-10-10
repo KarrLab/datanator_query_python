@@ -928,13 +928,11 @@ class QueryProtein(mongo_util.MongoUtil):
         projection = {
             'orthodb_id': 1,
             'orthodb_name': 1,
-            'ancestor_name': 1,
             'ncbi_taxonomy_id': 1,
             'abundances': 1,
             'species_name': 1,
             'uniprot_id': 1,
             '_id': 0,
-            'ancestor_taxon_id': 1,
             'protein_name': 1,
             'gene_name': 1,
             'modifications': 1,
@@ -946,25 +944,34 @@ class QueryProtein(mongo_util.MongoUtil):
         query = {'$and': [con_0, con_1]}
         docs = self.collection.find(filter=query, projection=projection)
         queried = deque()
+        distances = {}
         names = {}
         species_anc = {}
         canon_anc_anchor = self.taxon_col.find_one({"tax_name": anchor})['canon_anc_names']
         for doc in docs:
             doc = json.loads(json.dumps(doc, ignore_nan=True))
             species = doc.get('species_name')
-            if species is None and species not in queried: # few documents don't have species_name field
-                taxon_id = doc['ncbi_taxonomy_id']
+            taxon_id = doc['ncbi_taxonomy_id']
+            if species is None and taxon_id not in queried: # few documents don't have species_name field
                 tmp = self.taxon_col.find_one({"tax_id": taxon_id})
                 species = tmp['tax_name']
                 canon_anc_species = tmp["canon_anc_names"]
                 queried.append(taxon_id)
                 names[taxon_id] = species
                 species_anc[taxon_id] = canon_anc_species
-            elif species is None and species in queried:
-                species = names[doc['ncbi_taxonomy_id']]
-                canon_anc_species = species_anc[doc['ncbi_taxonomy_id']]
-            obj = self._get_common_canon_anc(anchor, species, canon_anc_anchor, doc["canon_anc_names"])
-            print(obj)
+                obj = self._get_common_canon_anc(anchor, species, canon_anc_anchor, doc["canon_anc_names"])
+                distances[taxon_id] = obj
+            elif species is not None and taxon_id not in queried:
+                canon_anc_species = doc["canon_anc_names"]
+                queried.append(taxon_id)
+                names[taxon_id] = species
+                species_anc[taxon_id] = canon_anc_species
+                obj = self._get_common_canon_anc(anchor, species, canon_anc_anchor, doc["canon_anc_names"])
+                distances[taxon_id] = obj                
+            else:
+                species = names[taxon_id]
+                canon_anc_species = species_anc[taxon_id]
+                obj = distances[taxon_id]            
             distance = obj[anchor]            
             if distance != -1 and distance <= max_distance:
                 species_canon_ancestor = obj[species+'_canon_ancestors']
