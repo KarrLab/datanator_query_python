@@ -1,6 +1,7 @@
 from datanator_query_python.util import mongo_util, file_util
 from datanator_query_python.query import query_taxon_tree, query_kegg_orthology
 from pymongo.collation import Collation, CollationStrength
+from pymongo import ASCENDING
 from collections import deque
 import simplejson as json
 
@@ -940,15 +941,17 @@ class QueryProtein(mongo_util.MongoUtil):
             "canon_anc_names": 1
         }
         con_0 = {'orthodb_id': ko}
-        con_1 = {'abundances': {'$exists': True}}
+        con_1 = {'abu_exist': True}
         query = {'$and': [con_0, con_1]}
-        docs = self.collection.find(filter=query, projection=projection)
+        docs = self.collection.find(filter=query, projection=projection,
+                                    hint=[("abu_exist", ASCENDING), ("orthodb_id", ASCENDING)],
+                                    batch_size=100)
         queried = deque()
         distances = {}
         names = {}
         species_anc = {}
         canon_anc_anchor = self.taxon_col.find_one({"tax_name": anchor})['canon_anc_names']
-        for i, doc in enumerate(docs):
+        for doc in docs:
             doc = json.loads(json.dumps(doc, ignore_nan=True))
             species = doc.get('species_name')
             taxon_id = doc['ncbi_taxonomy_id']
