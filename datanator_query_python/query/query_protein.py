@@ -980,7 +980,7 @@ class QueryProtein(mongo_util.MongoUtil):
                 species_canon_ancestor = obj[species+'_canon_ancestors']
                 doc['canon_ancestors'] = species_canon_ancestor
                 result[distance-1]['documents'].append(doc)
-        return 
+        return result
 
     def _get_common_canon_anc(self, org1, org2, canon_anc_1, canon_anc_2):
         """Get canon common ancestors between species.
