@@ -60,3 +60,59 @@ class FTX(query_schema_2_manager.QM):
         for doc in docs:
             result.append(doc)
         return result
+
+    def search_entity(self,
+                     msg,
+                     path,
+                     skip=0,
+                     limit=10,
+                     token_order="any",
+                     db="datanator-demo"):
+        """Search for taxon names.
+        (https://docs.atlas.mongodb.com/reference/atlas-search)
+
+        Args:
+            msg(:obj:`str`): query message.
+            path(:obj:`list`): fields to be queried.
+            skip(:obj:`int`, optional): number of records to skip.
+            limit(:obj:`int`, optional): max number of documents to return.
+            token_order(:obj:`str`, optional): token order, i.e. sequential or any.
+            db(:obj:`str`, optional): name of database in which the result resides.
+
+        Return:
+            (:obj:`CommandCursor`): MongDB CommandCursor after aggregation.
+        """
+        collection = self.client[db]["taxon_tree"]
+        result = []
+        docs = collection.aggregate([
+                                        {
+                                            "$search": {
+                                                "queryString": {
+                                                    "path": path,
+                                                    "query": msg,
+                                                    "fuzzy": {
+                                                        "maxEdits": 2,
+                                                        "prefixLength": 1,
+                                                        "maxExpansions": 100
+                                                    },
+                                                    "tokenOrder": token_order
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "$limit": limit
+                                        },
+                                        {
+                                            "$skip": skip
+                                        },
+                                        {
+                                            "$project": {
+                                                "_id": 0,
+                                                "tax_name": 1
+                                            }
+                                        }
+                                    ]
+                                    )
+        for doc in docs:
+            result.append(doc)
+        return result
