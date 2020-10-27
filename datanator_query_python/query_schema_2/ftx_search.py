@@ -73,7 +73,7 @@ class FTX(query_schema_2_manager.QM):
 
         Args:
             msg(:obj:`str`): query message.
-            path(:obj:`list`): fields to be queried.
+            path(:obj:`list` of :obj:`str`): fields to be queried.
             skip(:obj:`int`, optional): number of records to skip.
             limit(:obj:`int`, optional): max number of documents to return.
             token_order(:obj:`str`, optional): token order, i.e. sequential or any.
@@ -82,13 +82,13 @@ class FTX(query_schema_2_manager.QM):
         Return:
             (:obj:`CommandCursor`): MongDB CommandCursor after aggregation.
         """
-        collection = self.client[db]["taxon_tree"]
+        collection = self.client[db]["enitty"]
         result = []
         docs = collection.aggregate([
                                         {
                                             "$search": {
                                                 "queryString": {
-                                                    "path": path,
+                                                    "defaultPath": path,
                                                     "query": msg,
                                                     "fuzzy": {
                                                         "maxEdits": 2,
@@ -108,7 +108,7 @@ class FTX(query_schema_2_manager.QM):
                                         {
                                             "$project": {
                                                 "_id": 0,
-                                                "tax_name": 1
+                                                "synonyms": 1
                                             }
                                         }
                                     ]
