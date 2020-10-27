@@ -182,3 +182,10 @@ class TestFTX(unittest.TestCase):
         query_message = '1398761at2759'
         result_0 = self.src.get_genes_orthodb_count(query_message, 15, agg_field=agg_field, size=10, fields=['*'])
         print(result_0)
+
+    def test_simple_query_string_entity(self):
+        msg = "2-Ketobutanoic acid"
+        index = "entity"
+        fields = "synonyms"
+        r = self.src.simple_query_string(msg, index, fileds=fields)
+        print(r)
