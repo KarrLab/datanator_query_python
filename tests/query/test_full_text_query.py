@@ -188,4 +188,4 @@ class TestFTX(unittest.TestCase):
         index = "entity"
         fields = "synonyms"
         r = self.src.simple_query_string(msg, index, fileds=fields)
-        print(r)
+        self.assertEqual(r["hits"]["hits"][0]["_id"], "5efb9c4ca8c2d4a8d414d315")
